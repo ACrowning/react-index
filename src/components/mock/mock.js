@@ -1,7 +1,8 @@
 const Mock = [
   {
+    id: 1,
     title: "string",
-    done: "boolean",
+    done: false,
   },
 ];
 
