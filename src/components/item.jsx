@@ -3,6 +3,7 @@ import styles from "../app.module.css";
 export default function Item({ handleToggle, handleDeleteItem, items }) {
   return items.map((item, index) => (
     <div
+      key={item.id}
       className={styles.item}
       style={{ textDecoration: item.done ? "line-through" : "none" }}
       onClick={() => handleToggle(item.id)}
