@@ -1,13 +1,12 @@
 import React, { useState } from "react";
 import styles from "./app.module.css";
-import List from "./components/item.jsx";
+import Item from "./components/item.jsx";
 import Mock from "./components/mock/mock.js";
 
 function App() {
   const [elements, setElements] = useState(Mock);
 
   const [inputTitle, setInputTitle] = useState("");
-  const [inputDone, setInputDone] = useState("");
 
   const handleDeleteItem = (itemsIndex) => {
     const itemsDeleted = [
@@ -19,13 +18,22 @@ function App() {
 
   const handleAddItem = () => {
     const newItem = {
+      id: `${elements.length + 1}`,
       title: inputTitle,
-      done: inputDone,
     };
     setInputTitle("");
-    setInputDone("");
 
     setElements([...elements, newItem]);
+  };
+
+  const handleToggle = (itemsIndex) => {
+    setElements((prevElements) =>
+      prevElements.map((element) =>
+        element.id === itemsIndex
+          ? { ...element, done: !element.done }
+          : element
+      )
+    );
   };
 
   return (
@@ -39,18 +47,15 @@ function App() {
             placeholder="Enter the title"
           />
         </div>
-        <div>
-          <input
-            value={inputDone}
-            onChange={(event) => setInputDone(event.target.value)}
-            type="text"
-            placeholder="Enter the title"
-          />
-        </div>
+
         <button onClick={handleAddItem}>Add</button>
       </div>
       <div className={styles.itemsStyle}>
-        <List handleDeleteItem={handleDeleteItem} items={elements} />
+        <Item
+          handleDeleteItem={handleDeleteItem}
+          items={elements}
+          handleToggle={handleToggle}
+        />
       </div>
     </div>
   );
