@@ -1,7 +1,11 @@
 import styles from "../app.module.css";
 
-export default function Item({ handleToggle, handleDeleteItem, items }) {
-  return items.map((item, index) => (
+export default function Item({
+  handleToggle,
+  handleDeleteItem,
+  filteredElements,
+}) {
+  return filteredElements.map((item, index) => (
     <div
       key={item.id}
       className={styles.item}
