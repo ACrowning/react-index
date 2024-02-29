@@ -5,8 +5,8 @@ import Mock from "./components/mock/mock.js";
 
 function App() {
   const [elements, setElements] = useState(Mock);
-
   const [inputTitle, setInputTitle] = useState("");
+  const [searchElement, setSearchElement] = useState("");
 
   const handleDeleteItem = (itemsIndex) => {
     const itemsDeleted = [
@@ -36,6 +36,10 @@ function App() {
     );
   };
 
+  const filteredElements = elements.filter((item) =>
+    item.title.toLowerCase().includes(searchElement.toLowerCase())
+  );
+
   return (
     <div className={styles.containerStyle}>
       <div className={styles.navbar}>
@@ -47,14 +51,22 @@ function App() {
             placeholder="Enter the title"
           />
         </div>
-
         <button onClick={handleAddItem}>Add</button>
+        <div className={styles.item}>
+          <input
+            type="text"
+            placeholder="Find the title"
+            value={searchElement}
+            onChange={(event) => setSearchElement(event.target.value)}
+          />
+        </div>
       </div>
+
       <div className={styles.itemsStyle}>
         <Item
           handleDeleteItem={handleDeleteItem}
-          items={elements}
           handleToggle={handleToggle}
+          filteredElements={filteredElements}
         />
       </div>
     </div>
