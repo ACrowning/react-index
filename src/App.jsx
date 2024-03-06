@@ -40,6 +40,14 @@ function App() {
     item.title.toLowerCase().includes(searchElement.toLowerCase())
   );
 
+  const handleElementClick = (itemsIndex, newText) => {
+    setElements((prevElements) =>
+      prevElements.map((element) =>
+        element.id === itemsIndex ? { ...element, title: newText } : element
+      )
+    );
+  };
+
   return (
     <div className={styles.containerStyle}>
       <div className={styles.navbar}>
@@ -67,6 +75,7 @@ function App() {
           handleDeleteItem={handleDeleteItem}
           handleToggle={handleToggle}
           filteredElements={filteredElements}
+          handleElementClick={handleElementClick}
         />
       </div>
     </div>
