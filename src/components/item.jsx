@@ -8,13 +8,12 @@ export default function Item({
   handleElementClick,
 }) {
   return filteredElements.map((item, index) => (
-    <div
-      key={item.id}
-      className={styles.item}
-      style={{ textDecoration: item.done ? "line-through" : "none" }}
-      onClick={() => handleToggle(item.id)}
-    >
-      <Edit item={item} onItemClick={handleElementClick} />
+    <div key={item.id} className={styles.item}>
+      <Edit
+        item={item}
+        onItemClick={handleElementClick}
+        handleToggle={handleToggle}
+      />
 
       <div>
         <button onClick={() => handleDeleteItem(index)}>Delete</button>
