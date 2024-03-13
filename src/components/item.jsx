@@ -1,11 +1,17 @@
 import styles from "../app.module.css";
 import Edit from "./edit.jsx";
+import Count from "./count.jsx";
+import { Button } from "antd";
 
 export default function Item({
   handleToggle,
   handleDeleteItem,
   filteredElements,
   handleElementClick,
+  handlePlusCount,
+  handleMinusCount,
+  handleAmountEdit,
+  handleAddAmount,
 }) {
   return filteredElements.map((item, index) => (
     <div key={item.id} className={styles.item}>
@@ -14,9 +20,21 @@ export default function Item({
         onItemClick={handleElementClick}
         handleToggle={handleToggle}
       />
-
+      <Count
+        item={item}
+        onPlusClick={handlePlusCount}
+        onMinusClick={handleMinusCount}
+        handleAmountEdit={handleAmountEdit}
+        handleAddAmount={handleAddAmount}
+      />
       <div>
-        <button onClick={() => handleDeleteItem(index)}>Delete</button>
+        <Button
+          type="primary"
+          className={styles.item}
+          onClick={() => handleDeleteItem(index)}
+        >
+          Delete
+        </Button>
       </div>
     </div>
   ));

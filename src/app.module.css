@@ -14,3 +14,7 @@
 .item {
   margin-top: 20px;
 }
+
+.flex {
+  display: flex;
+}
