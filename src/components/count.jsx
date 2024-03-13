@@ -43,7 +43,7 @@ export default function Count({
             type="number"
             value={inputAmount}
             onBlur={handleAmount}
-            onChange={(event) => setInputAmount(event.target.value)}
+            onChange={(event) => setInputAmount(parseInt(event.target.value))}
           />
         </div>
         <div>
