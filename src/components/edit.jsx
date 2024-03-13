@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { Input } from "antd";
+import { Button } from "antd";
 
 export default function Edit({ item, onItemClick, handleToggle }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -29,7 +31,7 @@ export default function Edit({ item, onItemClick, handleToggle }) {
     <div>
       {isEditing ? (
         <div>
-          <input
+          <Input
             type="text"
             value={editText}
             onChange={(event) => setEditText(event.target.value)}
@@ -37,7 +39,7 @@ export default function Edit({ item, onItemClick, handleToggle }) {
             onKeyDown={handleInputKey}
             autoFocus
           />
-          <button onClick={() => handleInputEdit(item.title)}>Save</button>
+          <Button onClick={() => handleInputEdit(item.title)}>Save</Button>
         </div>
       ) : (
         <div onClick={handleItemClick}>{item.title} </div>
