@@ -5,36 +5,50 @@ import styles from "../app.module.css";
 
 export default function Count({
   item,
-  onPlusClick,
-  onMinusClick,
   handleAmountEdit,
   handleAddAmount,
+  addToCart,
 }) {
   const [inputAmount, setInputAmount] = useState(item.amount);
 
   const handleAddCount = () => {
     handleAddAmount(inputAmount);
+    handleAmountEdit(item.id, inputAmount);
+
+    addToCart(item, inputAmount);
+
+    setInputAmount(parseInt(item.amount - inputAmount));
   };
 
-  const handleAmount = () => {
-    handleAmountEdit(item.id, inputAmount);
+  const handleInputChange = (e) => {
+    if (parseInt(e.target.value) > item.amount) {
+      alert("Wrong count");
+    } else setInputAmount(parseInt(e.target.value));
+  };
+
+  const handleInputBlur = () => {
+    if (inputAmount === "" || isNaN(parseInt(inputAmount))) {
+      setInputAmount(0);
+    }
   };
 
   const minus = () => {
-    onMinusClick(item.id, inputAmount);
-    setInputAmount(Math.max(0, item.amount - 1));
+    setInputAmount(Math.max(0, inputAmount - 1));
   };
 
   const plus = () => {
-    onPlusClick(item.id, inputAmount);
-    setInputAmount(item.amount + 1);
+    setInputAmount(inputAmount + 1);
   };
 
   return (
     <div>
       <div className={styles.flex}>
         <div>
-          <Button type="primary" onClick={() => minus()}>
+          <Button
+            type="primary"
+            disabled={inputAmount === 0}
+            onClick={() => minus()}
+          >
             -
           </Button>
         </div>
@@ -42,12 +56,16 @@ export default function Count({
           <Input
             type="number"
             value={inputAmount}
-            onBlur={handleAmount}
-            onChange={(event) => setInputAmount(parseInt(event.target.value))}
+            onBlur={handleInputBlur}
+            onChange={handleInputChange}
           />
         </div>
         <div>
-          <Button type="primary" onClick={() => plus()}>
+          <Button
+            type="primary"
+            disabled={inputAmount >= item.amount && !isNaN(inputAmount)}
+            onClick={() => plus()}
+          >
             +
           </Button>
         </div>

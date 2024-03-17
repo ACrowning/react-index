@@ -4,12 +4,15 @@ import Item from "./components/item.jsx";
 import Mock from "./components/mock/mock.js";
 import { Button } from "antd";
 import { Input } from "antd";
+import { ShoppingCartOutlined } from "@ant-design/icons";
 
 function App() {
   const [elements, setElements] = useState(Mock);
   const [inputTitle, setInputTitle] = useState("");
+  const [inputAmount, setInputAmount] = useState("");
   const [searchElement, setSearchElement] = useState("");
   const [sumCard, setSumCard] = useState(0);
+  const [cartItems, setCartItems] = useState([]);
 
   const handleAddAmount = (newCount) => {
     if (!isNaN(newCount) && newCount >= 0) {
@@ -31,9 +34,10 @@ function App() {
     const newItem = {
       id: `${elements.length + 1}`,
       title: inputTitle,
-      amount: 1,
+      amount: parseInt(inputAmount),
     };
     setInputTitle("");
+    setInputAmount("");
 
     setElements([...elements, newItem]);
   };
@@ -43,32 +47,6 @@ function App() {
       prevElements.map((element) =>
         element.id === itemsIndex
           ? { ...element, done: !element.done }
-          : element
-      )
-    );
-  };
-
-  const handlePlusCount = (itemsIndex) => {
-    setElements((prevElements) =>
-      prevElements.map((element) =>
-        element.id === itemsIndex
-          ? {
-              ...element,
-              amount: parseInt(element.amount) + 1,
-            }
-          : element
-      )
-    );
-  };
-
-  const handleMinusCount = (itemsIndex) => {
-    setElements((prevElements) =>
-      prevElements.map((element) =>
-        element.id === itemsIndex
-          ? {
-              ...element,
-              amount: Math.max(0, element.amount - 1),
-            }
           : element
       )
     );
@@ -90,10 +68,28 @@ function App() {
     setElements((prevElements) =>
       prevElements.map((element) =>
         element.id === itemsIndex
-          ? { ...element, amount: parseInt(newCount) }
+          ? {
+              ...element,
+              amount: Math.max(0, element.amount - newCount),
+            }
           : element
       )
     );
+  };
+
+  const addToCart = (element, newCount) => {
+    const newItem = {
+      title: element.title,
+      amount: parseInt(newCount),
+    };
+    setCartItems([...cartItems, newItem]);
+  };
+
+  const handleShopCardClick = () => {
+    const cartContentsString = cartItems
+      .map((item) => `${item.title} - ${item.amount}`)
+      .join(", ");
+    console.log(cartContentsString);
   };
 
   return (
@@ -105,6 +101,14 @@ function App() {
             onChange={(event) => setInputTitle(event.target.value)}
             type="text"
             placeholder="Enter the title"
+          />
+        </div>
+        <div>
+          <Input
+            value={inputAmount}
+            onChange={(event) => setInputAmount(event.target.value)}
+            type="text"
+            placeholder="Enter the count"
           />
         </div>
         <Button type="primary" onClick={handleAddItem}>
@@ -119,21 +123,24 @@ function App() {
           />
         </div>
       </div>
-
       <div className={styles.itemsStyle}>
         <Item
           handleDeleteItem={handleDeleteItem}
           handleToggle={handleToggle}
           filteredElements={filteredElements}
           handleElementClick={handleElementClick}
-          handlePlusCount={handlePlusCount}
-          handleMinusCount={handleMinusCount}
           handleAmountEdit={handleAmountEdit}
           handleAddAmount={handleAddAmount}
+          addToCart={addToCart}
         />
       </div>
-
-      <div> Sum: {sumCard}</div>
+      <div>
+        {sumCard}
+        <ShoppingCartOutlined
+          className={styles.icon}
+          onClick={handleShopCardClick}
+        />
+      </div>
     </div>
   );
 }
