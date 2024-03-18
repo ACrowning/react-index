@@ -9,7 +9,7 @@ export default function Count({
   handleAddAmount,
   addToCart,
 }) {
-  const [inputAmount, setInputAmount] = useState(item.amount);
+  const [inputAmount, setInputAmount] = useState(1);
 
   const handleAddCount = () => {
     handleAddAmount(inputAmount);
@@ -17,19 +17,13 @@ export default function Count({
 
     addToCart(item, inputAmount);
 
-    setInputAmount(parseInt(item.amount - inputAmount));
+    setInputAmount(parseInt(item.amount - inputAmount && 1));
   };
 
   const handleInputChange = (e) => {
     if (parseInt(e.target.value) > item.amount) {
       alert("Wrong count");
-    } else setInputAmount(parseInt(e.target.value));
-  };
-
-  const handleInputBlur = () => {
-    if (inputAmount === "" || isNaN(parseInt(inputAmount))) {
-      setInputAmount(0);
-    }
+    } else parseInt(setInputAmount(e.target.value));
   };
 
   const minus = () => {
@@ -56,7 +50,6 @@ export default function Count({
           <Input
             type="number"
             value={inputAmount}
-            onBlur={handleInputBlur}
             onChange={handleInputChange}
           />
         </div>
@@ -73,6 +66,7 @@ export default function Count({
       <div>
         <Button
           type="primary"
+          disabled={inputAmount === 0}
           className={styles.item}
           onClick={() => handleAddCount()}
         >

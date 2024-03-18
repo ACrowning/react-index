@@ -34,12 +34,15 @@ function App() {
     const newItem = {
       id: `${elements.length + 1}`,
       title: inputTitle,
-      amount: parseInt(inputAmount),
+      amount: inputAmount,
     };
+    if (inputAmount === "" || inputTitle === "") {
+      alert("Enter the title and the count!");
+    } else {
+      setElements([...elements, newItem]);
+    }
     setInputTitle("");
     setInputAmount("");
-
-    setElements([...elements, newItem]);
   };
 
   const handleToggle = (itemsIndex) => {
@@ -79,6 +82,7 @@ function App() {
 
   const addToCart = (element, newCount) => {
     const newItem = {
+      id: element.id,
       title: element.title,
       amount: parseInt(newCount),
     };
@@ -86,10 +90,7 @@ function App() {
   };
 
   const handleShopCardClick = () => {
-    const cartContentsString = cartItems
-      .map((item) => `${item.title} - ${item.amount}`)
-      .join(", ");
-    console.log(cartContentsString);
+    console.log(cartItems);
   };
 
   return (
@@ -107,7 +108,7 @@ function App() {
           <Input
             value={inputAmount}
             onChange={(event) => setInputAmount(event.target.value)}
-            type="text"
+            type="number"
             placeholder="Enter the count"
           />
         </div>
