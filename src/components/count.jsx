@@ -23,7 +23,12 @@ export default function Count({
   const handleInputChange = (e) => {
     if (parseInt(e.target.value) > item.amount) {
       alert("Wrong count");
-    } else parseInt(setInputAmount(e.target.value));
+    } else if (
+      parseInt(e.target.value) === "" ||
+      isNaN(parseInt(e.target.value))
+    ) {
+      setInputAmount(0);
+    } else setInputAmount(parseInt(e.target.value));
   };
 
   const minus = () => {
