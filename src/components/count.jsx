@@ -21,13 +21,11 @@ export default function Count({
   };
 
   const handleInputChange = (e) => {
+    if (!e.target.value) {
+      return setInputAmount(0);
+    }
     if (parseInt(e.target.value) > item.amount) {
       alert("Wrong count");
-    } else if (
-      parseInt(e.target.value) === "" ||
-      isNaN(parseInt(e.target.value))
-    ) {
-      setInputAmount(0);
     } else setInputAmount(parseInt(e.target.value));
   };
 
