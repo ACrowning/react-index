@@ -49,6 +49,7 @@ export default function Edit({ item, onItemClick, handleToggle }) {
           <div>Done status</div>
         </div>
       </div>
+      <div>amount: {item.amount}</div>
     </div>
   );
 }

@@ -8,10 +8,9 @@ export default function Item({
   handleDeleteItem,
   filteredElements,
   handleElementClick,
-  handlePlusCount,
-  handleMinusCount,
   handleAmountEdit,
   handleAddAmount,
+  addToCart,
 }) {
   return filteredElements.map((item, index) => (
     <div key={item.id} className={styles.item}>
@@ -22,10 +21,9 @@ export default function Item({
       />
       <Count
         item={item}
-        onPlusClick={handlePlusCount}
-        onMinusClick={handleMinusCount}
         handleAmountEdit={handleAmountEdit}
         handleAddAmount={handleAddAmount}
+        addToCart={addToCart}
       />
       <div>
         <Button

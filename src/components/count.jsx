@@ -5,36 +5,47 @@ import styles from "../app.module.css";
 
 export default function Count({
   item,
-  onPlusClick,
-  onMinusClick,
   handleAmountEdit,
   handleAddAmount,
+  addToCart,
 }) {
-  const [inputAmount, setInputAmount] = useState(item.amount);
+  const [inputAmount, setInputAmount] = useState(1);
 
   const handleAddCount = () => {
     handleAddAmount(inputAmount);
+    handleAmountEdit(item.id, inputAmount);
+
+    addToCart(item, inputAmount);
+
+    setInputAmount(parseInt(item.amount - inputAmount && 1));
   };
 
-  const handleAmount = () => {
-    handleAmountEdit(item.id, inputAmount);
+  const handleInputChange = (e) => {
+    if (!e.target.value) {
+      return setInputAmount(0);
+    }
+    if (parseInt(e.target.value) > item.amount) {
+      alert("Wrong count");
+    } else setInputAmount(parseInt(e.target.value));
   };
 
   const minus = () => {
-    onMinusClick(item.id, inputAmount);
-    setInputAmount(Math.max(0, item.amount - 1));
+    setInputAmount(Math.max(0, inputAmount - 1));
   };
 
   const plus = () => {
-    onPlusClick(item.id, inputAmount);
-    setInputAmount(item.amount + 1);
+    setInputAmount(inputAmount + 1);
   };
 
   return (
     <div>
       <div className={styles.flex}>
         <div>
-          <Button type="primary" onClick={() => minus()}>
+          <Button
+            type="primary"
+            disabled={inputAmount === 0}
+            onClick={() => minus()}
+          >
             -
           </Button>
         </div>
@@ -42,12 +53,15 @@ export default function Count({
           <Input
             type="number"
             value={inputAmount}
-            onBlur={handleAmount}
-            onChange={(event) => setInputAmount(parseInt(event.target.value))}
+            onChange={handleInputChange}
           />
         </div>
         <div>
-          <Button type="primary" onClick={() => plus()}>
+          <Button
+            type="primary"
+            disabled={inputAmount >= item.amount && !isNaN(inputAmount)}
+            onClick={() => plus()}
+          >
             +
           </Button>
         </div>
@@ -55,6 +69,7 @@ export default function Count({
       <div>
         <Button
           type="primary"
+          disabled={inputAmount === 0}
           className={styles.item}
           onClick={() => handleAddCount()}
         >
