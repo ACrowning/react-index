@@ -1,7 +1,6 @@
 import styles from "../app.module.css";
 import Edit from "./edit.jsx";
 import Count from "./count.jsx";
-import { Button } from "antd";
 
 export default function Item({
   handleToggle,
@@ -13,26 +12,24 @@ export default function Item({
   addToCart,
 }) {
   return filteredElements.map((item, index) => (
-    <div key={item.id} className={styles.item}>
-      <Edit
-        item={item}
-        onItemClick={handleElementClick}
-        handleToggle={handleToggle}
-      />
-      <Count
-        item={item}
-        handleAmountEdit={handleAmountEdit}
-        handleAddAmount={handleAddAmount}
-        addToCart={addToCart}
-      />
+    <div key={item.id} className={styles.itemsStyle}>
       <div>
-        <Button
-          type="primary"
-          className={styles.item}
-          onClick={() => handleDeleteItem(index)}
-        >
-          Delete
-        </Button>
+        <Edit
+          item={item}
+          onItemClick={handleElementClick}
+          handleToggle={handleToggle}
+        />
+      </div>
+
+      <div className={styles.flexItem}>
+        <Count
+          item={item}
+          handleAmountEdit={handleAmountEdit}
+          handleAddAmount={handleAddAmount}
+          addToCart={addToCart}
+          handleDeleteItem={handleDeleteItem}
+          index={index}
+        />
       </div>
     </div>
   ));

@@ -1,24 +1,108 @@
+body {
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+    "Lucida Sans", Arial, sans-serif;
+}
+
 .navbar {
+  background-color: rgb(226, 241, 226);
   padding: 20px 25px;
+  border-right: 1px solid rgb(195, 194, 194);
+}
+
+.input {
+  margin-bottom: 12px;
+}
+
+.buttons {
+  margin-bottom: 12px;
+  margin-top: 5px;
+  background-color: rgb(7, 85, 7);
 }
 
 .containerStyle {
-  display: flex;
-  flex-shrink: 2;
-}
-
-.itemsStyle {
-  margin-left: 40px;
-}
-
-.item {
-  margin-top: 20px;
-}
-
-.flex {
   display: flex;
 }
 
 .icon {
   font-size: 30px;
+  color: rgb(248, 248, 248);
+}
+
+.card {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-right: 25px;
+  color: rgb(248, 248, 248);
+}
+
+.top {
+  position: relative;
+  width: 100%;
+  height: 50px;
+  background-color: #080808;
+  margin-bottom: 5px;
+}
+
+.font {
+  margin: 5px 5px;
+  font-style: italic;
+}
+
+.inputNum {
+  width: 100px;
+}
+
+.buttonSize {
+  background-color: rgb(7, 85, 7);
+  font-size: small;
+  margin: 3px;
+}
+
+.container {
+  margin-left: 25px;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.itemsStyle {
+  position: relative;
+  margin-right: 35px;
+  background-color: rgb(226, 241, 226);
+  border: 1px solid rgb(195, 194, 194);
+}
+
+.title {
+  color: rgb(7, 85, 7);
+  text-align: center;
+  font-size: larger;
+  font-weight: bold;
+  padding: 10px 10px;
+}
+
+.amount {
+  font-size: medium;
+  position: absolute;
+  display: flex;
+  padding-left: 5px;
+  bottom: 90px;
+}
+
+.done {
+  font-size: small;
+  padding-left: 5px;
+}
+
+.flexBtn {
+  position: absolute;
+  display: flex;
+  bottom: 5px;
+  padding-left: 5px;
+}
+
+.flexItem {
+  display: flex;
+  align-items: center;
+  height: 120px;
 }
