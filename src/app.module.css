@@ -124,7 +124,12 @@ body {
   margin-right: 15px;
 }
 
+.itemsStyle ::after {
+  position: absolute;
+  color: aliceblue;
+}
+
 .zero {
-  background-color: rgba(164, 159, 159, 0.5);
+  opacity: 0.6;
   pointer-events: none;
 }
