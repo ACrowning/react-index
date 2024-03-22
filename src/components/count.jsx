@@ -64,7 +64,7 @@ export default function Count({
             type="primary"
             disabled={inputAmount >= item.amount && !isNaN(inputAmount)}
             onClick={() => plus()}
-            className={styles.buttonSize}
+            className={styles.btnSize}
           >
             +
           </Button>
@@ -73,19 +73,21 @@ export default function Count({
       <div className={styles.amount}>amount: {item.amount}</div>
       <div className={styles.itemBtn}>
         <div className={styles.flexBtn}>
-          <Button
-            type="primary"
-            disabled={inputAmount === 0}
-            onClick={() => handleAddCount()}
-            className={styles.buttonSize}
-          >
-            Add to card
-          </Button>
           <div>
             <Button
               type="primary"
-              className={styles.buttonSize}
+              disabled={inputAmount === 0}
+              onClick={() => handleAddCount()}
+              className={styles.btnSize}
+            >
+              Add to card
+            </Button>
+          </div>
+          <div>
+            <Button
+              type="primary"
               onClick={() => handleDeleteItem(index)}
+              className={styles.btnSize}
             >
               Delete
             </Button>

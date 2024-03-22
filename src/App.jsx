@@ -96,8 +96,8 @@ function App() {
   return (
     <div>
       <div className={styles.top}>
-        <div className={styles.card}>
-          {sumCard}
+        <div>
+          <div className={styles.circle}>{sumCard}</div>
           <ShoppingCartOutlined
             className={styles.icon}
             onClick={handleShopCardClick}
