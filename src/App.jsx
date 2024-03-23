@@ -94,53 +94,64 @@ function App() {
   };
 
   return (
-    <div className={styles.containerStyle}>
-      <div className={styles.navbar}>
+    <div>
+      <div className={styles.top}>
         <div>
-          <Input
-            value={inputTitle}
-            onChange={(event) => setInputTitle(event.target.value)}
-            type="text"
-            placeholder="Enter the title"
-          />
-        </div>
-        <div>
-          <Input
-            value={inputAmount}
-            onChange={(event) => setInputAmount(event.target.value)}
-            type="number"
-            placeholder="Enter the count"
-          />
-        </div>
-        <Button type="primary" onClick={handleAddItem}>
-          Add
-        </Button>
-        <div className={styles.item}>
-          <Input
-            type="text"
-            placeholder="Find the title"
-            value={searchElement}
-            onChange={(event) => setSearchElement(event.target.value)}
+          <div className={styles.circle}>{sumCard}</div>
+          <ShoppingCartOutlined
+            className={styles.icon}
+            onClick={handleShopCardClick}
           />
         </div>
       </div>
-      <div className={styles.itemsStyle}>
-        <Item
-          handleDeleteItem={handleDeleteItem}
-          handleToggle={handleToggle}
-          filteredElements={filteredElements}
-          handleElementClick={handleElementClick}
-          handleAmountEdit={handleAmountEdit}
-          handleAddAmount={handleAddAmount}
-          addToCart={addToCart}
-        />
-      </div>
-      <div>
-        {sumCard}
-        <ShoppingCartOutlined
-          className={styles.icon}
-          onClick={handleShopCardClick}
-        />
+      <div className={styles.containerStyle}>
+        <div className={styles.navbar}>
+          <div className={styles.font}>Fill in the fields:</div>
+          <div className={styles.input}>
+            <Input
+              value={inputTitle}
+              onChange={(event) => setInputTitle(event.target.value)}
+              type="text"
+              placeholder="Enter the title"
+            />
+          </div>
+          <div>
+            <Input
+              value={inputAmount}
+              onChange={(event) => setInputAmount(event.target.value)}
+              type="number"
+              placeholder="Enter the count"
+            />
+          </div>
+          <Button
+            className={styles.buttons}
+            type="primary"
+            onClick={handleAddItem}
+          >
+            Add
+          </Button>
+
+          <div>
+            <div className={styles.font}>Filter:</div>
+            <Input
+              type="text"
+              placeholder="Find the title"
+              value={searchElement}
+              onChange={(event) => setSearchElement(event.target.value)}
+            />
+          </div>
+        </div>
+        <div className={styles.container}>
+          <Item
+            handleDeleteItem={handleDeleteItem}
+            handleToggle={handleToggle}
+            filteredElements={filteredElements}
+            handleElementClick={handleElementClick}
+            handleAmountEdit={handleAmountEdit}
+            handleAddAmount={handleAddAmount}
+            addToCart={addToCart}
+          />
+        </div>
       </div>
     </div>
   );

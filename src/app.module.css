@@ -1,24 +1,134 @@
+body {
+  font-family: "Roboto";
+}
+
 .navbar {
+  background-color: rgb(226, 241, 226);
   padding: 20px 25px;
+  border-right: 1px solid rgb(195, 194, 194);
+}
+
+.input {
+  margin-bottom: 12px;
+}
+
+.buttons {
+  margin-bottom: 12px;
+  margin-top: 5px;
+  background-color: rgb(7, 85, 7);
 }
 
 .containerStyle {
   display: flex;
-  flex-shrink: 2;
-}
-
-.itemsStyle {
-  margin-left: 40px;
-}
-
-.item {
-  margin-top: 20px;
-}
-
-.flex {
-  display: flex;
 }
 
 .icon {
-  font-size: 30px;
+  font-size: 35px;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-right: 25px;
+}
+
+.circle {
+  position: absolute;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background-color: rgb(7, 85, 7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 12px;
+  right: 10px;
+  top: 15%;
+  transform: translateY(-50%);
+}
+
+.top {
+  position: relative;
+  width: 100%;
+  height: 50px;
+  border-bottom: 1px solid rgb(195, 194, 194);
+  margin-bottom: 5px;
+}
+
+.font {
+  margin: 5px 5px;
+}
+
+.inputNum {
+  width: 100px;
+}
+
+.buttonSize {
+  background-color: rgb(7, 85, 7);
+  font-size: small;
+  margin: 3px;
+}
+
+.container {
+  margin-left: 25px;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.itemsStyle {
+  position: relative;
+  margin-right: 35px;
+  background-color: rgb(226, 241, 226);
+  border: 1px solid rgb(195, 194, 194);
+}
+
+.title {
+  color: rgb(7, 85, 7);
+  text-align: center;
+  font-size: larger;
+  font-weight: bold;
+  padding: 10px 10px;
+}
+
+.amount {
+  font-size: medium;
+  position: absolute;
+  display: flex;
+  padding-left: 12px;
+  bottom: 90px;
+}
+
+.done {
+  font-size: small;
+  padding-left: 12px;
+}
+
+.flexBtn {
+  position: absolute;
+  display: flex;
+  bottom: 5px;
+  padding: 5px;
+}
+
+.flexItem {
+  display: flex;
+  align-items: center;
+  height: 120px;
+  padding: 5px;
+}
+
+.btnSize {
+  background-color: rgb(7, 85, 7);
+  font-size: small;
+  margin-right: 15px;
+}
+
+.itemsStyle ::after {
+  position: absolute;
+  color: aliceblue;
+}
+
+.zero {
+  opacity: 0.6;
+  pointer-events: none;
 }

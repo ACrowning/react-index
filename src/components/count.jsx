@@ -8,6 +8,8 @@ export default function Count({
   handleAmountEdit,
   handleAddAmount,
   addToCart,
+  handleDeleteItem,
+  index,
 }) {
   const [inputAmount, setInputAmount] = useState(1);
 
@@ -39,21 +41,23 @@ export default function Count({
 
   return (
     <div>
-      <div className={styles.flex}>
+      <div className={styles.flexItem}>
         <div>
           <Button
             type="primary"
             disabled={inputAmount === 0}
             onClick={() => minus()}
+            className={styles.buttonSize}
           >
             -
           </Button>
         </div>
-        <div>
+        <div className={styles.inputNum}>
           <Input
             type="number"
             value={inputAmount}
             onChange={handleInputChange}
+            min={0}
           />
         </div>
         <div>
@@ -61,20 +65,35 @@ export default function Count({
             type="primary"
             disabled={inputAmount >= item.amount && !isNaN(inputAmount)}
             onClick={() => plus()}
+            className={styles.btnSize}
           >
             +
           </Button>
         </div>
       </div>
-      <div>
-        <Button
-          type="primary"
-          disabled={inputAmount === 0}
-          className={styles.item}
-          onClick={() => handleAddCount()}
-        >
-          Add to card
-        </Button>
+      <div className={styles.amount}>amount: {item.amount}</div>
+      <div className={styles.itemBtn}>
+        <div className={styles.flexBtn}>
+          <div>
+            <Button
+              type="primary"
+              disabled={inputAmount === 0}
+              onClick={() => handleAddCount()}
+              className={styles.btnSize}
+            >
+              Add to card
+            </Button>
+          </div>
+          <div>
+            <Button
+              type="primary"
+              onClick={() => handleDeleteItem(index)}
+              className={styles.btnSize}
+            >
+              Delete
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   );

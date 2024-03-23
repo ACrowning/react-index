@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Input } from "antd";
 import { Button } from "antd";
+import styles from "../app.module.css";
 
 export default function Edit({ item, onItemClick, handleToggle }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -42,14 +43,15 @@ export default function Edit({ item, onItemClick, handleToggle }) {
           <Button onClick={() => handleInputEdit(item.title)}>Save</Button>
         </div>
       ) : (
-        <div onClick={handleItemClick}>{item.title} </div>
+        <div className={styles.title} onClick={handleItemClick}>
+          {item.title}
+        </div>
       )}
       <div onClick={handleIsDone}>
         <div style={{ textDecoration: item.done ? "line-through" : "none" }}>
-          <div>Done status</div>
+          <div className={styles.done}>Done status</div>
         </div>
       </div>
-      <div>amount: {item.amount}</div>
     </div>
   );
 }
