@@ -57,6 +57,7 @@ export default function Count({
             type="number"
             value={inputAmount}
             onChange={handleInputChange}
+            min={0}
           />
         </div>
         <div>
