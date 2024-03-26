@@ -1,7 +1,6 @@
 import styles from "../app.module.css";
 import Edit from "./edit.jsx";
 import Count from "./count.jsx";
-import { Link } from "react-router-dom";
 
 function Item({
   handleToggle,
@@ -12,18 +11,6 @@ function Item({
   handleAddAmount,
   addToCart,
 }) {
-  const handleClick = (e) => {
-    const isClicked =
-      e.target.classList.contains("ant-btn") ||
-      e.target.closest(".ant-btn") ||
-      e.target.tagName.toLowerCase() === "input";
-
-    if (isClicked) {
-      e.stopPropagation();
-      e.preventDefault();
-    }
-  };
-
   return filteredElements.map((item, index) => (
     <div
       key={item.id}
@@ -37,18 +24,17 @@ function Item({
             handleToggle={handleToggle}
           />
         </div>
-        <Link to={`/item/${JSON.stringify(item)}`} className={styles.link}>
-          <div className={styles.flexItem} onClick={handleClick}>
-            <Count
-              item={item}
-              handleAmountEdit={handleAmountEdit}
-              handleAddAmount={handleAddAmount}
-              addToCart={addToCart}
-              handleDeleteItem={handleDeleteItem}
-              index={index}
-            />
-          </div>
-        </Link>
+
+        <div className={styles.flexItem}>
+          <Count
+            item={item}
+            handleAmountEdit={handleAmountEdit}
+            handleAddAmount={handleAddAmount}
+            addToCart={addToCart}
+            handleDeleteItem={handleDeleteItem}
+            index={index}
+          />
+        </div>
       </div>
     </div>
   ));

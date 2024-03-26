@@ -100,7 +100,7 @@ function Home() {
           <div>
             <div className={styles.circle}>{sumCard}</div>
             <ShoppingCartOutlined
-              className={styles.icon}
+              className={styles.iconCart}
               onClick={handleShopCardClick}
             />
           </div>
