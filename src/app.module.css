@@ -22,13 +22,19 @@ body {
   display: flex;
 }
 
-.icon {
+.iconCart {
   font-size: 35px;
   position: absolute;
   right: 0;
   top: 50%;
   transform: translateY(-50%);
   margin-right: 25px;
+}
+
+.iconEdit {
+  font-size: 15px;
+  margin-left: 10px;
+  cursor: pointer;
 }
 
 .circle {
@@ -131,4 +137,9 @@ body {
 .zero {
   opacity: 0.6;
   pointer-events: none;
+}
+
+.link {
+  text-decoration: none;
+  color: inherit;
 }

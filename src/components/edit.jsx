@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { Input } from "antd";
 import { Button } from "antd";
+import { Link } from "react-router-dom";
 import styles from "../app.module.css";
+import { EditOutlined } from "@ant-design/icons";
 
 export default function Edit({ item, onItemClick, handleToggle }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -44,7 +46,10 @@ export default function Edit({ item, onItemClick, handleToggle }) {
         </div>
       ) : (
         <div className={styles.title} onClick={handleItemClick}>
-          {item.title}
+          <Link to={`/item/${item.id}`} className={styles.link}>
+            {item.title}
+          </Link>
+          <EditOutlined className={styles.iconEdit} />
         </div>
       )}
       <div onClick={handleIsDone}>
