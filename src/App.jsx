@@ -7,8 +7,9 @@ function App() {
     <>
       <Router>
         <Routes>
-          <Route path="/item/:id" element={<ProductPage />} />
           <Route path="/" element={<Home />} />
+          <Route path="/item/:id" element={<ProductPage />} />
+          <Route path="/sorting/:elements" element={<queryParam />} />
         </Routes>
       </Router>
     </>
