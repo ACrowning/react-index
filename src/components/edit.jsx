@@ -4,14 +4,15 @@ import { Button } from "antd";
 import { Link } from "react-router-dom";
 import styles from "../app.module.css";
 import { EditOutlined } from "@ant-design/icons";
+import { StarOutlined } from "@ant-design/icons";
 
 export default function Edit({ item, onItemClick, handleToggle }) {
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(item.title);
-  const [isDone, setIsDone] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
 
-  const handleIsDone = () => {
-    setIsDone(!isDone);
+  const handleIsFavorite = () => {
+    setIsFavorite(!isFavorite);
     handleToggle(item.id);
   };
 
@@ -52,11 +53,11 @@ export default function Edit({ item, onItemClick, handleToggle }) {
           <EditOutlined className={styles.iconEdit} />
         </div>
       )}
-      <div onClick={handleIsDone}>
-        <div style={{ textDecoration: item.done ? "line-through" : "none" }}>
-          <div className={styles.done}>Done status</div>
-        </div>
-      </div>
+
+      <StarOutlined
+        className={isFavorite ? styles.star : styles.starDefault}
+        onClick={handleIsFavorite}
+      ></StarOutlined>
     </div>
   );
 }

@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "../app.module.css";
 import Item from "../components/item.jsx";
 import Mock from "../components/mock/mock.js";
 import { Button } from "antd";
 import { Input } from "antd";
 import { ShoppingCartOutlined } from "@ant-design/icons";
+import { useSearchParams } from "react-router-dom";
 
 function Home() {
   const [elements, setElements] = useState(Mock);
@@ -13,6 +14,8 @@ function Home() {
   const [searchElement, setSearchElement] = useState("");
   const [sumCard, setSumCard] = useState(0);
   const [cartItems, setCartItems] = useState([]);
+  const [sortedAmount, setSortedAmount] = useState("all");
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const handleAddAmount = (newCount) => {
     if (!isNaN(newCount) && newCount >= 0) {
@@ -41,6 +44,7 @@ function Home() {
     } else {
       setElements([...elements, newItem]);
     }
+
     setInputTitle("");
     setInputAmount("");
   };
@@ -49,7 +53,7 @@ function Home() {
     setElements((prevElements) =>
       prevElements.map((element) =>
         element.id === itemsIndex
-          ? { ...element, done: !element.done }
+          ? { ...element, favorite: !element.favorite }
           : element
       )
     );
@@ -58,6 +62,23 @@ function Home() {
   const filteredElements = elements.filter((item) =>
     item.title.toLowerCase().includes(searchElement.toLowerCase())
   );
+
+  const filteredItems =
+    sortedAmount === "all"
+      ? filteredElements
+      : filteredElements.filter((item) => item.amount > 0);
+
+  filteredItems.sort((a, b) => a.amount - b.amount);
+
+  const handleSort = (e) => {
+    setSortedAmount(e.target.value);
+    setSearchParams({ sort: e.target.value });
+  };
+
+  useEffect(() => {
+    const sort = searchParams.get("sort");
+    setSortedAmount(sort);
+  }, [searchParams]);
 
   const handleElementClick = (itemsIndex, newText) => {
     setElements((prevElements) =>
@@ -141,13 +162,24 @@ function Home() {
                 onChange={(event) => setSearchElement(event.target.value)}
               />
             </div>
+            <div>
+              Sort:
+              <select
+                value={sortedAmount}
+                onChange={handleSort}
+                className={styles.select}
+              >
+                <option value="all">all</option>
+                <option value="existing">only existing</option>
+              </select>
+            </div>
           </div>
 
           <div className={styles.container}>
             <Item
               handleDeleteItem={handleDeleteItem}
               handleToggle={handleToggle}
-              filteredElements={filteredElements}
+              filteredItems={filteredItems}
               handleElementClick={handleElementClick}
               handleAmountEdit={handleAmountEdit}
               handleAddAmount={handleAddAmount}
