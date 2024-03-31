@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "../app.module.css";
 import Item from "../components/item.jsx";
 import Mock from "../components/mock/mock.js";
 import { Button } from "antd";
 import { Input } from "antd";
 import { ShoppingCartOutlined } from "@ant-design/icons";
+import { useSearchParams } from "react-router-dom";
 
 function Home() {
   const [elements, setElements] = useState(Mock);
@@ -14,6 +15,7 @@ function Home() {
   const [sumCard, setSumCard] = useState(0);
   const [cartItems, setCartItems] = useState([]);
   const [sortedAmount, setSortedAmount] = useState("all");
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const handleAddAmount = (newCount) => {
     if (!isNaN(newCount) && newCount >= 0) {
@@ -67,6 +69,16 @@ function Home() {
       : filteredElements.filter((item) => item.amount > 0);
 
   filteredItems.sort((a, b) => a.amount - b.amount);
+
+  const handleSort = (e) => {
+    setSortedAmount(e.target.value);
+    setSearchParams({ sort: e.target.value });
+  };
+
+  useEffect(() => {
+    const sort = searchParams.get("sort");
+    setSortedAmount(sort);
+  }, [searchParams]);
 
   const handleElementClick = (itemsIndex, newText) => {
     setElements((prevElements) =>
@@ -154,7 +166,7 @@ function Home() {
               Sort:
               <select
                 value={sortedAmount}
-                onChange={(event) => setSortedAmount(event.target.value)}
+                onChange={handleSort}
                 className={styles.select}
               >
                 <option value="all">all</option>
