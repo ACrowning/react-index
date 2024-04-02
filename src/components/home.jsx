@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import styles from "../app.module.css";
 import Item from "../components/item.jsx";
-import Mock from "../components/mock/mock.js";
+// import Mock from "../components/mock/mock.jsx";
 import { Button } from "antd";
 import { Input } from "antd";
 import { ShoppingCartOutlined } from "@ant-design/icons";
 import { useSearchParams } from "react-router-dom";
 
 function Home() {
-  const [elements, setElements] = useState(Mock);
+  const [elements, setElements] = useState([]);
   const [inputTitle, setInputTitle] = useState("");
   const [inputAmount, setInputAmount] = useState("");
   const [searchElement, setSearchElement] = useState("");
@@ -16,6 +16,14 @@ function Home() {
   const [cartItems, setCartItems] = useState([]);
   const [sortedAmount, setSortedAmount] = useState("all");
   const [searchParams, setSearchParams] = useSearchParams();
+
+  useEffect(() => {
+    fetch("http://localhost:4000/elements")
+      .then((res) => res.json())
+      .then((res) => {
+        setElements(res.data);
+      });
+  }, []);
 
   const handleAddAmount = (newCount) => {
     if (!isNaN(newCount) && newCount >= 0) {
