@@ -18,10 +18,10 @@ function Home() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
-    fetch("http://localhost:3000/elements")
+    fetch("http://localhost:4000/elements")
       .then((res) => res.json())
-      .then((arr) => {
-        setElements(arr);
+      .then((res) => {
+        setElements(res.data);
       });
   }, []);
 
