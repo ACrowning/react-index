@@ -19,13 +19,14 @@ export default function ItemPage() {
       }
     };
     fetchUserData();
-  });
+  }, []);
   if (!element) return <div>Loading...</div>;
 
   return (
     <div>
-      <h2>Item Page</h2>
+      <h2>{element.title}</h2>
       <p>You selected item: {id}</p>
+      <p>Amount: {element.amount}</p>
     </div>
   );
 }
