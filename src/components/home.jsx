@@ -33,11 +33,8 @@ function Home() {
     }
   };
 
-  const handleDeleteItem = (itemsIndex, itemsId) => {
-    const itemsDeleted = [
-      ...elements.slice(0, itemsIndex),
-      ...elements.slice(itemsIndex + 1),
-    ];
+  const handleDeleteItem = (itemsId) => {
+    const itemsDeleted = elements.filter((element) => element.id !== itemsId);
 
     fetch(`http://localhost:4000/elements/${itemsId}`, {
       method: "DELETE",
