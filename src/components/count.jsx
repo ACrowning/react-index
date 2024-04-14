@@ -87,7 +87,7 @@ export default function Count({
           <div>
             <Button
               type="primary"
-              onClick={() => handleDeleteItem(index)}
+              onClick={() => handleDeleteItem(item.id)}
               className={styles.btnSize}
             >
               Delete

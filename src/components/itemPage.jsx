@@ -6,7 +6,7 @@ export default function ItemPage() {
   const { id } = useParams();
 
   useEffect(() => {
-    const fetchUserData = async () => {
+    const fetchElementData = async () => {
       try {
         const response = await fetch(`http://localhost:4000/elements/${id}`);
         if (!response.ok) {
@@ -18,7 +18,7 @@ export default function ItemPage() {
         console.error("Error fetching user data:", error);
       }
     };
-    fetchUserData();
+    fetchElementData();
   }, []);
   if (!element) return <div>Loading...</div>;
 

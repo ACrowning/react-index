@@ -33,24 +33,57 @@ function Home() {
     }
   };
 
-  const handleDeleteItem = (itemsIndex) => {
-    const itemsDeleted = [
-      ...elements.slice(0, itemsIndex),
-      ...elements.slice(itemsIndex + 1),
-    ];
+  const handleDeleteItem = (itemsId) => {
+    const itemsDeleted = elements.filter((element) => element.id !== itemsId);
+
+    fetch(`http://localhost:4000/elements/${itemsId}`, {
+      method: "DELETE",
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((error) => {
+        console.error("There was a problem with your fetch operation:", error);
+      });
+
     setElements(itemsDeleted);
   };
 
-  const handleAddItem = () => {
+  const handleAddItem = async () => {
+    const url = "http://localhost:4000/elements";
     const newItem = {
-      id: `${elements.length + 1}`,
       title: inputTitle,
       amount: inputAmount,
+      favorite: false,
     };
     if (inputAmount === "" || inputTitle === "") {
       alert("Enter the title and the count!");
     } else {
-      setElements([...elements, newItem]);
+      const options = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newItem),
+      };
+
+      try {
+        const response = await fetch(url, options);
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const responseData = await response.json();
+        console.log(responseData);
+        setElements([...elements, responseData.data]);
+      } catch (error) {
+        console.error("There was a problem with your POST request:", error);
+      }
     }
 
     setInputTitle("");
