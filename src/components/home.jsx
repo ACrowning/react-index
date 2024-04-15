@@ -121,12 +121,35 @@ function Home() {
     setSortedAmount(sort);
   }, [searchParams]);
 
-  const handleElementClick = (itemsIndex, newText) => {
-    setElements((prevElements) =>
-      prevElements.map((element) =>
-        element.id === itemsIndex ? { ...element, title: newText } : element
-      )
-    );
+  const handleElementClick = async (itemsIndex, newText) => {
+    const url = `http://localhost:4000/elements/${itemsIndex}`;
+    const changes = {
+      title: newText,
+    };
+    const options = {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(changes),
+    };
+
+    try {
+      const response = await fetch(url, options);
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const responseData = await response.json();
+      console.log(responseData);
+
+      setElements((prevElements) =>
+        prevElements.map((element) =>
+          element.id === itemsIndex ? { ...element, title: newText } : element
+        )
+      );
+    } catch (error) {
+      console.error("There was a problem with your PUT request:", error);
+    }
   };
 
   const handleAmountEdit = (itemsIndex, newCount) => {
