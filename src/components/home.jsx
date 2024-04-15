@@ -124,7 +124,6 @@ function Home() {
   const handleElementClick = async (itemsIndex, newText) => {
     const url = `http://localhost:4000/elements/${itemsIndex}`;
     const changes = {
-      ...elements,
       title: newText,
     };
     const options = {
@@ -142,6 +141,7 @@ function Home() {
       }
       const responseData = await response.json();
       console.log(responseData);
+
       setElements((prevElements) =>
         prevElements.map((element) =>
           element.id === itemsIndex ? { ...element, title: newText } : element
