@@ -9,7 +9,6 @@ export default function Count({
   handleAddAmount,
   addToCart,
   handleDeleteItem,
-  index,
 }) {
   const [inputAmount, setInputAmount] = useState(1);
 
