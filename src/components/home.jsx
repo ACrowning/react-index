@@ -6,6 +6,7 @@ import { Button } from "antd";
 import { Input } from "antd";
 import { ShoppingCartOutlined } from "@ant-design/icons";
 import { useSearchParams } from "react-router-dom";
+import { Modal, List } from "antd";
 
 function Home() {
   const [elements, setElements] = useState([]);
@@ -16,6 +17,8 @@ function Home() {
   const [cartItems, setCartItems] = useState([]);
   const [sortedAmount, setSortedAmount] = useState("all");
   const [searchParams, setSearchParams] = useSearchParams();
+  const [loading, setLoading] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     fetch("http://localhost:4000/elements")
@@ -24,14 +27,6 @@ function Home() {
         setElements(res.data);
       });
   }, []);
-
-  const handleAddAmount = (newCount) => {
-    if (!isNaN(newCount) && newCount >= 0) {
-      setSumCard((prevSum) => parseInt(prevSum + newCount));
-    } else {
-      alert("Wrong count");
-    }
-  };
 
   const handleDeleteItem = (itemsId) => {
     const itemsDeleted = elements.filter((element) => element.id !== itemsId);
@@ -152,30 +147,107 @@ function Home() {
     }
   };
 
-  const handleAmountEdit = (itemsIndex, newCount) => {
-    setElements((prevElements) =>
-      prevElements.map((element) =>
-        element.id === itemsIndex
-          ? {
-              ...element,
-              amount: Math.max(0, element.amount - newCount),
-            }
-          : element
-      )
-    );
+  const handleAmountEdit = async (itemsIndex, newCount) => {
+    const url = `http://localhost:4000/elements/${itemsIndex.id}`;
+    const changes = {
+      amount: parseInt(itemsIndex.amount - newCount),
+    };
+    const options = {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(changes),
+    };
+
+    try {
+      const response = await fetch(url, options);
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const responseData = await response.json();
+      console.log(responseData);
+
+      setElements((prevElements) =>
+        prevElements.map((element) =>
+          element.id === itemsIndex.id
+            ? {
+                ...element,
+                amount: Math.max(0, element.amount - newCount),
+              }
+            : element
+        )
+      );
+    } catch (error) {
+      console.error("There was a problem with your PUT request:", error);
+    }
   };
 
+  useEffect(() => {
+    const totalItems = cartItems.reduce(
+      (total, item) => total + item.amount,
+      0
+    );
+    setSumCard(totalItems);
+  }, [cartItems]);
+
   const addToCart = (element, newCount) => {
+    const url = `http://localhost:4000/cart`;
     const newItem = {
       id: element.id,
       title: element.title,
       amount: parseInt(newCount),
     };
-    setCartItems([...cartItems, newItem]);
+    const options = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newItem),
+    };
+
+    fetch(url, options)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const existingItemIndex = cartItems.findIndex(
+          (item) => item.id === newItem.id
+        );
+
+        if (existingItemIndex !== -1) {
+          cartItems[existingItemIndex].amount += newItem.amount;
+          setCartItems([...cartItems]);
+        } else {
+          setCartItems([...cartItems, newItem]);
+        }
+      })
+      .catch((error) => {
+        console.error("There was a problem with your POST request:", error);
+      });
   };
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch("http://localhost:4000/cart");
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const responseData = await response.json();
+
+        setCartItems(responseData.data);
+      } catch (error) {
+        console.error("There was a problem with your GET request:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   const handleShopCardClick = () => {
-    console.log(cartItems);
+    setLoading(true);
+    setModalOpen(true);
   };
 
   return (
@@ -189,6 +261,37 @@ function Home() {
               onClick={handleShopCardClick}
             />
           </div>
+          <Modal
+            open={modalOpen}
+            title="Shopping Cart"
+            onCancel={() => setModalOpen(false)}
+            footer={[
+              <Button key="back" onClick={() => setModalOpen(false)}>
+                Close
+              </Button>,
+              <Button
+                key="submit"
+                type="primary"
+                loading={loading}
+                onClick={handleShopCardClick}
+              >
+                Checkout
+              </Button>,
+            ]}
+          >
+            <List
+              itemLayout="horizontal"
+              dataSource={cartItems}
+              renderItem={(item) => (
+                <List.Item>
+                  <List.Item.Meta
+                    title={item.title}
+                    description={`Amount: ${item.amount}`}
+                  />
+                </List.Item>
+              )}
+            />
+          </Modal>
         </div>
         <div className={styles.containerStyle}>
           <div className={styles.navbar}>
@@ -246,7 +349,6 @@ function Home() {
               filteredItems={filteredItems}
               handleElementClick={handleElementClick}
               handleAmountEdit={handleAmountEdit}
-              handleAddAmount={handleAddAmount}
               addToCart={addToCart}
             />
           </div>
