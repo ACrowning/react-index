@@ -184,9 +184,12 @@ function Home() {
   };
 
   useEffect(() => {
-    const totalItems = new Set(cartItems.map((item) => item.id, 1)).size;
+    const totalItems = cartItems.reduce(
+      (total, item) => total + item.amount,
+      0
+    );
     setSumCard(totalItems);
-  });
+  }, [cartItems]);
 
   const addToCart = (element, newCount) => {
     const url = `http://localhost:4000/cart`;
