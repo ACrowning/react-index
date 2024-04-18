@@ -29,7 +29,6 @@ function Item({
           <Count
             item={item}
             handleAmountEdit={handleAmountEdit}
-            handleAddAmount={handleAddAmount}
             addToCart={addToCart}
             handleDeleteItem={handleDeleteItem}
             index={index}

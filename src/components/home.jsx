@@ -28,14 +28,6 @@ function Home() {
       });
   }, []);
 
-  const handleAddAmount = (newCount) => {
-    if (!isNaN(newCount) && newCount >= 0) {
-      setSumCard((prevSum) => parseInt(prevSum + newCount));
-    } else {
-      alert("Wrong count");
-    }
-  };
-
   const handleDeleteItem = (itemsId) => {
     const itemsDeleted = elements.filter((element) => element.id !== itemsId);
 
@@ -191,13 +183,18 @@ function Home() {
     }
   };
 
+  useEffect(() => {
+    const totalItems = new Set(cartItems.map((item) => item.id, 1)).size;
+    setSumCard(totalItems);
+  });
+
   const addToCart = (element, newCount) => {
+    const url = `http://localhost:4000/cart`;
     const newItem = {
+      id: element.id,
       title: element.title,
       amount: parseInt(newCount),
     };
-    const url = `http://localhost:4000/cart`;
-
     const options = {
       method: "POST",
       headers: {
@@ -211,8 +208,16 @@ function Home() {
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
+        const existingItemIndex = cartItems.findIndex(
+          (item) => item.id === newItem.id
+        );
 
-        setCartItems([...cartItems, newItem]);
+        if (existingItemIndex !== -1) {
+          cartItems[existingItemIndex].amount += newItem.amount;
+          setCartItems([...cartItems]);
+        } else {
+          setCartItems([...cartItems, newItem]);
+        }
       })
       .catch((error) => {
         console.error("There was a problem with your POST request:", error);
@@ -341,7 +346,6 @@ function Home() {
               filteredItems={filteredItems}
               handleElementClick={handleElementClick}
               handleAmountEdit={handleAmountEdit}
-              handleAddAmount={handleAddAmount}
               addToCart={addToCart}
             />
           </div>

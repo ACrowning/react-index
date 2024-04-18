@@ -6,14 +6,13 @@ import styles from "../app.module.css";
 export default function Count({
   item,
   handleAmountEdit,
-  handleAddAmount,
+
   addToCart,
   handleDeleteItem,
 }) {
   const [inputAmount, setInputAmount] = useState(1);
 
   const handleAddCount = () => {
-    handleAddAmount(inputAmount);
     handleAmountEdit(item, inputAmount);
 
     addToCart(item, inputAmount);
