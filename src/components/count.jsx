@@ -14,7 +14,7 @@ export default function Count({
 
   const handleAddCount = () => {
     handleAddAmount(inputAmount);
-    handleAmountEdit(item.id, inputAmount);
+    handleAmountEdit(item, inputAmount);
 
     addToCart(item, inputAmount);
 
