@@ -5,6 +5,8 @@ import Item from "../components/item.jsx";
 import { Button } from "antd";
 import { Input } from "antd";
 import { ShoppingCartOutlined } from "@ant-design/icons";
+import { PlusSquareOutlined } from "@ant-design/icons";
+import { MinusSquareOutlined } from "@ant-design/icons";
 import { useSearchParams } from "react-router-dom";
 import { Modal, List } from "antd";
 
@@ -42,12 +44,44 @@ function Home() {
       })
       .then((data) => {
         console.log(data);
+        setElements(itemsDeleted);
       })
       .catch((error) => {
         console.error("There was a problem with your fetch operation:", error);
       });
+  };
 
-    setElements(itemsDeleted);
+  const handleShopCardRemove = (itemsId) => {
+    const itemsDeleted = cartItems.filter((item) => item.id !== itemsId);
+    const removedItem = cartItems.find((item) => item.id === itemsId);
+    const elementToUpdate = elements.find((element) => element.id === itemsId);
+    const amountReturn = (elementToUpdate.amount += removedItem.amount);
+
+    fetch(`http://localhost:4000/cart/${itemsId}`, {
+      method: "DELETE",
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return fetch(`http://localhost:4000/elements/${itemsId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ amount: amountReturn }),
+        });
+      })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        console.log(data);
+        setCartItems(itemsDeleted);
+      })
+      .catch((error) => {
+        console.error("There was a problem with your fetch operation:", error);
+      });
   };
 
   const handleAddItem = async () => {
@@ -115,6 +149,112 @@ function Home() {
     const sort = searchParams.get("sort");
     setSortedAmount(sort);
   }, [searchParams]);
+
+  const handleCartPlus = (itemsIndex) => {
+    const url = `http://localhost:4000/cart/${itemsIndex}`;
+
+    const itemToUpdate = cartItems.find((item) => item.id === itemsIndex);
+    const elementToUpdate = elements.find(
+      (element) => element.id === itemsIndex
+    );
+
+    const updatedAmount = (itemToUpdate.amount += 1);
+    const amountReturn = Math.max((elementToUpdate.amount -= 1), 0);
+
+    const changes = {
+      amount: updatedAmount,
+    };
+    const options = {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(changes),
+    };
+
+    fetch(url, options)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return fetch(`http://localhost:4000/elements/${itemsIndex}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ amount: amountReturn }),
+        });
+      })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        console.log(data);
+        setCartItems((prevElements) =>
+          prevElements.map((element) =>
+            element.id === itemsIndex
+              ? { ...element, amount: updatedAmount }
+              : element
+          )
+        );
+      })
+      .catch((error) => {
+        console.error("There was a problem with your fetch operation:", error);
+      });
+  };
+
+  const handleCartMinus = (itemsIndex) => {
+    const url = `http://localhost:4000/cart/${itemsIndex}`;
+
+    const itemToUpdate = cartItems.find((item) => item.id === itemsIndex);
+    const elementToUpdate = elements.find(
+      (element) => element.id === itemsIndex
+    );
+    const updatedAmount = Math.max((itemToUpdate.amount -= 1), 0);
+    const amountReturn = (elementToUpdate.amount += 1);
+
+    const changes = {
+      amount: updatedAmount,
+    };
+    const options = {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(changes),
+    };
+
+    fetch(url, options)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return fetch(`http://localhost:4000/elements/${itemsIndex}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ amount: amountReturn }),
+        });
+      })
+      .then((response) => {
+        return response.json();
+      })
+
+      .then((data) => {
+        console.log(data);
+        setCartItems((prevElements) =>
+          prevElements.map((element) =>
+            element.id === itemsIndex
+              ? { ...element, amount: updatedAmount }
+              : element
+          )
+        );
+      })
+      .catch((error) => {
+        console.error("There was a problem with your fetch operation:", error);
+      });
+  };
 
   const handleElementClick = async (itemsIndex, newText) => {
     const url = `http://localhost:4000/elements/${itemsIndex}`;
@@ -283,7 +423,22 @@ function Home() {
               itemLayout="horizontal"
               dataSource={cartItems}
               renderItem={(item) => (
-                <List.Item>
+                <List.Item
+                  actions={[
+                    <PlusSquareOutlined
+                      onClick={() => handleCartPlus(item.id)}
+                    ></PlusSquareOutlined>,
+                    <MinusSquareOutlined
+                      onClick={() => handleCartMinus(item.id)}
+                    ></MinusSquareOutlined>,
+                    <Button
+                      type="link"
+                      onClick={() => handleShopCardRemove(item.id)}
+                    >
+                      Remove
+                    </Button>,
+                  ]}
+                >
                   <List.Item.Meta
                     title={item.title}
                     description={`Amount: ${item.amount}`}
