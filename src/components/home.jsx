@@ -22,7 +22,7 @@ function Home() {
   useEffect(() => {
     const fetchSortedElements = async () => {
       try {
-        const response = await fetch("http://localhost:4000/elements/sort", {
+        const response = await fetch("http://localhost:4000/products", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -48,7 +48,7 @@ function Home() {
   const handleDeleteItem = (itemsId) => {
     const itemsDeleted = elements.filter((element) => element.id !== itemsId);
 
-    fetch(`http://localhost:4000/elements/${itemsId}`, {
+    fetch(`http://localhost:4000/products/${itemsId}`, {
       method: "DELETE",
     })
       .then((response) => {
@@ -79,7 +79,7 @@ function Home() {
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
-        return fetch(`http://localhost:4000/elements/${itemsId}`, {
+        return fetch(`http://localhost:4000/products/${itemsId}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -100,7 +100,7 @@ function Home() {
   };
 
   const handleAddItem = async () => {
-    const url = "http://localhost:4000/elements";
+    const url = "http://localhost:4000/products/create";
     const newItem = {
       title: inputTitle,
       amount: inputAmount,
@@ -174,7 +174,7 @@ function Home() {
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
-        return fetch(`http://localhost:4000/elements/${itemsIndex}`, {
+        return fetch(`http://localhost:4000/products/${itemsIndex}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -231,7 +231,7 @@ function Home() {
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
-        return fetch(`http://localhost:4000/elements/${itemsIndex}`, {
+        return fetch(`http://localhost:4000/products/${itemsIndex}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -259,7 +259,7 @@ function Home() {
   };
 
   const handleElementClick = async (itemsIndex, newText) => {
-    const url = `http://localhost:4000/elements/${itemsIndex}`;
+    const url = `http://localhost:4000/products/${itemsIndex}`;
     const changes = {
       title: newText,
     };
@@ -290,7 +290,7 @@ function Home() {
   };
 
   const handleAmountEdit = async (itemsIndex, newCount) => {
-    const url = `http://localhost:4000/elements/${itemsIndex.id}`;
+    const url = `http://localhost:4000/products/${itemsIndex.id}`;
     const changes = {
       amount: parseInt(itemsIndex.amount - newCount),
     };
