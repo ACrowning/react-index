@@ -8,7 +8,7 @@ export default function ItemPage() {
   useEffect(() => {
     const fetchElementData = async () => {
       try {
-        const response = await fetch(`http://localhost:4000/products/${id}`);
+        const response = await fetch(`http://localhost:4000/elements/${id}`);
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }

@@ -7,49 +7,33 @@ import { Input } from "antd";
 import { ShoppingCartOutlined } from "@ant-design/icons";
 import { PlusSquareOutlined } from "@ant-design/icons";
 import { MinusSquareOutlined } from "@ant-design/icons";
+import { useSearchParams } from "react-router-dom";
 import { Modal, List } from "antd";
 
 function Home() {
   const [elements, setElements] = useState([]);
   const [inputTitle, setInputTitle] = useState("");
   const [inputAmount, setInputAmount] = useState("");
-  const [inputPrice, setInputPrice] = useState("");
   const [searchElement, setSearchElement] = useState("");
   const [sumCard, setSumCard] = useState(0);
   const [cartItems, setCartItems] = useState([]);
-  const [sortByPrice, setSortByPrice] = useState("asc");
+  const [sortedAmount, setSortedAmount] = useState("all");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
-    const fetchSortedElements = async () => {
-      try {
-        const response = await fetch("http://localhost:4000/products", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ title: searchElement, sortByPrice }),
-        });
-        if (!response.ok) {
-          throw new Error("Failed to fetch sorted elements");
-        }
-        const data = await response.json();
-        setElements(data.sortedElements);
-      } catch (error) {
-        console.error("Error:", error);
-      }
-    };
-    fetchSortedElements();
-  }, [searchElement, sortByPrice]);
-
-  const handleSort = (e) => {
-    setSortByPrice(e.target.value);
-  };
+    fetch("http://localhost:4000/elements")
+      .then((res) => res.json())
+      .then((res) => {
+        setElements(res.data);
+      });
+  }, []);
 
   const handleDeleteItem = (itemsId) => {
     const itemsDeleted = elements.filter((element) => element.id !== itemsId);
 
-    fetch(`http://localhost:4000/products/${itemsId}`, {
+    fetch(`http://localhost:4000/elements/${itemsId}`, {
       method: "DELETE",
     })
       .then((response) => {
@@ -80,7 +64,7 @@ function Home() {
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
-        return fetch(`http://localhost:4000/products/${itemsId}`, {
+        return fetch(`http://localhost:4000/elements/${itemsId}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -101,11 +85,10 @@ function Home() {
   };
 
   const handleAddItem = async () => {
-    const url = "http://localhost:4000/products/create";
+    const url = "http://localhost:4000/elements";
     const newItem = {
       title: inputTitle,
       amount: inputAmount,
-      price: inputPrice,
       favorite: false,
     };
     if (inputAmount === "" || inputTitle === "") {
@@ -134,29 +117,47 @@ function Home() {
 
     setInputTitle("");
     setInputAmount("");
-    setInputPrice("");
   };
 
-  const handleToggle = (productId) => {
+  const handleToggle = (itemsIndex) => {
     setElements((prevElements) =>
       prevElements.map((element) =>
-        element.id === productId
+        element.id === itemsIndex
           ? { ...element, favorite: !element.favorite }
           : element
       )
     );
   };
 
-  const handleCartPlus = (productId) => {
-    const url = `http://localhost:4000/cart/${productId}`;
+  const filteredElements = elements.filter((item) =>
+    item.title.toLowerCase().includes(searchElement.toLowerCase())
+  );
 
-    const itemToUpdate = cartItems.find((item) => item.id === productId);
+  const filteredItems =
+    sortedAmount === "all"
+      ? filteredElements
+      : filteredElements.filter((item) => item.amount > 0);
+
+  filteredItems.sort((a, b) => a.amount - b.amount);
+
+  const handleSort = (e) => {
+    setSortedAmount(e.target.value);
+    setSearchParams({ sort: e.target.value });
+  };
+
+  useEffect(() => {
+    const sort = searchParams.get("sort");
+    setSortedAmount(sort);
+  }, [searchParams]);
+
+  const handleCartPlus = (itemsIndex) => {
+    const url = `http://localhost:4000/cart/${itemsIndex}`;
+
+    const itemToUpdate = cartItems.find((item) => item.id === itemsIndex);
     const elementToUpdate = elements.find(
-      (element) => element.id === productId && element.amount > 0
+      (element) => element.id === itemsIndex
     );
-    if (!elementToUpdate) {
-      return;
-    }
+
     const updatedAmount = (itemToUpdate.amount += 1);
     const amountReturn = Math.max((elementToUpdate.amount -= 1), 0);
 
@@ -176,7 +177,7 @@ function Home() {
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
-        return fetch(`http://localhost:4000/products/${productId}`, {
+        return fetch(`http://localhost:4000/elements/${itemsIndex}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -191,7 +192,7 @@ function Home() {
         console.log(data);
         setCartItems((prevElements) =>
           prevElements.map((element) =>
-            element.id === productId
+            element.id === itemsIndex
               ? { ...element, amount: updatedAmount }
               : element
           )
@@ -202,18 +203,13 @@ function Home() {
       });
   };
 
-  const handleCartMinus = (productId) => {
-    const url = `http://localhost:4000/cart/${productId}`;
+  const handleCartMinus = (itemsIndex) => {
+    const url = `http://localhost:4000/cart/${itemsIndex}`;
 
-    const itemToUpdate = cartItems.find(
-      (item) => item.id === productId && item.amount > 0
-    );
+    const itemToUpdate = cartItems.find((item) => item.id === itemsIndex);
     const elementToUpdate = elements.find(
-      (element) => element.id === productId
+      (element) => element.id === itemsIndex
     );
-    if (!itemToUpdate) {
-      return;
-    }
     const updatedAmount = Math.max((itemToUpdate.amount -= 1), 0);
     const amountReturn = (elementToUpdate.amount += 1);
 
@@ -233,7 +229,7 @@ function Home() {
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
-        return fetch(`http://localhost:4000/products/${productId}`, {
+        return fetch(`http://localhost:4000/elements/${itemsIndex}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -249,7 +245,7 @@ function Home() {
         console.log(data);
         setCartItems((prevElements) =>
           prevElements.map((element) =>
-            element.id === productId
+            element.id === itemsIndex
               ? { ...element, amount: updatedAmount }
               : element
           )
@@ -260,8 +256,8 @@ function Home() {
       });
   };
 
-  const handleElementClick = async (productId, newText) => {
-    const url = `http://localhost:4000/products/${productId}`;
+  const handleElementClick = async (itemsIndex, newText) => {
+    const url = `http://localhost:4000/elements/${itemsIndex}`;
     const changes = {
       title: newText,
     };
@@ -283,7 +279,7 @@ function Home() {
 
       setElements((prevElements) =>
         prevElements.map((element) =>
-          element.id === productId ? { ...element, title: newText } : element
+          element.id === itemsIndex ? { ...element, title: newText } : element
         )
       );
     } catch (error) {
@@ -291,10 +287,10 @@ function Home() {
     }
   };
 
-  const handleAmountEdit = async (productId, newCount) => {
-    const url = `http://localhost:4000/products/${productId.id}`;
+  const handleAmountEdit = async (itemsIndex, newCount) => {
+    const url = `http://localhost:4000/elements/${itemsIndex.id}`;
     const changes = {
-      amount: parseInt(productId.amount - newCount),
+      amount: parseInt(itemsIndex.amount - newCount),
     };
     const options = {
       method: "PUT",
@@ -314,7 +310,7 @@ function Home() {
 
       setElements((prevElements) =>
         prevElements.map((element) =>
-          element.id === productId.id
+          element.id === itemsIndex.id
             ? {
                 ...element,
                 amount: Math.max(0, element.amount - newCount),
@@ -341,7 +337,6 @@ function Home() {
       id: element.id,
       title: element.title,
       amount: parseInt(newCount),
-      price: element.price,
     };
     const options = {
       method: "POST",
@@ -391,6 +386,7 @@ function Home() {
   }, []);
 
   const handleShopCardClick = () => {
+    setLoading(true);
     setModalOpen(true);
   };
 
@@ -413,6 +409,14 @@ function Home() {
               <Button key="back" onClick={() => setModalOpen(false)}>
                 Close
               </Button>,
+              <Button
+                key="submit"
+                type="primary"
+                loading={loading}
+                onClick={handleShopCardClick}
+              >
+                Checkout
+              </Button>,
             ]}
           >
             <List
@@ -422,13 +426,9 @@ function Home() {
                 <List.Item
                   actions={[
                     <PlusSquareOutlined
-                      className={styles.iconsStyle}
                       onClick={() => handleCartPlus(item.id)}
                     ></PlusSquareOutlined>,
                     <MinusSquareOutlined
-                      className={`${styles.iconsStyle} ${
-                        item.amount === 0 ? styles.zero : ""
-                      }`}
                       onClick={() => handleCartMinus(item.id)}
                     ></MinusSquareOutlined>,
                     <Button
@@ -441,12 +441,7 @@ function Home() {
                 >
                   <List.Item.Meta
                     title={item.title}
-                    description={
-                      <>
-                        <div>Amount: {item.amount}</div>
-                        <div>Price: {item.price}</div>
-                      </>
-                    }
+                    description={`Amount: ${item.amount}`}
                   />
                 </List.Item>
               )}
@@ -464,20 +459,12 @@ function Home() {
                 placeholder="Enter the title"
               />
             </div>
-            <div className={styles.input}>
+            <div>
               <Input
                 value={inputAmount}
                 onChange={(event) => setInputAmount(event.target.value)}
                 type="number"
                 placeholder="Enter the count"
-              />
-            </div>
-            <div>
-              <Input
-                value={inputPrice}
-                onChange={(event) => setInputPrice(event.target.value)}
-                type="number"
-                placeholder="Enter the price"
               />
             </div>
             <Button
@@ -497,15 +484,15 @@ function Home() {
                 onChange={(event) => setSearchElement(event.target.value)}
               />
             </div>
-            <div className={styles.select}>
-              Sort by price:
+            <div>
+              Sort:
               <select
-                value={sortByPrice}
+                value={sortedAmount}
                 onChange={handleSort}
                 className={styles.select}
               >
-                <option value="asc">Ascending</option>
-                <option value="desc">Descending</option>
+                <option value="all">all</option>
+                <option value="existing">only existing</option>
               </select>
             </div>
           </div>
@@ -514,7 +501,7 @@ function Home() {
             <Item
               handleDeleteItem={handleDeleteItem}
               handleToggle={handleToggle}
-              sortedElements={elements}
+              filteredItems={filteredItems}
               handleElementClick={handleElementClick}
               handleAmountEdit={handleAmountEdit}
               addToCart={addToCart}

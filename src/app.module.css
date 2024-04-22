@@ -88,11 +88,6 @@ body {
   border: 1px solid rgb(195, 194, 194);
 }
 
-.iconsStyle {
-  position: relative;
-  font-size: 18px;
-}
-
 .title {
   color: rgb(7, 85, 7);
   text-align: center;
@@ -106,19 +101,8 @@ body {
   position: absolute;
   display: flex;
   padding-left: 12px;
-  bottom: 85px;
-  font-size: small;
+  bottom: 80px;
 }
-
-.price {
-  font-size: medium;
-  position: absolute;
-  display: flex;
-  padding-left: 12px;
-  bottom: 100px;
-  font-size: medium;
-}
-
 .starDefault {
   display: flex;
   justify-content: center;
@@ -153,7 +137,7 @@ body {
 }
 
 .zero {
-  opacity: 0.5;
+  opacity: 0.7;
   pointer-events: none;
 }
 
