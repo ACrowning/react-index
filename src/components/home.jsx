@@ -152,9 +152,9 @@ function Home() {
 
     const itemToUpdate = cartItems.find((item) => item.id === productId);
     const elementToUpdate = elements.find(
-      (element) => element.id === productId && element.amount > 0
+      (element) => element.id === productId
     );
-    if (!elementToUpdate) {
+    if (elementToUpdate.amount === 0) {
       return;
     }
     const updatedAmount = (itemToUpdate.amount += 1);
@@ -205,13 +205,11 @@ function Home() {
   const handleCartMinus = (productId) => {
     const url = `http://localhost:4000/cart/${productId}`;
 
-    const itemToUpdate = cartItems.find(
-      (item) => item.id === productId && item.amount > 0
-    );
+    const itemToUpdate = cartItems.find((item) => item.id === productId);
     const elementToUpdate = elements.find(
       (element) => element.id === productId
     );
-    if (!itemToUpdate) {
+    if (itemToUpdate.amount === 0) {
       return;
     }
     const updatedAmount = Math.max((itemToUpdate.amount -= 1), 0);
