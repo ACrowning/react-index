@@ -13,6 +13,7 @@ function Home() {
   const [elements, setElements] = useState([]);
   const [inputTitle, setInputTitle] = useState("");
   const [inputAmount, setInputAmount] = useState("");
+  const [inputPrice, setInputPrice] = useState("");
   const [searchElement, setSearchElement] = useState("");
   const [sumCard, setSumCard] = useState(0);
   const [cartItems, setCartItems] = useState([]);
@@ -104,7 +105,7 @@ function Home() {
     const newItem = {
       title: inputTitle,
       amount: inputAmount,
-      price: Math.floor(Math.random() * 10),
+      price: inputPrice,
       favorite: false,
     };
     if (inputAmount === "" || inputTitle === "") {
@@ -133,24 +134,25 @@ function Home() {
 
     setInputTitle("");
     setInputAmount("");
+    setInputPrice("");
   };
 
-  const handleToggle = (itemsIndex) => {
+  const handleToggle = (productId) => {
     setElements((prevElements) =>
       prevElements.map((element) =>
-        element.id === itemsIndex
+        element.id === productId
           ? { ...element, favorite: !element.favorite }
           : element
       )
     );
   };
 
-  const handleCartPlus = (itemsIndex) => {
-    const url = `http://localhost:4000/cart/${itemsIndex}`;
+  const handleCartPlus = (productId) => {
+    const url = `http://localhost:4000/cart/${productId}`;
 
-    const itemToUpdate = cartItems.find((item) => item.id === itemsIndex);
+    const itemToUpdate = cartItems.find((item) => item.id === productId);
     const elementToUpdate = elements.find(
-      (element) => element.id === itemsIndex && element.amount > 0
+      (element) => element.id === productId && element.amount > 0
     );
     if (!elementToUpdate) {
       return;
@@ -174,7 +176,7 @@ function Home() {
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
-        return fetch(`http://localhost:4000/products/${itemsIndex}`, {
+        return fetch(`http://localhost:4000/products/${productId}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -189,7 +191,7 @@ function Home() {
         console.log(data);
         setCartItems((prevElements) =>
           prevElements.map((element) =>
-            element.id === itemsIndex
+            element.id === productId
               ? { ...element, amount: updatedAmount }
               : element
           )
@@ -200,14 +202,14 @@ function Home() {
       });
   };
 
-  const handleCartMinus = (itemsIndex) => {
-    const url = `http://localhost:4000/cart/${itemsIndex}`;
+  const handleCartMinus = (productId) => {
+    const url = `http://localhost:4000/cart/${productId}`;
 
     const itemToUpdate = cartItems.find(
-      (item) => item.id === itemsIndex && item.amount > 0
+      (item) => item.id === productId && item.amount > 0
     );
     const elementToUpdate = elements.find(
-      (element) => element.id === itemsIndex
+      (element) => element.id === productId
     );
     if (!itemToUpdate) {
       return;
@@ -231,7 +233,7 @@ function Home() {
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
-        return fetch(`http://localhost:4000/products/${itemsIndex}`, {
+        return fetch(`http://localhost:4000/products/${productId}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -247,7 +249,7 @@ function Home() {
         console.log(data);
         setCartItems((prevElements) =>
           prevElements.map((element) =>
-            element.id === itemsIndex
+            element.id === productId
               ? { ...element, amount: updatedAmount }
               : element
           )
@@ -258,8 +260,8 @@ function Home() {
       });
   };
 
-  const handleElementClick = async (itemsIndex, newText) => {
-    const url = `http://localhost:4000/products/${itemsIndex}`;
+  const handleElementClick = async (productId, newText) => {
+    const url = `http://localhost:4000/products/${productId}`;
     const changes = {
       title: newText,
     };
@@ -281,7 +283,7 @@ function Home() {
 
       setElements((prevElements) =>
         prevElements.map((element) =>
-          element.id === itemsIndex ? { ...element, title: newText } : element
+          element.id === productId ? { ...element, title: newText } : element
         )
       );
     } catch (error) {
@@ -289,10 +291,10 @@ function Home() {
     }
   };
 
-  const handleAmountEdit = async (itemsIndex, newCount) => {
-    const url = `http://localhost:4000/products/${itemsIndex.id}`;
+  const handleAmountEdit = async (productId, newCount) => {
+    const url = `http://localhost:4000/products/${productId.id}`;
     const changes = {
-      amount: parseInt(itemsIndex.amount - newCount),
+      amount: parseInt(productId.amount - newCount),
     };
     const options = {
       method: "PUT",
@@ -312,7 +314,7 @@ function Home() {
 
       setElements((prevElements) =>
         prevElements.map((element) =>
-          element.id === itemsIndex.id
+          element.id === productId.id
             ? {
                 ...element,
                 amount: Math.max(0, element.amount - newCount),
@@ -420,9 +422,13 @@ function Home() {
                 <List.Item
                   actions={[
                     <PlusSquareOutlined
+                      className={styles.iconsStyle}
                       onClick={() => handleCartPlus(item.id)}
                     ></PlusSquareOutlined>,
                     <MinusSquareOutlined
+                      className={`${styles.iconsStyle} ${
+                        item.amount === 0 ? styles.zero : ""
+                      }`}
                       onClick={() => handleCartMinus(item.id)}
                     ></MinusSquareOutlined>,
                     <Button
@@ -458,12 +464,20 @@ function Home() {
                 placeholder="Enter the title"
               />
             </div>
-            <div>
+            <div className={styles.input}>
               <Input
                 value={inputAmount}
                 onChange={(event) => setInputAmount(event.target.value)}
                 type="number"
                 placeholder="Enter the count"
+              />
+            </div>
+            <div>
+              <Input
+                value={inputPrice}
+                onChange={(event) => setInputPrice(event.target.value)}
+                type="number"
+                placeholder="Enter the price"
               />
             </div>
             <Button

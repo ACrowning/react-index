@@ -88,6 +88,11 @@ body {
   border: 1px solid rgb(195, 194, 194);
 }
 
+.iconsStyle {
+  position: relative;
+  font-size: 18px;
+}
+
 .title {
   color: rgb(7, 85, 7);
   text-align: center;
@@ -148,7 +153,7 @@ body {
 }
 
 .zero {
-  opacity: 0.7;
+  opacity: 0.5;
   pointer-events: none;
 }
 
