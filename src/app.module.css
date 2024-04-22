@@ -101,8 +101,19 @@ body {
   position: absolute;
   display: flex;
   padding-left: 12px;
-  bottom: 80px;
+  bottom: 85px;
+  font-size: small;
 }
+
+.price {
+  font-size: medium;
+  position: absolute;
+  display: flex;
+  padding-left: 12px;
+  bottom: 100px;
+  font-size: medium;
+}
+
 .starDefault {
   display: flex;
   justify-content: center;
