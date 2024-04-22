@@ -5,12 +5,13 @@ import Count from "./count.jsx";
 function Item({
   handleToggle,
   handleDeleteItem,
-  sortedElements,
+  filteredItems,
   handleElementClick,
   handleAmountEdit,
+  handleAddAmount,
   addToCart,
 }) {
-  return sortedElements.map((item, index) => (
+  return filteredItems.map((item, index) => (
     <div
       key={item.id}
       className={`${styles.itemsStyle} ${item.amount === 0 ? styles.zero : ""}`}
