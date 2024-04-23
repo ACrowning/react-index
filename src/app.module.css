@@ -31,6 +31,11 @@ body {
   margin-right: 25px;
 }
 
+.iconsStyle {
+  position: relative;
+  font-size: 18px;
+}
+
 .iconEdit {
   font-size: 15px;
   margin-left: 10px;
@@ -101,7 +106,16 @@ body {
   position: absolute;
   display: flex;
   padding-left: 12px;
-  bottom: 80px;
+  bottom: 85px;
+  font-size: small;
+}
+.price {
+  font-size: medium;
+  position: absolute;
+  display: flex;
+  padding-left: 12px;
+  bottom: 100px;
+  font-size: medium;
 }
 .starDefault {
   display: flex;
@@ -137,7 +151,7 @@ body {
 }
 
 .zero {
-  opacity: 0.7;
+  opacity: 0.5;
   pointer-events: none;
 }
 

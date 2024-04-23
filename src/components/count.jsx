@@ -69,6 +69,7 @@ export default function Count({
           </Button>
         </div>
       </div>
+      <div className={styles.price}>price: {item.price}</div>
       <div className={styles.amount}>amount: {item.amount}</div>
       <div className={styles.itemBtn}>
         <div className={styles.flexBtn}>
