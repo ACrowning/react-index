@@ -42,25 +42,14 @@ function Home() {
   };
 
   const handleDeleteItem = async (itemsId) => {
-    try {
-      const itemsDeleted = elements.filter((element) => element.id !== itemsId);
+    const itemsDeleted = elements.filter((element) => element.id !== itemsId);
 
-      const response = await fetch(
-        `http://localhost:4000/products/${itemsId}`,
-        {
-          method: "DELETE",
-        }
-      );
+    const { error } = await products.deleteProduct(itemsId);
 
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-
-      const data = await response.json();
-      console.log(data);
-      setElements(itemsDeleted);
-    } catch (error) {
-      console.error("There was a problem with your fetch operation:", error);
+    if (error) {
+      setElements([]);
+    } else {
+      setElements([...itemsDeleted]);
     }
   };
 
@@ -109,7 +98,6 @@ function Home() {
   };
 
   const handleAddItem = async () => {
-    const url = "http://localhost:4000/products/create";
     const newItem = {
       title: inputTitle,
       amount: inputAmount,
@@ -119,24 +107,12 @@ function Home() {
     if (inputAmount === "" || inputTitle === "") {
       alert("Enter the title and the count!");
     } else {
-      const options = {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newItem),
-      };
+      const { data, error } = await products.addProduct(newItem);
 
-      try {
-        const response = await fetch(url, options);
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const responseData = await response.json();
-        console.log(responseData);
-        setElements([...elements, responseData.data]);
-      } catch (error) {
-        console.error("There was a problem with your POST request:", error);
+      if (error) {
+        setElements([]);
+      } else {
+        setElements([...elements, data.data]);
       }
     }
 
@@ -282,57 +258,28 @@ function Home() {
   };
 
   const handleElementClick = async (productId, newText) => {
-    const url = `http://localhost:4000/products/${productId}`;
-    const changes = {
-      title: newText,
-    };
-    const options = {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(changes),
-    };
+    const { error } = await products.editTitle(productId, newText);
 
-    try {
-      const response = await fetch(url, options);
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      const responseData = await response.json();
-      console.log(responseData);
-
+    if (error) {
+      setElements([]);
+    } else {
       setElements((prevElements) =>
         prevElements.map((element) =>
           element.id === productId ? { ...element, title: newText } : element
         )
       );
-    } catch (error) {
-      console.error("There was a problem with your PUT request:", error);
     }
   };
 
   const handleAmountEdit = async (productId, newCount) => {
-    const url = `http://localhost:4000/products/${productId.id}`;
     const changes = {
       amount: parseInt(productId.amount - newCount),
     };
-    const options = {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(changes),
-    };
+    const { error } = await products.changeAmount(productId.id, changes);
 
-    try {
-      const response = await fetch(url, options);
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      const responseData = await response.json();
-      console.log(responseData);
-
+    if (error) {
+      setElements([]);
+    } else {
       setElements((prevElements) =>
         prevElements.map((element) =>
           element.id === productId.id
@@ -343,8 +290,6 @@ function Home() {
             : element
         )
       );
-    } catch (error) {
-      console.error("There was a problem with your PUT request:", error);
     }
   };
 
