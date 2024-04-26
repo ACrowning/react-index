@@ -24,7 +24,7 @@ function Home() {
 
   useEffect(() => {
     (async () => {
-      const { data, error } = await products.fetchSortedElements(
+      const { data, error } = await products.getProducts(
         searchElement,
         sortByPrice
       );

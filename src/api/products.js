@@ -14,7 +14,7 @@ export const products = {
       };
     }
   },
-  fetchSortedElements: async (searchElement, sortByPrice) => {
+  getProducts: async (searchElement, sortByPrice) => {
     try {
       const response = await apiInstance.post("/products", {
         title: searchElement,
@@ -22,6 +22,18 @@ export const products = {
       });
 
       return { data: response.data.sortedElements, error: null };
+    } catch (error) {
+      return {
+        data: null,
+        error: error.response.data.message || "Network response was not ok",
+      };
+    }
+  },
+
+  getProductById: async (id) => {
+    try {
+      const response = await apiInstance.get(`/products/${id}`);
+      return { data: response.data, error: null };
     } catch (error) {
       return {
         data: null,
