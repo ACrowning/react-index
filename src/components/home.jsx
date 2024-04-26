@@ -8,6 +8,8 @@ import { ShoppingCartOutlined } from "@ant-design/icons";
 import { PlusSquareOutlined } from "@ant-design/icons";
 import { MinusSquareOutlined } from "@ant-design/icons";
 import { Modal, List } from "antd";
+import { cart } from "../api/cart.js";
+import { products } from "../api/products.js";
 
 function Home() {
   const [elements, setElements] = useState([]);
@@ -21,83 +23,89 @@ function Home() {
   const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
-    const fetchSortedElements = async () => {
-      try {
-        const response = await fetch("http://localhost:4000/products", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ title: searchElement, sortByPrice }),
-        });
-        if (!response.ok) {
-          throw new Error("Failed to fetch sorted elements");
-        }
-        const data = await response.json();
-        setElements(data.sortedElements);
-      } catch (error) {
-        console.error("Error:", error);
+    (async () => {
+      const { data, error } = await products.fetchSortedElements(
+        searchElement,
+        sortByPrice
+      );
+
+      if (error) {
+        setElements([]);
+      } else {
+        setElements(data);
       }
-    };
-    fetchSortedElements();
+    })();
   }, [searchElement, sortByPrice]);
 
   const handleSort = (e) => {
     setSortByPrice(e.target.value);
   };
 
-  const handleDeleteItem = (itemsId) => {
-    const itemsDeleted = elements.filter((element) => element.id !== itemsId);
+  const handleDeleteItem = async (itemsId) => {
+    try {
+      const itemsDeleted = elements.filter((element) => element.id !== itemsId);
 
-    fetch(`http://localhost:4000/products/${itemsId}`, {
-      method: "DELETE",
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
+      const response = await fetch(
+        `http://localhost:4000/products/${itemsId}`,
+        {
+          method: "DELETE",
         }
-        return response.json();
-      })
-      .then((data) => {
-        console.log(data);
-        setElements(itemsDeleted);
-      })
-      .catch((error) => {
-        console.error("There was a problem with your fetch operation:", error);
-      });
+      );
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const data = await response.json();
+      console.log(data);
+      setElements(itemsDeleted);
+    } catch (error) {
+      console.error("There was a problem with your fetch operation:", error);
+    }
   };
 
-  const handleShopCardRemove = (itemsId) => {
-    const itemsDeleted = cartItems.filter((item) => item.id !== itemsId);
-    const removedItem = cartItems.find((item) => item.id === itemsId);
-    const elementToUpdate = elements.find((element) => element.id === itemsId);
-    const amountReturn = (elementToUpdate.amount += removedItem.amount);
+  const handleShopCardRemove = async (itemsId) => {
+    try {
+      const itemsDeleted = cartItems.filter((item) => item.id !== itemsId);
+      const removedItem = cartItems.find((item) => item.id === itemsId);
+      const elementToUpdate = elements.find(
+        (element) => element.id === itemsId
+      );
+      const amountReturn = elementToUpdate.amount + removedItem.amount;
 
-    fetch(`http://localhost:4000/cart/${itemsId}`, {
-      method: "DELETE",
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
+      const deleteResponse = await fetch(
+        `http://localhost:4000/cart/${itemsId}`,
+        {
+          method: "DELETE",
         }
-        return fetch(`http://localhost:4000/products/${itemsId}`, {
+      );
+      if (!deleteResponse.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const updateResponse = await fetch(
+        `http://localhost:4000/products/${itemsId}`,
+        {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ amount: amountReturn }),
-        });
-      })
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        console.log(data);
-        setCartItems(itemsDeleted);
-      })
-      .catch((error) => {
-        console.error("There was a problem with your fetch operation:", error);
-      });
+        }
+      );
+      const data = await updateResponse.json();
+      console.log(data);
+      setCartItems(itemsDeleted);
+      setElements((prevElements) =>
+        prevElements.map((element) =>
+          element.id === itemsId
+            ? { ...element, amount: amountReturn }
+            : element
+        )
+      );
+    } catch (error) {
+      console.error("There was a problem with your fetch operation:", error);
+    }
   };
 
   const handleAddItem = async () => {
@@ -147,7 +155,7 @@ function Home() {
     );
   };
 
-  const handleCartPlus = (productId) => {
+  const handleCartPlus = async (productId) => {
     const url = `http://localhost:4000/cart/${productId}`;
 
     const itemToUpdate = cartItems.find((item) => item.id === productId);
@@ -173,38 +181,44 @@ function Home() {
       body: JSON.stringify(changes),
     };
 
-    fetch(url, options)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return fetch(`http://localhost:4000/products/${productId}`, {
+    try {
+      const response = await fetch(url, options);
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const updateResponse = await fetch(
+        `http://localhost:4000/products/${productId}`,
+        {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ amount: amountReturn }),
-        });
-      })
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        console.log(data);
-        setCartItems((prevElements) =>
-          prevElements.map((element) =>
-            element.id === productId
-              ? { ...element, amount: updatedAmount }
-              : element
-          )
-        );
-      })
-      .catch((error) => {
-        console.error("There was a problem with your fetch operation:", error);
-      });
+        }
+      );
+
+      if (!updateResponse.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const data = await updateResponse.json();
+      console.log(data);
+
+      setCartItems((prevElements) =>
+        prevElements.map((element) =>
+          element.id === productId
+            ? { ...element, amount: updatedAmount }
+            : element
+        )
+      );
+    } catch (error) {
+      console.error("There was a problem with your fetch operation:", error);
+    }
   };
 
-  const handleCartMinus = (productId) => {
+  const handleCartMinus = async (productId) => {
     const url = `http://localhost:4000/cart/${productId}`;
 
     const itemToUpdate = cartItems.find((item) => item.id === productId);
@@ -230,36 +244,41 @@ function Home() {
       body: JSON.stringify(changes),
     };
 
-    fetch(url, options)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return fetch(`http://localhost:4000/products/${productId}`, {
+    try {
+      const response = await fetch(url, options);
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const updateResponse = await fetch(
+        `http://localhost:4000/products/${productId}`,
+        {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ amount: amountReturn }),
-        });
-      })
-      .then((response) => {
-        return response.json();
-      })
+        }
+      );
 
-      .then((data) => {
-        console.log(data);
-        setCartItems((prevElements) =>
-          prevElements.map((element) =>
-            element.id === productId
-              ? { ...element, amount: updatedAmount }
-              : element
-          )
-        );
-      })
-      .catch((error) => {
-        console.error("There was a problem with your fetch operation:", error);
-      });
+      if (!updateResponse.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const data = await updateResponse.json();
+      console.log(data);
+
+      setCartItems((prevElements) =>
+        prevElements.map((element) =>
+          element.id === productId
+            ? { ...element, amount: updatedAmount }
+            : element
+        )
+      );
+    } catch (error) {
+      console.error("There was a problem with your fetch operation:", error);
+    }
   };
 
   const handleElementClick = async (productId, newText) => {
@@ -337,41 +356,42 @@ function Home() {
     setSumCard(totalItems);
   }, [cartItems]);
 
-  const addToCart = (element, newCount) => {
-    const url = `http://localhost:4000/cart`;
-    const newItem = {
-      id: element.id,
-      title: element.title,
-      amount: parseInt(newCount),
-      price: element.price,
-    };
-    const options = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(newItem),
-    };
+  const addToCart = async (element, newCount) => {
+    try {
+      const url = `http://localhost:4000/cart`;
+      const newItem = {
+        id: element.id,
+        title: element.title,
+        amount: parseInt(newCount),
+        price: element.price,
+      };
+      const options = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newItem),
+      };
 
-    fetch(url, options)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const existingItemIndex = cartItems.findIndex(
-          (item) => item.id === newItem.id
-        );
+      const response = await fetch(url, options);
 
-        if (existingItemIndex !== -1) {
-          cartItems[existingItemIndex].amount += newItem.amount;
-          setCartItems([...cartItems]);
-        } else {
-          setCartItems([...cartItems, newItem]);
-        }
-      })
-      .catch((error) => {
-        console.error("There was a problem with your POST request:", error);
-      });
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const existingItemIndex = cartItems.findIndex(
+        (item) => item.id === newItem.id
+      );
+
+      if (existingItemIndex !== -1) {
+        cartItems[existingItemIndex].amount += newItem.amount;
+        setCartItems([...cartItems]);
+      } else {
+        setCartItems([...cartItems, newItem]);
+      }
+    } catch (error) {
+      console.error("There was a problem with your POST request:", error);
+    }
   };
 
   useEffect(() => {
