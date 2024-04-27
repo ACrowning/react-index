@@ -16,7 +16,7 @@ export default function ItemPage() {
         setElement(data);
       }
     })();
-  }, []);
+  }, [id]);
   if (!element) return <div>Loading...</div>;
 
   return (

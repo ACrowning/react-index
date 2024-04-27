@@ -1,22 +1,10 @@
 import { apiInstance } from "./index.js";
+const productRoot = "products";
 
 export const products = {
-  updateProductAmount: async (itemsId, amount) => {
-    try {
-      const response = await apiInstance.put(`/products/${itemsId}`, {
-        amount,
-      });
-      return { data: response.data, error: null };
-    } catch (error) {
-      return {
-        data: null,
-        error: error.response.data.message || "Network response was not ok",
-      };
-    }
-  },
   getProducts: async (searchElement, sortByPrice) => {
     try {
-      const response = await apiInstance.post("/products", {
+      const response = await apiInstance.post(`/${productRoot}`, {
         title: searchElement,
         sortByPrice,
       });
@@ -32,7 +20,7 @@ export const products = {
 
   getProductById: async (id) => {
     try {
-      const response = await apiInstance.get(`/products/${id}`);
+      const response = await apiInstance.get(`/${productRoot}/${id}`);
       return { data: response.data, error: null };
     } catch (error) {
       return {
@@ -43,7 +31,7 @@ export const products = {
   },
   deleteProduct: async (itemsId) => {
     try {
-      const response = await apiInstance.delete(`/products/${itemsId}`);
+      const response = await apiInstance.delete(`/${productRoot}/${itemsId}`);
       return { data: response.data, error: null };
     } catch (error) {
       return {
@@ -54,7 +42,10 @@ export const products = {
   },
   addProduct: async (newItem) => {
     try {
-      const response = await apiInstance.post("/products/create", newItem);
+      const response = await apiInstance.post(
+        `/${productRoot}/create`,
+        newItem
+      );
       return { data: response.data, error: null };
     } catch (error) {
       return {
@@ -65,7 +56,7 @@ export const products = {
   },
   editTitle: async (productId, newText) => {
     try {
-      const response = await apiInstance.put(`/products/${productId}`, {
+      const response = await apiInstance.put(`/${productRoot}/${productId}`, {
         title: newText,
       });
       return { data: response.data, error: null };
@@ -79,9 +70,23 @@ export const products = {
   changeAmount: async (productId, newCount) => {
     try {
       const response = await apiInstance.put(
-        `/products/${productId}`,
+        `/${productRoot}/${productId}`,
         newCount
       );
+      return { data: response.data, error: null };
+    } catch (error) {
+      return {
+        data: null,
+        error: error.response.data.message || "Network response was not ok",
+      };
+    }
+  },
+
+  updateProductAmount: async (itemsId, amount) => {
+    try {
+      const response = await apiInstance.put(`/${productRoot}/${itemsId}`, {
+        amount,
+      });
       return { data: response.data, error: null };
     } catch (error) {
       return {

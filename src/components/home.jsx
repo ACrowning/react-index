@@ -28,7 +28,6 @@ function Home() {
         searchElement,
         sortByPrice
       );
-
       if (error) {
         setElements([]);
       } else {
@@ -40,6 +39,17 @@ function Home() {
   const handleSort = (e) => {
     setSortByPrice(e.target.value);
   };
+
+  useEffect(() => {
+    (async () => {
+      const { data, error } = await cart.getCart();
+      if (error) {
+        setCartItems([]);
+      } else {
+        setCartItems(data.data);
+      }
+    })();
+  }, []);
 
   const handleDeleteItem = async (itemsId) => {
     const itemsDeleted = elements.filter((element) => element.id !== itemsId);
@@ -54,36 +64,17 @@ function Home() {
   };
 
   const handleShopCardRemove = async (itemsId) => {
-    try {
-      const itemsDeleted = cartItems.filter((item) => item.id !== itemsId);
-      const removedItem = cartItems.find((item) => item.id === itemsId);
-      const elementToUpdate = elements.find(
-        (element) => element.id === itemsId
-      );
-      const amountReturn = elementToUpdate.amount + removedItem.amount;
+    const itemsDeleted = cartItems.filter((item) => item.id !== itemsId);
+    const removedItem = cartItems.find((item) => item.id === itemsId);
+    const elementToUpdate = elements.find((element) => element.id === itemsId);
+    const amountReturn = elementToUpdate.amount + removedItem.amount;
 
-      const deleteResponse = await fetch(
-        `http://localhost:4000/cart/${itemsId}`,
-        {
-          method: "DELETE",
-        }
-      );
-      if (!deleteResponse.ok) {
-        throw new Error("Network response was not ok");
-      }
+    const { error } = await cart.removeFromCart(itemsId);
+    await products.updateProductAmount(itemsId, amountReturn);
 
-      const updateResponse = await fetch(
-        `http://localhost:4000/products/${itemsId}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ amount: amountReturn }),
-        }
-      );
-      const data = await updateResponse.json();
-      console.log(data);
+    if (error) {
+      setElements([]);
+    } else {
       setCartItems(itemsDeleted);
       setElements((prevElements) =>
         prevElements.map((element) =>
@@ -92,8 +83,6 @@ function Home() {
             : element
         )
       );
-    } catch (error) {
-      console.error("There was a problem with your fetch operation:", error);
     }
   };
 
@@ -132,8 +121,6 @@ function Home() {
   };
 
   const handleCartPlus = async (productId) => {
-    const url = `http://localhost:4000/cart/${productId}`;
-
     const itemToUpdate = cartItems.find((item) => item.id === productId);
     const elementToUpdate = elements.find(
       (element) => element.id === productId
@@ -142,46 +129,18 @@ function Home() {
     if (elementToUpdate.amount === 0) {
       return;
     }
-
     const updatedAmount = (itemToUpdate.amount += 1);
     const amountReturn = Math.max((elementToUpdate.amount -= 1), 0);
-
     const changes = {
       amount: updatedAmount,
     };
-    const options = {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(changes),
-    };
 
-    try {
-      const response = await fetch(url, options);
+    const { error } = await cart.cartPlusMinus(productId, changes);
+    await products.updateProductAmount(productId, amountReturn);
 
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-
-      const updateResponse = await fetch(
-        `http://localhost:4000/products/${productId}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ amount: amountReturn }),
-        }
-      );
-
-      if (!updateResponse.ok) {
-        throw new Error("Network response was not ok");
-      }
-
-      const data = await updateResponse.json();
-      console.log(data);
-
+    if (error) {
+      setCartItems([]);
+    } else {
       setCartItems((prevElements) =>
         prevElements.map((element) =>
           element.id === productId
@@ -189,14 +148,10 @@ function Home() {
             : element
         )
       );
-    } catch (error) {
-      console.error("There was a problem with your fetch operation:", error);
     }
   };
 
   const handleCartMinus = async (productId) => {
-    const url = `http://localhost:4000/cart/${productId}`;
-
     const itemToUpdate = cartItems.find((item) => item.id === productId);
     const elementToUpdate = elements.find(
       (element) => element.id === productId
@@ -205,46 +160,18 @@ function Home() {
     if (itemToUpdate.amount === 0) {
       return;
     }
-
     const updatedAmount = Math.max((itemToUpdate.amount -= 1), 0);
     const amountReturn = (elementToUpdate.amount += 1);
-
     const changes = {
       amount: updatedAmount,
     };
-    const options = {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(changes),
-    };
 
-    try {
-      const response = await fetch(url, options);
+    const { error } = await cart.cartPlusMinus(productId, changes);
+    await products.updateProductAmount(productId, amountReturn);
 
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-
-      const updateResponse = await fetch(
-        `http://localhost:4000/products/${productId}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ amount: amountReturn }),
-        }
-      );
-
-      if (!updateResponse.ok) {
-        throw new Error("Network response was not ok");
-      }
-
-      const data = await updateResponse.json();
-      console.log(data);
-
+    if (error) {
+      setCartItems([]);
+    } else {
       setCartItems((prevElements) =>
         prevElements.map((element) =>
           element.id === productId
@@ -252,8 +179,6 @@ function Home() {
             : element
         )
       );
-    } catch (error) {
-      console.error("There was a problem with your fetch operation:", error);
     }
   };
 
@@ -302,60 +227,27 @@ function Home() {
   }, [cartItems]);
 
   const addToCart = async (element, newCount) => {
-    try {
-      const url = `http://localhost:4000/cart`;
-      const newItem = {
-        id: element.id,
-        title: element.title,
-        amount: parseInt(newCount),
-        price: element.price,
-      };
-      const options = {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newItem),
-      };
+    const newItem = {
+      id: element.id,
+      title: element.title,
+      amount: parseInt(newCount),
+      price: element.price,
+    };
+    const existingItemIndex = cartItems.findIndex(
+      (item) => item.id === newItem.id
+    );
 
-      const response = await fetch(url, options);
+    const { error } = await cart.addToCart(newItem);
 
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-
-      const existingItemIndex = cartItems.findIndex(
-        (item) => item.id === newItem.id
-      );
-
-      if (existingItemIndex !== -1) {
-        cartItems[existingItemIndex].amount += newItem.amount;
-        setCartItems([...cartItems]);
-      } else {
-        setCartItems([...cartItems, newItem]);
-      }
-    } catch (error) {
-      console.error("There was a problem with your POST request:", error);
+    if (error) {
+      setCartItems([]);
+    } else if (existingItemIndex !== -1) {
+      cartItems[existingItemIndex].amount += newItem.amount;
+      setCartItems([...cartItems]);
+    } else {
+      setCartItems([...cartItems, newItem]);
     }
   };
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch("http://localhost:4000/cart");
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const responseData = await response.json();
-
-        setCartItems(responseData.data);
-      } catch (error) {
-        console.error("There was a problem with your GET request:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
 
   const handleShopCardClick = () => {
     setModalOpen(true);
