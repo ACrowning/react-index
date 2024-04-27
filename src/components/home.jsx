@@ -157,14 +157,14 @@ function Home() {
       (element) => element.id === productId
     );
 
-    if (itemToUpdate.amount === 0) {
-      return;
-    }
-    const updatedAmount = Math.max((itemToUpdate.amount -= 1), 0);
+    const updatedAmount = itemToUpdate.amount - 1;
     const amountReturn = (elementToUpdate.amount += 1);
     const changes = {
       amount: updatedAmount,
     };
+    if (itemToUpdate.amount <= 1) {
+      await cart.removeFromCart(productId);
+    }
 
     const { error } = await cart.cartPlusMinus(productId, changes);
     await products.updateProductAmount(productId, amountReturn);
@@ -285,9 +285,6 @@ function Home() {
                       onClick={() => handleCartPlus(item.id)}
                     ></PlusSquareOutlined>,
                     <MinusSquareOutlined
-                      className={`${styles.iconsStyle} ${
-                        item.amount === 0 ? styles.zero : ""
-                      }`}
                       onClick={() => handleCartMinus(item.id)}
                     ></MinusSquareOutlined>,
                     <Button
