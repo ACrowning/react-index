@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from "react";
-import styles from "../app.module.css";
-import Item from "../components/item.jsx";
-// import Mock from "../components/mock/mock.jsx";
+import styles from "../Home/app.module.css";
+import Item from "./components/item.jsx";
 import { Button } from "antd";
 import { Input } from "antd";
 import { ShoppingCartOutlined } from "@ant-design/icons";
 import { PlusSquareOutlined } from "@ant-design/icons";
 import { MinusSquareOutlined } from "@ant-design/icons";
 import { Modal, List } from "antd";
-import { cart } from "../api/cart.js";
-import { products } from "../api/products.js";
+import { cart } from "../../api/cart.js";
+import { products } from "../../api/products.js";
 
 function Home() {
   const [elements, setElements] = useState([]);
