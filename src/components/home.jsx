@@ -156,6 +156,7 @@ function Home() {
     const elementToUpdate = elements.find(
       (element) => element.id === productId
     );
+    const itemsDeleted = cartItems.filter((item) => item.id !== productId);
 
     const updatedAmount = itemToUpdate.amount - 1;
     const amountReturn = (elementToUpdate.amount += 1);
@@ -163,22 +164,35 @@ function Home() {
       amount: updatedAmount,
     };
     if (itemToUpdate.amount <= 1) {
-      await cart.removeFromCart(productId);
-    }
-
-    const { error } = await cart.cartPlusMinus(productId, changes);
-    await products.updateProductAmount(productId, amountReturn);
-
-    if (error) {
-      setCartItems([]);
+      const { error } = await cart.removeFromCart(productId);
+      await products.updateProductAmount(productId, amountReturn);
+      if (error) {
+        setCartItems([]);
+      } else {
+        setCartItems(itemsDeleted);
+        setCartItems((prevElements) =>
+          prevElements.map((element) =>
+            element.id === productId
+              ? { ...element, amount: updatedAmount }
+              : element
+          )
+        );
+      }
     } else {
-      setCartItems((prevElements) =>
-        prevElements.map((element) =>
-          element.id === productId
-            ? { ...element, amount: updatedAmount }
-            : element
-        )
-      );
+      const { error } = await cart.cartPlusMinus(productId, changes);
+      await products.updateProductAmount(productId, amountReturn);
+
+      if (error) {
+        setCartItems([]);
+      } else {
+        setCartItems((prevElements) =>
+          prevElements.map((element) =>
+            element.id === productId
+              ? { ...element, amount: updatedAmount }
+              : element
+          )
+        );
+      }
     }
   };
 
@@ -285,6 +299,7 @@ function Home() {
                       onClick={() => handleCartPlus(item.id)}
                     ></PlusSquareOutlined>,
                     <MinusSquareOutlined
+                      className={styles.iconsStyle}
                       onClick={() => handleCartMinus(item.id)}
                     ></MinusSquareOutlined>,
                     <Button
