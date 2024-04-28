@@ -8,6 +8,8 @@ import { ShoppingCartOutlined } from "@ant-design/icons";
 import { PlusSquareOutlined } from "@ant-design/icons";
 import { MinusSquareOutlined } from "@ant-design/icons";
 import { Modal, List } from "antd";
+import { cart } from "../api/cart.js";
+import { products } from "../api/products.js";
 
 function Home() {
   const [elements, setElements] = useState([]);
@@ -21,87 +23,70 @@ function Home() {
   const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
-    const fetchSortedElements = async () => {
-      try {
-        const response = await fetch("http://localhost:4000/products", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ title: searchElement, sortByPrice }),
-        });
-        if (!response.ok) {
-          throw new Error("Failed to fetch sorted elements");
-        }
-        const data = await response.json();
-        setElements(data.sortedElements);
-      } catch (error) {
-        console.error("Error:", error);
+    (async () => {
+      const { data, error } = await products.getProducts(
+        searchElement,
+        sortByPrice
+      );
+      if (error) {
+        setElements([]);
+      } else {
+        setElements(data);
       }
-    };
-    fetchSortedElements();
+    })();
   }, [searchElement, sortByPrice]);
 
   const handleSort = (e) => {
     setSortByPrice(e.target.value);
   };
 
-  const handleDeleteItem = (itemsId) => {
+  useEffect(() => {
+    (async () => {
+      const { data, error } = await cart.getCart();
+      if (error) {
+        setCartItems([]);
+      } else {
+        setCartItems(data.data);
+      }
+    })();
+  }, []);
+
+  const handleDeleteItem = async (itemsId) => {
     const itemsDeleted = elements.filter((element) => element.id !== itemsId);
 
-    fetch(`http://localhost:4000/products/${itemsId}`, {
-      method: "DELETE",
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        console.log(data);
-        setElements(itemsDeleted);
-      })
-      .catch((error) => {
-        console.error("There was a problem with your fetch operation:", error);
-      });
+    const { error } = await products.deleteProduct(itemsId);
+
+    if (error) {
+      setElements([]);
+    } else {
+      setElements([...itemsDeleted]);
+    }
   };
 
-  const handleShopCardRemove = (itemsId) => {
+  const handleShopCardRemove = async (itemsId) => {
     const itemsDeleted = cartItems.filter((item) => item.id !== itemsId);
     const removedItem = cartItems.find((item) => item.id === itemsId);
     const elementToUpdate = elements.find((element) => element.id === itemsId);
-    const amountReturn = (elementToUpdate.amount += removedItem.amount);
+    const amountReturn = elementToUpdate.amount + removedItem.amount;
 
-    fetch(`http://localhost:4000/cart/${itemsId}`, {
-      method: "DELETE",
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return fetch(`http://localhost:4000/products/${itemsId}`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ amount: amountReturn }),
-        });
-      })
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        console.log(data);
-        setCartItems(itemsDeleted);
-      })
-      .catch((error) => {
-        console.error("There was a problem with your fetch operation:", error);
-      });
+    const { error } = await cart.removeFromCart(itemsId);
+    await products.updateProductAmount(itemsId, amountReturn);
+
+    if (error) {
+      setElements([]);
+    } else {
+      setCartItems(itemsDeleted);
+      setElements((prevElements) =>
+        prevElements.map((element) =>
+          element.id === itemsId
+            ? { ...element, amount: amountReturn }
+            : element
+        )
+      );
+    }
   };
 
   const handleAddItem = async () => {
-    const url = "http://localhost:4000/products/create";
     const newItem = {
       title: inputTitle,
       amount: inputAmount,
@@ -111,24 +96,12 @@ function Home() {
     if (inputAmount === "" || inputTitle === "") {
       alert("Enter the title and the count!");
     } else {
-      const options = {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newItem),
-      };
+      const { data, error } = await products.addProduct(newItem);
 
-      try {
-        const response = await fetch(url, options);
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const responseData = await response.json();
-        console.log(responseData);
-        setElements([...elements, responseData.data]);
-      } catch (error) {
-        console.error("There was a problem with your POST request:", error);
+      if (error) {
+        setElements([]);
+      } else {
+        setElements([...elements, data.data]);
       }
     }
 
@@ -147,9 +120,7 @@ function Home() {
     );
   };
 
-  const handleCartPlus = (productId) => {
-    const url = `http://localhost:4000/cart/${productId}`;
-
+  const handleCartPlus = async (productId) => {
     const itemToUpdate = cartItems.find((item) => item.id === productId);
     const elementToUpdate = elements.find(
       (element) => element.id === productId
@@ -158,97 +129,55 @@ function Home() {
     if (elementToUpdate.amount === 0) {
       return;
     }
-
     const updatedAmount = (itemToUpdate.amount += 1);
     const amountReturn = Math.max((elementToUpdate.amount -= 1), 0);
-
     const changes = {
       amount: updatedAmount,
     };
-    const options = {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(changes),
-    };
 
-    fetch(url, options)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return fetch(`http://localhost:4000/products/${productId}`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ amount: amountReturn }),
-        });
-      })
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        console.log(data);
-        setCartItems((prevElements) =>
-          prevElements.map((element) =>
-            element.id === productId
-              ? { ...element, amount: updatedAmount }
-              : element
-          )
-        );
-      })
-      .catch((error) => {
-        console.error("There was a problem with your fetch operation:", error);
-      });
+    const { error } = await cart.cartPlusMinus(productId, changes);
+    await products.updateProductAmount(productId, amountReturn);
+
+    if (error) {
+      setCartItems([]);
+    } else {
+      setCartItems((prevElements) =>
+        prevElements.map((element) =>
+          element.id === productId
+            ? { ...element, amount: updatedAmount }
+            : element
+        )
+      );
+    }
   };
 
-  const handleCartMinus = (productId) => {
-    const url = `http://localhost:4000/cart/${productId}`;
-
+  const handleCartMinus = async (productId) => {
     const itemToUpdate = cartItems.find((item) => item.id === productId);
     const elementToUpdate = elements.find(
       (element) => element.id === productId
     );
+    const itemsDeleted = cartItems.filter((item) => item.id !== productId);
 
-    if (itemToUpdate.amount === 0) {
-      return;
-    }
-
-    const updatedAmount = Math.max((itemToUpdate.amount -= 1), 0);
+    const updatedAmount = itemToUpdate.amount - 1;
     const amountReturn = (elementToUpdate.amount += 1);
-
     const changes = {
       amount: updatedAmount,
     };
-    const options = {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(changes),
-    };
+    if (itemToUpdate.amount <= 1) {
+      const { error } = await cart.removeFromCart(productId);
+      await products.updateProductAmount(productId, amountReturn);
+      if (error) {
+        setCartItems([]);
+      } else {
+        setCartItems(itemsDeleted);
+      }
+    } else {
+      const { error } = await cart.cartPlusMinus(productId, changes);
+      await products.updateProductAmount(productId, amountReturn);
 
-    fetch(url, options)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return fetch(`http://localhost:4000/products/${productId}`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ amount: amountReturn }),
-        });
-      })
-      .then((response) => {
-        return response.json();
-      })
-
-      .then((data) => {
-        console.log(data);
+      if (error) {
+        setCartItems([]);
+      } else {
         setCartItems((prevElements) =>
           prevElements.map((element) =>
             element.id === productId
@@ -256,64 +185,33 @@ function Home() {
               : element
           )
         );
-      })
-      .catch((error) => {
-        console.error("There was a problem with your fetch operation:", error);
-      });
+      }
+    }
   };
 
   const handleElementClick = async (productId, newText) => {
-    const url = `http://localhost:4000/products/${productId}`;
-    const changes = {
-      title: newText,
-    };
-    const options = {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(changes),
-    };
+    const { error } = await products.editTitle(productId, newText);
 
-    try {
-      const response = await fetch(url, options);
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      const responseData = await response.json();
-      console.log(responseData);
-
+    if (error) {
+      setElements([]);
+    } else {
       setElements((prevElements) =>
         prevElements.map((element) =>
           element.id === productId ? { ...element, title: newText } : element
         )
       );
-    } catch (error) {
-      console.error("There was a problem with your PUT request:", error);
     }
   };
 
   const handleAmountEdit = async (productId, newCount) => {
-    const url = `http://localhost:4000/products/${productId.id}`;
     const changes = {
       amount: parseInt(productId.amount - newCount),
     };
-    const options = {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(changes),
-    };
+    const { error } = await products.changeAmount(productId.id, changes);
 
-    try {
-      const response = await fetch(url, options);
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      const responseData = await response.json();
-      console.log(responseData);
-
+    if (error) {
+      setElements([]);
+    } else {
       setElements((prevElements) =>
         prevElements.map((element) =>
           element.id === productId.id
@@ -324,8 +222,6 @@ function Home() {
             : element
         )
       );
-    } catch (error) {
-      console.error("There was a problem with your PUT request:", error);
     }
   };
 
@@ -337,60 +233,28 @@ function Home() {
     setSumCard(totalItems);
   }, [cartItems]);
 
-  const addToCart = (element, newCount) => {
-    const url = `http://localhost:4000/cart`;
+  const addToCart = async (element, newCount) => {
     const newItem = {
       id: element.id,
       title: element.title,
       amount: parseInt(newCount),
       price: element.price,
     };
-    const options = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(newItem),
-    };
+    const existingItemIndex = cartItems.findIndex(
+      (item) => item.id === newItem.id
+    );
 
-    fetch(url, options)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const existingItemIndex = cartItems.findIndex(
-          (item) => item.id === newItem.id
-        );
+    const { error } = await cart.addToCart(newItem);
 
-        if (existingItemIndex !== -1) {
-          cartItems[existingItemIndex].amount += newItem.amount;
-          setCartItems([...cartItems]);
-        } else {
-          setCartItems([...cartItems, newItem]);
-        }
-      })
-      .catch((error) => {
-        console.error("There was a problem with your POST request:", error);
-      });
+    if (error) {
+      setCartItems([]);
+    } else if (existingItemIndex !== -1) {
+      cartItems[existingItemIndex].amount += newItem.amount;
+      setCartItems([...cartItems]);
+    } else {
+      setCartItems([...cartItems, newItem]);
+    }
   };
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch("http://localhost:4000/cart");
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const responseData = await response.json();
-
-        setCartItems(responseData.data);
-      } catch (error) {
-        console.error("There was a problem with your GET request:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
 
   const handleShopCardClick = () => {
     setModalOpen(true);
@@ -428,9 +292,7 @@ function Home() {
                       onClick={() => handleCartPlus(item.id)}
                     ></PlusSquareOutlined>,
                     <MinusSquareOutlined
-                      className={`${styles.iconsStyle} ${
-                        item.amount === 0 ? styles.zero : ""
-                      }`}
+                      className={styles.iconsStyle}
                       onClick={() => handleCartMinus(item.id)}
                     ></MinusSquareOutlined>,
                     <Button

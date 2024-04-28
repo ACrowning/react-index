@@ -1,25 +1,22 @@
 import { useParams } from "react-router-dom";
 import React, { useState, useEffect } from "react";
+import { products } from "../api/products.js";
 
 export default function ItemPage() {
   const [element, setElement] = useState();
   const { id } = useParams();
 
   useEffect(() => {
-    const fetchElementData = async () => {
-      try {
-        const response = await fetch(`http://localhost:4000/products/${id}`);
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const userData = await response.json();
-        setElement(userData);
-      } catch (error) {
-        console.error("Error fetching user data:", error);
+    (async () => {
+      const { data, error } = await products.getProductById(id);
+
+      if (error) {
+        setElement([]);
+      } else {
+        setElement(data);
       }
-    };
-    fetchElementData();
-  }, []);
+    })();
+  }, [id]);
   if (!element) return <div>Loading...</div>;
 
   return (
