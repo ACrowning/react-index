@@ -170,13 +170,6 @@ function Home() {
         setCartItems([]);
       } else {
         setCartItems(itemsDeleted);
-        setCartItems((prevElements) =>
-          prevElements.map((element) =>
-            element.id === productId
-              ? { ...element, amount: updatedAmount }
-              : element
-          )
-        );
       }
     } else {
       const { error } = await cart.cartPlusMinus(productId, changes);
