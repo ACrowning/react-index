@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import React, { useState, useEffect } from "react";
-import { products } from "../api/products.js";
+import { products } from "../../api/products.js";
 
 export default function ItemPage() {
   const [element, setElement] = useState();

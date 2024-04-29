@@ -1,5 +1,5 @@
-import ItemPage from "./components/itemPage.jsx";
-import Home from "./components/home.jsx";
+import ItemPage from "./pages/Item/index.jsx";
+import Home from "./pages/Home/index.jsx";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 function App() {
