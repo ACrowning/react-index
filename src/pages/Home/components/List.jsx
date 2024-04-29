@@ -1,8 +1,8 @@
 import styles from "../app.module.css";
-import Edit from "./edit.jsx";
-import Count from "./count.jsx";
+import Edit from "./Edit.jsx";
+import Count from "./Count.jsx";
 
-function Item({
+export function List({
   handleToggle,
   handleDeleteItem,
   sortedElements,
@@ -37,4 +37,3 @@ function Item({
     </div>
   ));
 }
-export default Item;
