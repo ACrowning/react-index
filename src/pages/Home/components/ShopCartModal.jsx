@@ -24,7 +24,7 @@ export function ShopCartModal({
         setCartItems(data.data);
       }
     })();
-  }, []);
+  }, [setCartItems]);
 
   const handleShopCardRemove = async (itemsId) => {
     const itemsDeleted = cartItems.filter((item) => item.id !== itemsId);
