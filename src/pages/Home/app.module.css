@@ -3,9 +3,13 @@ body {
 }
 
 .navbar {
+  position: fixed;
   background-color: rgb(226, 241, 226);
   padding: 20px 25px;
   border-right: 1px solid rgb(195, 194, 194);
+  top: 60px;
+  left: 0;
+  height: calc(100vh - 10px);
 }
 
 .input {
@@ -31,11 +35,6 @@ body {
   margin-right: 25px;
 }
 
-.iconsStyle {
-  position: relative;
-  font-size: 18px;
-}
-
 .iconEdit {
   font-size: 15px;
   margin-left: 10px;
@@ -54,16 +53,18 @@ body {
   color: white;
   font-size: 12px;
   right: 10px;
-  top: 15%;
+  top: 25%;
   transform: translateY(-50%);
 }
 
 .top {
-  position: relative;
+  position: fixed;
+  top: 0%;
   width: 100%;
-  height: 50px;
+  height: 60px;
   border-bottom: 1px solid rgb(195, 194, 194);
   margin-bottom: 5px;
+  background-color: white;
 }
 
 .font {
@@ -81,14 +82,16 @@ body {
 }
 
 .container {
-  margin-left: 25px;
+  margin-top: 50px;
+  margin-left: 300px;
   display: flex;
   flex-wrap: wrap;
 }
 
 .itemsStyle {
-  position: relative;
-  margin-right: 35px;
+  margin-right: 20px;
+  margin-bottom: 20px;
+  width: 300px;
   background-color: rgb(226, 241, 226);
   border: 1px solid rgb(195, 194, 194);
 }
@@ -103,26 +106,27 @@ body {
 
 .amount {
   font-size: medium;
-  position: absolute;
   display: flex;
   padding-left: 12px;
   bottom: 85px;
   font-size: small;
 }
+
 .price {
   font-size: medium;
-  position: absolute;
   display: flex;
   padding-left: 12px;
   bottom: 100px;
   font-size: medium;
 }
+
 .starDefault {
   display: flex;
   justify-content: center;
   font-size: large;
   color: black;
 }
+
 .star {
   display: flex;
   justify-content: center;
@@ -131,23 +135,27 @@ body {
 }
 
 .flexBtn {
-  position: absolute;
   display: flex;
-  bottom: 5px;
   padding: 5px;
+  justify-content: center;
 }
 
 .flexItem {
   display: flex;
   align-items: center;
-  height: 120px;
+  justify-content: center;
   padding: 5px;
 }
 
-.btnSize {
+.btnAdd {
   background-color: rgb(7, 85, 7);
   font-size: small;
-  margin-right: 15px;
+  margin-right: 100px;
+}
+
+.btnDelete {
+  background-color: rgb(7, 85, 7);
+  font-size: small;
 }
 
 .zero {

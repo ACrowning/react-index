@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styles from "../Home/app.module.css";
 import { List } from "./components/List.jsx";
-import { Navbar } from "./components/Navbar.jsx";
+import { Navbar } from "./components/TheNavbar.jsx";
 import { ShoppingCartOutlined } from "@ant-design/icons";
 import { ShopCartModal } from "./components/ShopCartModal.jsx";
 import { cart } from "../../api/cart.js";
@@ -125,14 +125,14 @@ function Home() {
   return (
     <>
       <div>
-        <div className={styles.top}>
-          <div>
+        <div>
+          <header className={styles.top}>
             <div className={styles.circle}>{sumCard}</div>
             <ShoppingCartOutlined
               className={styles.iconCart}
               onClick={handleShopCardClick}
             />
-          </div>
+          </header>
           <ShopCartModal
             modalOpen={modalOpen}
             setModalOpen={setModalOpen}
