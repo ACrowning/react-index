@@ -125,14 +125,14 @@ function Home() {
   return (
     <>
       <div>
-        <div className={styles.top}>
-          <div>
+        <div>
+          <header className={styles.top}>
             <div className={styles.circle}>{sumCard}</div>
             <ShoppingCartOutlined
               className={styles.iconCart}
               onClick={handleShopCardClick}
             />
-          </div>
+          </header>
           <ShopCartModal
             modalOpen={modalOpen}
             setModalOpen={setModalOpen}
