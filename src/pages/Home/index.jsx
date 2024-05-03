@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styles from "../Home/app.module.css";
 import { List } from "./components/List.jsx";
-import { Navbar } from "./components/Navbar.jsx";
+import { Navbar } from "./components/TheNavbar.jsx";
 import { ShoppingCartOutlined } from "@ant-design/icons";
 import { ShopCartModal } from "./components/ShopCartModal.jsx";
 import { cart } from "../../api/cart.js";

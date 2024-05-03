@@ -1,6 +1,6 @@
 import styles from "../app.module.css";
-import Edit from "./Edit.jsx";
-import Count from "./Count.jsx";
+import Edit from "./Change.jsx";
+import Count from "./Counter.jsx";
 
 export function List({
   handleToggle,
