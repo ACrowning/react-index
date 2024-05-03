@@ -11,11 +11,12 @@ export function List({
   addToCart,
 }) {
   return sortedElements.map((item, index) => (
-    <div
-      key={item.id}
-      className={`${styles.itemsStyle} ${item.amount === 0 ? styles.zero : ""}`}
-    >
-      <div>
+    <div key={item.id}>
+      <div
+        className={`${styles.itemsStyle} ${
+          item.amount === 0 ? styles.zero : ""
+        }`}
+      >
         <div>
           <Edit
             item={item}
@@ -24,7 +25,11 @@ export function List({
           />
         </div>
 
-        <div className={styles.flexItem}>
+        <div>
+          <img
+            src="https://picsum.photos/200/300?random"
+            alt={item.title}
+          ></img>
           <Count
             item={item}
             handleAmountEdit={handleAmountEdit}

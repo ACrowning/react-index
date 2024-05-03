@@ -88,7 +88,9 @@ body {
 
 .itemsStyle {
   position: relative;
-  margin-right: 35px;
+  margin-right: 20px;
+  margin-bottom: 20px;
+  width: 200px;
   background-color: rgb(226, 241, 226);
   border: 1px solid rgb(195, 194, 194);
 }
