@@ -27,7 +27,7 @@ export function List({
 
         <div>
           <img
-            src="https://picsum.photos/200/300?random"
+            src="https://picsum.photos/300/300?random"
             alt={item.title}
           ></img>
           <Count
