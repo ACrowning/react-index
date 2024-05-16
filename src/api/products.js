@@ -2,14 +2,21 @@ import { apiInstance } from "./index.js";
 const productRoot = "products";
 
 export const products = {
-  getProducts: async (searchElement, sortByPrice) => {
+  getProducts: async (
+    searchElement,
+    sortByPrice,
+    currentPage,
+    currentLimit
+  ) => {
     try {
       const response = await apiInstance.post(`/${productRoot}`, {
         title: searchElement,
         sortByPrice,
+        page: currentPage,
+        limit: currentLimit,
       });
 
-      return { data: response.data.sortedElements, error: null };
+      return { data: response.data.data.currentPage, error: null };
     } catch (error) {
       return {
         data: null,

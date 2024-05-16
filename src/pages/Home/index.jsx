@@ -6,6 +6,7 @@ import { ShoppingCartOutlined } from "@ant-design/icons";
 import { ShopCartModal } from "./components/ShopCartModal.jsx";
 import { cart } from "../../api/cart.js";
 import { products } from "../../api/products.js";
+import { Pagination } from "antd";
 
 function Home() {
   const [elements, setElements] = useState([]);
@@ -14,20 +15,59 @@ function Home() {
   const [cartItems, setCartItems] = useState([]);
   const [sortByPrice, setSortByPrice] = useState("asc");
   const [modalOpen, setModalOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState();
+  const [currentLimit, setCurrentLimit] = useState();
+  const [totalPages, setTotalPages] = useState();
 
-  useEffect(() => {
+  // useEffect(() => {
+  //   (async () => {
+  //     const { data, error } = await products.getProducts(
+  //       searchElement,
+  //       sortByPrice,
+  //       currentPage,
+  //       currentLimit
+  //     );
+  //     if (error) {
+  //       setElements([]);
+  //     } else {
+  //       setCurrentLimit(currentLimit);
+  //       setCurrentPage(currentPage);
+  //       setTotalPages(data.total);
+  //       setElements(data);
+  //     }
+  //   })();
+  // }, [searchElement, sortByPrice]);
+
+  const fetchData = async () => {
     (async () => {
       const { data, error } = await products.getProducts(
         searchElement,
-        sortByPrice
+        sortByPrice,
+        currentPage,
+        currentLimit
       );
       if (error) {
         setElements([]);
       } else {
+        setCurrentLimit(currentLimit);
+        setCurrentPage(currentPage);
+        setTotalPages(data.total);
         setElements(data);
       }
     })();
-  }, [searchElement, sortByPrice]);
+  };
+
+  useEffect(() => {
+    fetchData(currentPage);
+  }, [currentPage]);
+
+  const handlePageChange = () => {
+    setCurrentPage(currentPage);
+  };
+
+  const onShowSizeChange = () => {
+    console.log(currentPage, totalPages);
+  };
 
   const handleDeleteItem = async (itemsId) => {
     const itemsDeleted = elements.filter((element) => element.id !== itemsId);
@@ -161,6 +201,23 @@ function Home() {
               handleAmountEdit={handleAmountEdit}
               addToCart={addToCart}
             />
+            <div>
+              <Pagination
+                showSizeChanger
+                onShowSizeChange={onShowSizeChange}
+                onChange={handlePageChange}
+                defaultCurrent={1}
+                total={20}
+              />
+              <br />
+              <Pagination
+                showSizeChanger
+                onShowSizeChange={onShowSizeChange}
+                defaultCurrent={1}
+                total={100}
+                disabled
+              />
+            </div>
           </div>
         </div>
       </div>
