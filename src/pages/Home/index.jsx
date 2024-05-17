@@ -6,6 +6,7 @@ import { ShoppingCartOutlined } from "@ant-design/icons";
 import { ShopCartModal } from "./components/ShopCartModal.jsx";
 import { cart } from "../../api/cart.js";
 import { products } from "../../api/products.js";
+import { Pagination } from "antd";
 
 function Home() {
   const [elements, setElements] = useState([]);
@@ -14,20 +15,38 @@ function Home() {
   const [cartItems, setCartItems] = useState([]);
   const [sortByPrice, setSortByPrice] = useState("asc");
   const [modalOpen, setModalOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
+
+  const fetchData = async (page, pageSize) => {
+    const { data, error } = await products.getProducts(
+      searchElement,
+      sortByPrice,
+      page,
+      pageSize
+    );
+    if (error) {
+      setElements([]);
+    } else {
+      setElements(data.currentPage);
+      setCurrentPage(page);
+      setTotalPages(data.total);
+    }
+  };
 
   useEffect(() => {
-    (async () => {
-      const { data, error } = await products.getProducts(
-        searchElement,
-        sortByPrice
-      );
-      if (error) {
-        setElements([]);
-      } else {
-        setElements(data);
-      }
-    })();
-  }, [searchElement, sortByPrice]);
+    fetchData(currentPage, pageSize);
+  }, [searchElement, sortByPrice, currentPage, pageSize]);
+
+  const handlePageChange = (page) => {
+    fetchData(page, pageSize);
+  };
+
+  const handleShowSizeChange = (current, size) => {
+    setPageSize(size);
+    fetchData(current, size);
+  };
 
   const handleDeleteItem = async (itemsId) => {
     const itemsDeleted = elements.filter((element) => element.id !== itemsId);
@@ -161,6 +180,17 @@ function Home() {
               handleAmountEdit={handleAmountEdit}
               addToCart={addToCart}
             />
+            <div className={styles.pag}>
+              <Pagination
+                showSizeChanger
+                pageSizeOptions={["2", "5", "10"]}
+                pageSize={pageSize}
+                onShowSizeChange={handleShowSizeChange}
+                onChange={handlePageChange}
+                defaultCurrent={1}
+                total={totalPages * pageSize}
+              />
+            </div>
           </div>
         </div>
       </div>
