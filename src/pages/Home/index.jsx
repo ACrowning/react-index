@@ -15,58 +15,37 @@ function Home() {
   const [cartItems, setCartItems] = useState([]);
   const [sortByPrice, setSortByPrice] = useState("asc");
   const [modalOpen, setModalOpen] = useState(false);
-  const [currentPage, setCurrentPage] = useState();
-  const [currentLimit, setCurrentLimit] = useState();
-  const [totalPages, setTotalPages] = useState();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalPages, setTotalPages] = useState(20);
 
-  // useEffect(() => {
-  //   (async () => {
-  //     const { data, error } = await products.getProducts(
-  //       searchElement,
-  //       sortByPrice,
-  //       currentPage,
-  //       currentLimit
-  //     );
-  //     if (error) {
-  //       setElements([]);
-  //     } else {
-  //       setCurrentLimit(currentLimit);
-  //       setCurrentPage(currentPage);
-  //       setTotalPages(data.total);
-  //       setElements(data);
-  //     }
-  //   })();
-  // }, [searchElement, sortByPrice]);
-
-  const fetchData = async () => {
-    (async () => {
-      const { data, error } = await products.getProducts(
-        searchElement,
-        sortByPrice,
-        currentPage,
-        currentLimit
-      );
-      if (error) {
-        setElements([]);
-      } else {
-        setCurrentLimit(currentLimit);
-        setCurrentPage(currentPage);
-        setTotalPages(data.total);
-        setElements(data);
-      }
-    })();
+  const fetchData = async (page, pageSize) => {
+    const { data, error } = await products.getProducts(
+      searchElement,
+      sortByPrice,
+      page,
+      pageSize
+    );
+    if (error) {
+      setElements([]);
+    } else {
+      setElements(data);
+      setCurrentPage(page);
+      setTotalPages(data.total);
+    }
   };
 
   useEffect(() => {
-    fetchData(currentPage);
-  }, [currentPage]);
+    fetchData(currentPage, pageSize);
+  }, [currentPage, pageSize]);
 
-  const handlePageChange = () => {
-    setCurrentPage(currentPage);
+  const handlePageChange = (page) => {
+    fetchData(page, pageSize);
   };
 
-  const onShowSizeChange = () => {
-    console.log(currentPage, totalPages);
+  const handleShowSizeChange = (current, size) => {
+    setPageSize(size);
+    fetchData(current, size);
   };
 
   const handleDeleteItem = async (itemsId) => {
@@ -204,18 +183,12 @@ function Home() {
             <div>
               <Pagination
                 showSizeChanger
-                onShowSizeChange={onShowSizeChange}
+                pageSizeOptions={["10", "20", "50"]}
+                pageSize={pageSize}
+                onShowSizeChange={handleShowSizeChange}
                 onChange={handlePageChange}
                 defaultCurrent={1}
                 total={20}
-              />
-              <br />
-              <Pagination
-                showSizeChanger
-                onShowSizeChange={onShowSizeChange}
-                defaultCurrent={1}
-                total={100}
-                disabled
               />
             </div>
           </div>
