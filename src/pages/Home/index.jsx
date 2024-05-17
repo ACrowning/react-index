@@ -19,7 +19,7 @@ function Home() {
   const [pageSize, setPageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
 
-  const fetchData = async ({ searchElement, sortByPrice, page, pageSize }) => {
+  const fetchData = async (page, pageSize) => {
     const { data, error } = await products.getProducts(
       searchElement,
       sortByPrice,
@@ -36,7 +36,7 @@ function Home() {
   };
 
   useEffect(() => {
-    fetchData({ searchElement, sortByPrice, currentPage, pageSize });
+    fetchData(currentPage, pageSize);
   }, [searchElement, sortByPrice, currentPage, pageSize]);
 
   const handlePageChange = (page) => {
