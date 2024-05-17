@@ -180,7 +180,7 @@ function Home() {
               handleAmountEdit={handleAmountEdit}
               addToCart={addToCart}
             />
-            <div>
+            <div className={styles.pag}>
               <Pagination
                 showSizeChanger
                 pageSizeOptions={["2", "5", "10"]}
