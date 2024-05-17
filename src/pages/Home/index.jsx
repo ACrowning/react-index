@@ -17,7 +17,7 @@ function Home() {
   const [modalOpen, setModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [totalPages, setTotalPages] = useState(20);
+  const [totalPages, setTotalPages] = useState(1);
 
   const fetchData = async (page, pageSize) => {
     const { data, error } = await products.getProducts(
@@ -29,7 +29,7 @@ function Home() {
     if (error) {
       setElements([]);
     } else {
-      setElements(data);
+      setElements(data.currentPage);
       setCurrentPage(page);
       setTotalPages(data.total);
     }
@@ -183,12 +183,12 @@ function Home() {
             <div>
               <Pagination
                 showSizeChanger
-                pageSizeOptions={["10", "20", "50"]}
+                pageSizeOptions={["2", "5", "10"]}
                 pageSize={pageSize}
                 onShowSizeChange={handleShowSizeChange}
                 onChange={handlePageChange}
                 defaultCurrent={1}
-                total={20}
+                total={totalPages * pageSize}
               />
             </div>
           </div>

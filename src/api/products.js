@@ -11,7 +11,7 @@ export const products = {
         limit: pageSize,
       });
 
-      return { data: response.data.data.currentPage, error: null };
+      return { data: response.data.data, error: null };
     } catch (error) {
       return {
         data: null,
