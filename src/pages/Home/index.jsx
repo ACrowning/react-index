@@ -43,15 +43,13 @@ function Home() {
 
   useEffect(() => {
     const sort = searchParams.get("sort");
-    // const current = searchParams.get("current");
-    // const size = searchParams.get("size");
+    const current = searchParams.get("page");
     setSortByPrice(sort);
-    // setPageSize(size);
-    // setCurrentPage(current);
+    setCurrentPage(current);
   }, [searchParams]);
 
   const handlePageChange = (page) => {
-    // setSearchParams({ current: page });
+    setSearchParams({ page: page, sort: sortByPrice });
     fetchData(page, pageSize);
   };
 

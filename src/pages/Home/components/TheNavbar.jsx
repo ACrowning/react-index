@@ -43,7 +43,6 @@ export function Navbar({
 
   const handleSort = (e) => {
     setSortByPrice(e.target.value);
-    setSearchParams({ sort: e.target.value });
   };
 
   return (
