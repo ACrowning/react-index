@@ -7,6 +7,7 @@ import { ShopCartModal } from "./components/ShopCartModal.jsx";
 import { cart } from "../../api/cart.js";
 import { products } from "../../api/products.js";
 import { Pagination } from "antd";
+import { useSearchParams } from "react-router-dom";
 
 function Home() {
   const [elements, setElements] = useState([]);
@@ -18,6 +19,7 @@ function Home() {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const fetchData = async (page, pageSize) => {
     const { data, error } = await products.getProducts(
@@ -39,7 +41,17 @@ function Home() {
     fetchData(currentPage, pageSize);
   }, [searchElement, sortByPrice, currentPage, pageSize]);
 
+  useEffect(() => {
+    const sort = searchParams.get("sort");
+    // const current = searchParams.get("current");
+    // const size = searchParams.get("size");
+    setSortByPrice(sort);
+    // setPageSize(size);
+    // setCurrentPage(current);
+  }, [searchParams]);
+
   const handlePageChange = (page) => {
+    // setSearchParams({ current: page });
     fetchData(page, pageSize);
   };
 
@@ -169,6 +181,7 @@ function Home() {
             setSearchElement={setSearchElement}
             sortByPrice={sortByPrice}
             setSortByPrice={setSortByPrice}
+            setSearchParams={setSearchParams}
           />
 
           <div className={styles.container}>

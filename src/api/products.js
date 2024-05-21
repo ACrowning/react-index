@@ -1,4 +1,5 @@
 import { apiInstance } from "./index.js";
+
 const productRoot = "products";
 
 export const products = {
