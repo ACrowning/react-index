@@ -49,12 +49,15 @@ function Home() {
   }, [searchParams]);
 
   const handlePageChange = (page) => {
+    setCurrentPage(page);
     setSearchParams({ page: page, sort: sortByPrice });
     fetchData(page, pageSize);
   };
 
   const handleShowSizeChange = (current, size) => {
     setPageSize(size);
+    setCurrentPage(1);
+    setSearchParams({ page: current, limit: size });
     fetchData(current, size);
   };
 
@@ -180,6 +183,9 @@ function Home() {
             sortByPrice={sortByPrice}
             setSortByPrice={setSortByPrice}
             setSearchParams={setSearchParams}
+            setCurrentPage={setCurrentPage}
+            pageSize={pageSize}
+            fetchData={fetchData}
           />
 
           <div className={styles.container}>

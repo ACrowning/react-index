@@ -11,6 +11,9 @@ export function Navbar({
   setSearchElement,
   sortByPrice,
   setSortByPrice,
+  setCurrentPage,
+  fetchData,
+  pageSize,
   setSearchParams,
 }) {
   const [inputTitle, setInputTitle] = useState("");
@@ -39,6 +42,13 @@ export function Navbar({
     setInputTitle("");
     setInputAmount("");
     setInputPrice("");
+  };
+
+  const handleSearch = (e) => {
+    setCurrentPage(1);
+    setSearchElement(e.target.value);
+    setSearchParams({ page: 1 });
+    fetchData(1, pageSize);
   };
 
   const handleSort = (e) => {
@@ -82,7 +92,7 @@ export function Navbar({
           type="text"
           placeholder="Find the title"
           value={searchElement}
-          onChange={(event) => setSearchElement(event.target.value)}
+          onChange={handleSearch}
         />
       </div>
       <div className={styles.select}>
