@@ -10,11 +10,7 @@ export function Navbar({
   searchElement,
   setSearchElement,
   sortByPrice,
-  setSortByPrice,
-  setCurrentPage,
-  fetchData,
-  pageSize,
-  setSearchParams,
+  handleSort,
 }) {
   const [inputTitle, setInputTitle] = useState("");
   const [inputAmount, setInputAmount] = useState("");
@@ -45,14 +41,7 @@ export function Navbar({
   };
 
   const handleSearch = (e) => {
-    setCurrentPage(1);
     setSearchElement(e.target.value);
-    setSearchParams({ page: 1 });
-    fetchData(1, pageSize);
-  };
-
-  const handleSort = (e) => {
-    setSortByPrice(e.target.value);
   };
 
   return (

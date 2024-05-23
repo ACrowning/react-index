@@ -32,32 +32,42 @@ function Home() {
       setElements([]);
     } else {
       setElements(data.currentPage);
-      setCurrentPage(page);
       setTotalPages(data.total);
     }
+    setCurrentPage(page);
   };
 
   useEffect(() => {
     fetchData(currentPage, pageSize);
-  }, [searchElement, sortByPrice, currentPage, pageSize]);
+  }, [searchParams, searchElement, sortByPrice, pageSize]);
 
   useEffect(() => {
     const sort = searchParams.get("sort");
     const current = searchParams.get("page");
-    setSortByPrice(sort);
-    setCurrentPage(current);
+    const size = parseInt(searchParams.get("size"), 10);
+    setSortByPrice(sort || "asc");
+    setCurrentPage(current || 1);
+    setPageSize(size || 10);
   }, [searchParams]);
 
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-    setSearchParams({ page: page, sort: sortByPrice });
-    fetchData(page, pageSize);
+  const handleSort = (e) => {
+    setSortByPrice(e.target.value);
+    setSearchParams({
+      page: currentPage,
+      size: pageSize,
+      sort: e.target.value,
+    });
+  };
+
+  const handlePageChange = (current, size) => {
+    setSearchParams({ page: current, size: size, sort: sortByPrice });
+    setCurrentPage(current);
+    fetchData(current, size);
   };
 
   const handleShowSizeChange = (current, size) => {
+    setSearchParams({ page: current, size: size, sort: sortByPrice });
     setPageSize(size);
-    setCurrentPage(1);
-    setSearchParams({ page: current, limit: size });
     fetchData(current, size);
   };
 
@@ -186,6 +196,7 @@ function Home() {
             setCurrentPage={setCurrentPage}
             pageSize={pageSize}
             fetchData={fetchData}
+            handleSort={handleSort}
           />
 
           <div className={styles.container}>
@@ -203,8 +214,8 @@ function Home() {
                 pageSizeOptions={["2", "5", "10"]}
                 pageSize={pageSize}
                 onShowSizeChange={handleShowSizeChange}
+                current={currentPage}
                 onChange={handlePageChange}
-                defaultCurrent={1}
                 total={totalPages * pageSize}
               />
             </div>
