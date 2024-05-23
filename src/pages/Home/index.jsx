@@ -17,7 +17,7 @@ function Home() {
   const [sortByPrice, setSortByPrice] = useState("asc");
   const [modalOpen, setModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -43,8 +43,8 @@ function Home() {
 
   useEffect(() => {
     const sort = searchParams.get("sort");
-    const current = searchParams.get("page");
-    const size = parseInt(searchParams.get("size"), 10);
+    const current = parseInt(searchParams.get("page"));
+    const size = parseInt(searchParams.get("size"));
     setSortByPrice(sort || "asc");
     setCurrentPage(current || 1);
     setPageSize(size || 10);
