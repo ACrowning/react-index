@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Button } from "antd";
 import { Input } from "antd";
 import styles from "../app.module.css";
-import { PlusSquareOutlined } from "@ant-design/icons";
 
 export default function Count({
   item,
@@ -63,7 +62,7 @@ export default function Count({
         </div>
         <div>
           <Button
-            type="default"
+            type="primary"
             disabled={inputAmount >= item.amount && !isNaN(inputAmount)}
             onClick={() => plus()}
             className={styles.buttonSize}
