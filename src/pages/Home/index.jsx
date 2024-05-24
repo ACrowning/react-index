@@ -8,22 +8,23 @@ import { cart } from "../../api/cart.js";
 import { products } from "../../api/products.js";
 import { Pagination } from "antd";
 import { useSearchParams } from "react-router-dom";
+import {
+  DEFAULT_PAGE,
+  DEFAULT_LIMIT,
+  DEFAULT_SORT,
+} from "../../constants/index.js";
 
 function Home() {
   const [elements, setElements] = useState([]);
   const [searchElement, setSearchElement] = useState("");
   const [sumCard, setSumCard] = useState(0);
   const [cartItems, setCartItems] = useState([]);
-  const [sortByPrice, setSortByPrice] = useState("asc");
+  const [sortByPrice, setSortByPrice] = useState(DEFAULT_SORT);
   const [modalOpen, setModalOpen] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(1);
+  const [currentPage, setCurrentPage] = useState(DEFAULT_PAGE);
+  const [pageSize, setPageSize] = useState(DEFAULT_LIMIT);
   const [totalPages, setTotalPages] = useState(1);
   const [searchParams, setSearchParams] = useSearchParams();
-
-  const DEFAULT_PAGE = 1;
-  const DEFAULT_LIMIT = 10;
-  const DEFAULT_SORT = "asc";
 
   const fetchProducts = async (page, pageSize) => {
     const { data, error } = await products.getProducts(
@@ -42,11 +43,11 @@ function Home() {
 
   useEffect(() => {
     fetchProducts(currentPage, pageSize);
-  }, [searchParams, searchElement, sortByPrice, pageSize]);
+  }, [searchElement, sortByPrice, currentPage, pageSize]);
 
   useEffect(() => {
     const sort = searchParams.get("sort");
-    const current = parseInt(searchParams.get("page"));
+    const current = searchParams.get("page");
     const size = parseInt(searchParams.get("size"));
     setSortByPrice(sort || DEFAULT_SORT);
     setCurrentPage(current || DEFAULT_PAGE);
@@ -56,7 +57,7 @@ function Home() {
   const handleSort = (e) => {
     setSortByPrice(e.target.value);
     setSearchParams({
-      page: currentPage,
+      page: DEFAULT_PAGE,
       size: pageSize,
       sort: e.target.value,
     });
@@ -73,13 +74,9 @@ function Home() {
 
   const handlePageChange = (current, size) => {
     setSearchParams({ page: current, size: size, sort: sortByPrice });
-    setCurrentPage(current);
   };
 
-  const handleShowSizeChange = (current, size) => {
-    setSearchParams({ page: current, size: size, sort: sortByPrice });
-    setPageSize(size);
-  };
+  const handleShowSizeChange = (current, size) => {};
 
   const handleDeleteItem = async (itemsId) => {
     const itemsDeleted = elements.filter((element) => element.id !== itemsId);
@@ -220,7 +217,7 @@ function Home() {
             <div className={styles.pag}>
               <Pagination
                 showSizeChanger
-                pageSizeOptions={["2", "5", "10"]}
+                pageSizeOptions={[2, 5, 10]}
                 pageSize={pageSize}
                 onShowSizeChange={handleShowSizeChange}
                 current={currentPage}
