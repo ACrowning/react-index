@@ -21,7 +21,11 @@ function Home() {
   const [totalPages, setTotalPages] = useState(1);
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const fetchData = async (page, pageSize) => {
+  const DEFAULT_PAGE = 1;
+  const DEFAULT_LIMIT = 10;
+  const DEFAULT_SORT = "asc";
+
+  const fetchProducts = async (page, pageSize) => {
     const { data, error } = await products.getProducts(
       searchElement,
       sortByPrice,
@@ -34,20 +38,19 @@ function Home() {
       setElements(data.currentPage);
       setTotalPages(data.total);
     }
-    setCurrentPage(page);
   };
 
   useEffect(() => {
-    fetchData(currentPage, pageSize);
+    fetchProducts(currentPage, pageSize);
   }, [searchParams, searchElement, sortByPrice, pageSize]);
 
   useEffect(() => {
     const sort = searchParams.get("sort");
     const current = parseInt(searchParams.get("page"));
     const size = parseInt(searchParams.get("size"));
-    setSortByPrice(sort || "asc");
-    setCurrentPage(current || 1);
-    setPageSize(size || 10);
+    setSortByPrice(sort || DEFAULT_SORT);
+    setCurrentPage(current || DEFAULT_PAGE);
+    setPageSize(size || DEFAULT_LIMIT);
   }, [searchParams]);
 
   const handleSort = (e) => {
@@ -59,16 +62,23 @@ function Home() {
     });
   };
 
+  const handleSearch = (e) => {
+    setSearchElement(e.target.value);
+    setSearchParams({
+      page: DEFAULT_PAGE,
+      size: DEFAULT_LIMIT,
+      sort: DEFAULT_SORT,
+    });
+  };
+
   const handlePageChange = (current, size) => {
     setSearchParams({ page: current, size: size, sort: sortByPrice });
     setCurrentPage(current);
-    fetchData(current, size);
   };
 
   const handleShowSizeChange = (current, size) => {
     setSearchParams({ page: current, size: size, sort: sortByPrice });
     setPageSize(size);
-    fetchData(current, size);
   };
 
   const handleDeleteItem = async (itemsId) => {
@@ -194,11 +204,8 @@ function Home() {
             setSearchElement={setSearchElement}
             sortByPrice={sortByPrice}
             setSortByPrice={setSortByPrice}
-            setSearchParams={setSearchParams}
-            setCurrentPage={setCurrentPage}
-            pageSize={pageSize}
-            fetchData={fetchData}
             handleSort={handleSort}
+            handleSearch={handleSearch}
           />
 
           <div className={styles.container}>

@@ -11,6 +11,7 @@ export function Navbar({
   setSearchElement,
   sortByPrice,
   handleSort,
+  handleSearch,
 }) {
   const [inputTitle, setInputTitle] = useState("");
   const [inputAmount, setInputAmount] = useState("");
@@ -38,10 +39,6 @@ export function Navbar({
     setInputTitle("");
     setInputAmount("");
     setInputPrice("");
-  };
-
-  const handleSearch = (e) => {
-    setSearchElement(e.target.value);
   };
 
   return (
