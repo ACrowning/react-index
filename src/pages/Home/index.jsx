@@ -12,6 +12,7 @@ import {
   DEFAULT_PAGE,
   DEFAULT_LIMIT,
   DEFAULT_SORT,
+  DEFAULT_SIZE,
 } from "../../constants/index.js";
 
 function Home() {
@@ -73,10 +74,9 @@ function Home() {
   };
 
   const handlePageChange = (current, size) => {
-    setSearchParams({ page: current, size: size, sort: sortByPrice });
+    const page = size !== pageSize ? DEFAULT_PAGE : current;
+    setSearchParams({ page: page, size: size, sort: sortByPrice });
   };
-
-  const handleShowSizeChange = (current, size) => {};
 
   const handleDeleteItem = async (itemsId) => {
     const itemsDeleted = elements.filter((element) => element.id !== itemsId);
@@ -217,9 +217,8 @@ function Home() {
             <div className={styles.pag}>
               <Pagination
                 showSizeChanger
-                pageSizeOptions={[2, 5, 10]}
+                pageSizeOptions={DEFAULT_SIZE}
                 pageSize={pageSize}
-                onShowSizeChange={handleShowSizeChange}
                 current={currentPage}
                 onChange={handlePageChange}
                 total={totalPages * pageSize}
