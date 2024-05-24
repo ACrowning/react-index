@@ -1,25 +1,33 @@
 import React, { useState, useEffect } from "react";
 import styles from "../Home/app.module.css";
 import { List } from "./components/List.jsx";
-import { Navbar } from "./components/TheNavbar.jsx";
+import { Navbar } from "./components/Navbar.jsx";
 import { ShoppingCartOutlined } from "@ant-design/icons";
 import { ShopCartModal } from "./components/ShopCartModal.jsx";
 import { cart } from "../../api/cart.js";
 import { products } from "../../api/products.js";
 import { Pagination } from "antd";
+import { useSearchParams } from "react-router-dom";
+import {
+  DEFAULT_PAGE,
+  DEFAULT_LIMIT,
+  DEFAULT_SORT,
+  DEFAULT_SIZE,
+} from "../../constants/index.js";
 
 function Home() {
   const [elements, setElements] = useState([]);
   const [searchElement, setSearchElement] = useState("");
   const [sumCard, setSumCard] = useState(0);
   const [cartItems, setCartItems] = useState([]);
-  const [sortByPrice, setSortByPrice] = useState("asc");
+  const [sortByPrice, setSortByPrice] = useState(DEFAULT_SORT);
   const [modalOpen, setModalOpen] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [currentPage, setCurrentPage] = useState(DEFAULT_PAGE);
+  const [pageSize, setPageSize] = useState(DEFAULT_LIMIT);
   const [totalPages, setTotalPages] = useState(1);
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const fetchData = async (page, pageSize) => {
+  const fetchProducts = async (page, pageSize) => {
     const { data, error } = await products.getProducts(
       searchElement,
       sortByPrice,
@@ -30,22 +38,44 @@ function Home() {
       setElements([]);
     } else {
       setElements(data.currentPage);
-      setCurrentPage(page);
       setTotalPages(data.total);
     }
   };
 
   useEffect(() => {
-    fetchData(currentPage, pageSize);
+    fetchProducts(currentPage, pageSize);
   }, [searchElement, sortByPrice, currentPage, pageSize]);
 
-  const handlePageChange = (page) => {
-    fetchData(page, pageSize);
+  useEffect(() => {
+    const sort = searchParams.get("sort");
+    const current = searchParams.get("page");
+    const size = parseInt(searchParams.get("size"));
+    setSortByPrice(sort || DEFAULT_SORT);
+    setCurrentPage(current || DEFAULT_PAGE);
+    setPageSize(size || DEFAULT_LIMIT);
+  }, [searchParams]);
+
+  const handleSort = (e) => {
+    setSortByPrice(e.target.value);
+    setSearchParams({
+      page: DEFAULT_PAGE,
+      size: pageSize,
+      sort: e.target.value,
+    });
   };
 
-  const handleShowSizeChange = (current, size) => {
-    setPageSize(size);
-    fetchData(current, size);
+  const handleSearch = (e) => {
+    setSearchElement(e.target.value);
+    setSearchParams({
+      page: DEFAULT_PAGE,
+      size: DEFAULT_LIMIT,
+      sort: DEFAULT_SORT,
+    });
+  };
+
+  const handlePageChange = (current, size) => {
+    const page = size !== pageSize ? DEFAULT_PAGE : current;
+    setSearchParams({ page: page, size: size, sort: sortByPrice });
   };
 
   const handleDeleteItem = async (itemsId) => {
@@ -152,14 +182,16 @@ function Home() {
               onClick={handleShopCardClick}
             />
           </header>
-          <ShopCartModal
-            modalOpen={modalOpen}
-            setModalOpen={setModalOpen}
-            cartItems={cartItems}
-            setCartItems={setCartItems}
-            elements={elements}
-            setElements={setElements}
-          />
+          <div>
+            <ShopCartModal
+              modalOpen={modalOpen}
+              setModalOpen={setModalOpen}
+              cartItems={cartItems}
+              setCartItems={setCartItems}
+              elements={elements}
+              setElements={setElements}
+            />
+          </div>
         </div>
         <div className={styles.containerStyle}>
           <Navbar
@@ -169,6 +201,8 @@ function Home() {
             setSearchElement={setSearchElement}
             sortByPrice={sortByPrice}
             setSortByPrice={setSortByPrice}
+            handleSort={handleSort}
+            handleSearch={handleSearch}
           />
 
           <div className={styles.container}>
@@ -183,11 +217,10 @@ function Home() {
             <div className={styles.pag}>
               <Pagination
                 showSizeChanger
-                pageSizeOptions={["2", "5", "10"]}
+                pageSizeOptions={DEFAULT_SIZE}
                 pageSize={pageSize}
-                onShowSizeChange={handleShowSizeChange}
+                current={currentPage}
                 onChange={handlePageChange}
-                defaultCurrent={1}
                 total={totalPages * pageSize}
               />
             </div>
