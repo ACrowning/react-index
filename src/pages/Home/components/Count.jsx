@@ -6,7 +6,6 @@ import styles from "../app.module.css";
 export default function Count({
   item,
   handleAmountEdit,
-
   addToCart,
   handleDeleteItem,
 }) {
