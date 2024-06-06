@@ -2,6 +2,7 @@ import { useParams } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import styles from "../Item/item.module.css";
 import { products } from "../../api/products.js";
+import { comments } from "../../api/comments.js";
 import Comment from "./components/Comment.jsx";
 import { Form, Input, Button } from "antd";
 
@@ -10,25 +11,31 @@ export default function ItemPage() {
   const [element, setElement] = useState();
   const [inputComment, setInputComment] = useState("");
 
-  useEffect(() => {
-    (async () => {
-      const { data, error } = await products.getProductById(id);
+  const fetchProduct = async () => {
+    const { data, error } = await products.getProductById(id);
+    if (error) {
+      setElement([]);
+    } else {
+      setElement(data.data);
+    }
+  };
 
-      if (error) {
-        setElement([]);
-      } else {
-        setElement(data.data);
-      }
-    })();
+  useEffect(() => {
+    fetchProduct();
   }, [id]);
+
   if (!element) return <div>Loading...</div>;
 
   const handleAddComment = async () => {
+    if (!inputComment.trim()) {
+      alert("Comment cannot be empty");
+      return;
+    }
     const newComment = {
       productId: id,
       text: inputComment,
     };
-    const { data, error } = await products.addComment(newComment);
+    const { data, error } = await comments.addComment(newComment);
 
     if (error) {
       setElement([]);
@@ -38,7 +45,12 @@ export default function ItemPage() {
         comments: [...prevProduct.comments, data.data],
       }));
     }
+    fetchProduct();
     setInputComment("");
+  };
+
+  const refreshComments = () => {
+    fetchProduct();
   };
 
   return (
@@ -64,7 +76,12 @@ export default function ItemPage() {
       {element.comments.length > 0 ? (
         <ul>
           {element.comments.map((comment) => (
-            <Comment key={comment.id} comment={comment} />
+            <Comment
+              key={comment.id}
+              comment={comment}
+              productId={id}
+              refreshComments={refreshComments}
+            />
           ))}
         </ul>
       ) : (

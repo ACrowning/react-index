@@ -58,21 +58,6 @@ export const products = {
     }
   },
 
-  addComment: async (newComment) => {
-    try {
-      const response = await apiInstance.post(
-        `/${productRoot}/comment`,
-        newComment
-      );
-      return { data: response.data, error: null };
-    } catch (error) {
-      return {
-        data: null,
-        error: error.response.data.message || "Network response was not ok",
-      };
-    }
-  },
-
   editTitle: async (productId, newText) => {
     try {
       const response = await apiInstance.put(`/${productRoot}/${productId}`, {
