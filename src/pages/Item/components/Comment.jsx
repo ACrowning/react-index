@@ -8,6 +8,7 @@ const Comment = ({ comment, productId, refreshComments }) => {
   const [isReplying, setIsReplying] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(comment.text);
+  const [showReplies, setShowReplies] = useState(false);
 
   const handleReply = async () => {
     if (!replyText.trim()) {
@@ -51,6 +52,18 @@ const Comment = ({ comment, productId, refreshComments }) => {
     if (!error) {
       refreshComments();
     }
+  };
+
+  const handleToggleReplies = () => {
+    setShowReplies(!showReplies);
+  };
+
+  const countReplies = (comment) => {
+    let count = comment.comments.length;
+    for (let reply of comment.comments) {
+      count += countReplies(reply);
+    }
+    return count;
   };
 
   return (
@@ -107,16 +120,23 @@ const Comment = ({ comment, productId, refreshComments }) => {
       )}
 
       {comment.comments && comment.comments.length > 0 && (
-        <ul>
-          {comment.comments.map((subComment) => (
-            <Comment
-              key={subComment.id}
-              comment={subComment}
-              productId={productId}
-              refreshComments={refreshComments}
-            />
-          ))}
-        </ul>
+        <>
+          <Button type="link" onClick={handleToggleReplies}>
+            {showReplies ? "Hide" : `Show (${countReplies(comment)})`}
+          </Button>
+          {showReplies && (
+            <ul>
+              {comment.comments.map((subComment) => (
+                <Comment
+                  key={subComment.id}
+                  comment={subComment}
+                  productId={productId}
+                  refreshComments={refreshComments}
+                />
+              ))}
+            </ul>
+          )}
+        </>
       )}
     </li>
   );
