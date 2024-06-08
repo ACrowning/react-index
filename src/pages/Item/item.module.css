@@ -1,0 +1,21 @@
+body {
+  background-color: rgb(226, 241, 226);
+}
+
+p {
+  font-size: medium;
+}
+
+.comment {
+  margin-top: 60px;
+}
+
+.buttons {
+  margin-bottom: 20px;
+  margin-left: 85px;
+  background-color: rgb(7, 85, 7);
+}
+
+.date {
+  font-size: smaller;
+}

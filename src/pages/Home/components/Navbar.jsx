@@ -8,7 +8,6 @@ export function Navbar({
   elements,
   setElements,
   searchElement,
-  setSearchElement,
   sortByPrice,
   handleSort,
   handleSearch,

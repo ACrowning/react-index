@@ -57,6 +57,7 @@ export const products = {
       };
     }
   },
+
   editTitle: async (productId, newText) => {
     try {
       const response = await apiInstance.put(`/${productRoot}/${productId}`, {
