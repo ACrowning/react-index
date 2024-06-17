@@ -2,11 +2,12 @@ import React, { useState, useEffect } from "react";
 import styles from "../Home/app.module.css";
 import { List } from "./components/List.jsx";
 import { Navbar } from "./components/Navbar.jsx";
-import { ShoppingCartOutlined } from "@ant-design/icons";
+import { ShoppingCartOutlined, PlusOutlined } from "@ant-design/icons";
 import { ShopCartModal } from "./components/ShopCartModal.jsx";
 import { cart } from "../../api/cart.js";
 import { products } from "../../api/products.js";
 import { Pagination } from "antd";
+import { useNavigate } from "react-router-dom";
 import { useSearchParams } from "react-router-dom";
 import {
   DEFAULT_PAGE,
@@ -26,6 +27,7 @@ function Home() {
   const [pageSize, setPageSize] = useState(DEFAULT_LIMIT);
   const [totalPages, setTotalPages] = useState(1);
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   const fetchProducts = async (page, pageSize) => {
     const { data, error } = await products.getProducts(
@@ -171,6 +173,10 @@ function Home() {
     setModalOpen(true);
   };
 
+  const goToForm = () => {
+    navigate("/form");
+  };
+
   return (
     <>
       <div>
@@ -181,6 +187,11 @@ function Home() {
               className={styles.iconCart}
               onClick={handleShopCardClick}
             />
+
+            <PlusOutlined
+              className={styles.iconForm}
+              onClick={goToForm}
+            ></PlusOutlined>
           </header>
           <div>
             <ShopCartModal

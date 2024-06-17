@@ -32,6 +32,7 @@ export const products = {
       };
     }
   },
+
   deleteProduct: async (itemsId) => {
     try {
       const response = await apiInstance.delete(`/${productRoot}/${itemsId}`);
@@ -43,6 +44,7 @@ export const products = {
       };
     }
   },
+
   addProduct: async (newItem) => {
     try {
       const response = await apiInstance.post(
@@ -71,6 +73,7 @@ export const products = {
       };
     }
   },
+
   changeAmount: async (productId, newCount) => {
     try {
       const response = await apiInstance.put(

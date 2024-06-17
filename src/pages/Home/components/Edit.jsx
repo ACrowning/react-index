@@ -50,6 +50,7 @@ export default function Edit({ item, onItemClick, handleToggle }) {
           <Link to={`/item/${item.id}`} className={styles.link}>
             {item.title}
           </Link>
+
           <EditOutlined className={styles.iconEdit} />
         </div>
       )}
@@ -58,6 +59,8 @@ export default function Edit({ item, onItemClick, handleToggle }) {
         className={isFavorite ? styles.star : styles.starDefault}
         onClick={handleIsFavorite}
       ></StarOutlined>
+
+      <img className={styles.img} src={item.image} alt={item.title}></img>
     </div>
   );
 }
