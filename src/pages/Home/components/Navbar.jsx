@@ -28,11 +28,11 @@ export function Navbar({
     } else {
       const { data, error } = await products.addProduct(newItem);
 
-      if (error) {
-        setElements([]);
-      } else {
-        setElements([...elements, data.data]);
-      }
+      //   if (error) {
+      //     setElements([]);
+      //   } else {
+      //     setElements([...elements, data.data]);
+      //   }
     }
 
     setInputTitle("");

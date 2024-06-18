@@ -31,6 +31,10 @@ export default function Edit({ item, onItemClick, handleToggle }) {
     }
   };
 
+  const imageUrl = item.image
+    ? `http://localhost:4000/static/${item.image}`
+    : "https://picsum.photos/300/300?random";
+
   return (
     <div>
       {isEditing ? (
@@ -60,7 +64,7 @@ export default function Edit({ item, onItemClick, handleToggle }) {
         onClick={handleIsFavorite}
       ></StarOutlined>
 
-      <img className={styles.img} src={item.image} alt={item.title}></img>
+      <img className={styles.img} src={imageUrl} alt={item.title}></img>
     </div>
   );
 }

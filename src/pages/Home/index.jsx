@@ -174,7 +174,7 @@ function Home() {
   };
 
   const goToForm = () => {
-    navigate("/form");
+    navigate("/new_product");
   };
 
   return (

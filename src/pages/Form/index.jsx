@@ -1,9 +1,12 @@
 import { Formik, Form, Field, ErrorMessage } from "formik";
-import * as Yup from "yup";
 import styles from "../Form/form.module.css";
 import { products } from "../../api/products.js";
+import schema from "../Form/schema.js";
+import { useNavigate } from "react-router-dom";
 
 const ProductForm = () => {
+  const navigate = useNavigate();
+
   const initialValues = {
     title: "",
     amount: "",
@@ -12,24 +15,6 @@ const ProductForm = () => {
     image: null,
     albumPhotos: [],
   };
-
-  const validationSchema = Yup.object({
-    title: Yup.string().required("Title is required"),
-    amount: Yup.number()
-      .required("Amount is required")
-      .positive("Amount must be positive"),
-    price: Yup.number().positive("Price must be positive"),
-    image: Yup.mixed()
-      .required("Main image is required")
-      .test("fileFormat", "Unsupported Format", (value) => {
-        if (value) {
-          return ["image/jpg", "image/jpeg", "image/png", "image/gif"].includes(
-            value.type
-          );
-        }
-        return true;
-      }),
-  });
 
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     const formData = new FormData();
@@ -50,7 +35,7 @@ const ProductForm = () => {
 
     const { data, error } = await products.addProduct(formData);
     if (data) {
-      alert("Product created successfully!");
+      navigate("/");
       resetForm();
     } else {
       alert("Failed to create product: " + error);
@@ -64,7 +49,7 @@ const ProductForm = () => {
       <h1>Upload Product</h1>
       <Formik
         initialValues={initialValues}
-        validationSchema={validationSchema}
+        validationSchema={schema}
         onSubmit={handleSubmit}
       >
         {({ setFieldValue, isSubmitting }) => (
@@ -72,17 +57,29 @@ const ProductForm = () => {
             <div className={styles.formStyle}>
               <label htmlFor="title">Title:</label>
               <Field type="text" id="title" name="title" />
-              <ErrorMessage name="title" component="div" />
+              <ErrorMessage
+                className={styles.error}
+                name="title"
+                component="div"
+              />
             </div>
             <div className={styles.formStyle}>
               <label htmlFor="amount">Amount:</label>
               <Field type="number" id="amount" name="amount" />
-              <ErrorMessage name="amount" component="div" />
+              <ErrorMessage
+                className={styles.error}
+                name="amount"
+                component="div"
+              />
             </div>
             <div className={styles.formStyle}>
               <label htmlFor="price">Price:</label>
               <Field type="number" step="0.01" id="price" name="price" />
-              <ErrorMessage name="price" component="div" />
+              <ErrorMessage
+                className={styles.error}
+                name="price"
+                component="div"
+              />
             </div>
             <div className={styles.formStyle}>
               <label htmlFor="favorite">Favorite:</label>
@@ -99,7 +96,11 @@ const ProductForm = () => {
                   setFieldValue("image", event.currentTarget.files[0]);
                 }}
               />
-              <ErrorMessage name="image" component="div" />
+              <ErrorMessage
+                className={styles.error}
+                name="image"
+                component="div"
+              />
             </div>
             <div className={styles.formStyle}>
               <label htmlFor="albumPhotos">Album Photos:</label>
