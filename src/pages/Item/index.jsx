@@ -62,8 +62,12 @@ export default function ItemPage() {
     <div>
       <h2>{element.title}</h2>
       <p>You selected item: {id}</p>
-      <img className={styles.img} src={imageUrl} alt={element.title}></img>
-      <Album albumPhotos={element.albumPhotos} />
+      <div className={styles.imgContainer}>
+        <img className={styles.img} src={imageUrl} alt={element.title}></img>
+      </div>
+      <div className={styles.albumContainer}>
+        <Album albumPhotos={element.albumPhotos} />
+      </div>
 
       <p>Amount: {element.amount}</p>
       <h2 className={styles.comment}>Add a Comment</h2>

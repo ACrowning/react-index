@@ -20,6 +20,12 @@ p {
   font-size: smaller;
 }
 
+.imgContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .img {
   margin-top: 15px;
   width: 400px;
@@ -27,14 +33,15 @@ p {
 }
 
 .carouselContainer {
-  width: 100%;
+  width: 300px;
+  height: 300px;
   max-width: 600px;
-  margin: 0 auto;
+  margin: 20px auto;
 }
 
 .carouselImage {
   width: 100%;
-  height: auto;
+  height: 300px;
 }
 
 .noPhotos {
