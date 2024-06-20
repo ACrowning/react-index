@@ -1,10 +1,14 @@
+import React, { useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import styles from "../Form/form.module.css";
 import { products } from "../../api/products.js";
 import schema from "../Form/schema.js";
 import { useNavigate } from "react-router-dom";
+import { Alert } from "antd";
 
 const ProductForm = () => {
+  const [errorMessage, setErrorMessage] = useState("");
+  const [message, setMessage] = useState({ type: "", content: "" });
   const navigate = useNavigate();
 
   const initialValues = {
@@ -35,10 +39,13 @@ const ProductForm = () => {
 
     const { data, error } = await products.addProduct(formData);
     if (data) {
-      navigate("/");
       resetForm();
+      setMessage({ type: "success", content: "Product added successfully!" });
+      setTimeout(() => {
+        navigate("/");
+      }, 2500);
     } else {
-      alert("Failed to create product: " + error);
+      setErrorMessage("Failed to create product: " + error);
     }
 
     setSubmitting(false);
@@ -46,7 +53,25 @@ const ProductForm = () => {
 
   return (
     <div>
-      <h1>Upload Product</h1>
+      <h1>Add New Product</h1>
+      <div className={styles.alert}>
+        {message.content && (
+          <Alert
+            message={message.content}
+            type={message.type}
+            showIcon
+            className={styles.alert}
+          />
+        )}
+        {errorMessage && (
+          <Alert
+            message={errorMessage}
+            type="error"
+            showIcon
+            className={styles.alert}
+          />
+        )}
+      </div>
       <Formik
         initialValues={initialValues}
         validationSchema={schema}

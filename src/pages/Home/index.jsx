@@ -206,8 +206,6 @@ function Home() {
         </div>
         <div className={styles.containerStyle}>
           <Navbar
-            elements={elements}
-            setElements={setElements}
             searchElement={searchElement}
             setSearchElement={setSearchElement}
             sortByPrice={sortByPrice}

@@ -4,6 +4,7 @@ import styles from "../Item/item.module.css";
 import { products } from "../../api/products.js";
 import { comments } from "../../api/comments.js";
 import Comment from "./components/Comment.jsx";
+import Album from "./components/Album.jsx";
 import { Form, Input, Button } from "antd";
 
 export default function ItemPage() {
@@ -53,10 +54,17 @@ export default function ItemPage() {
     fetchProduct();
   };
 
+  const imageUrl = element.image
+    ? `http://localhost:4000/static/${element.image}`
+    : "https://picsum.photos/300/300?random";
+
   return (
     <div>
       <h2>{element.title}</h2>
       <p>You selected item: {id}</p>
+      <img className={styles.img} src={imageUrl} alt={element.title}></img>
+      <Album albumPhotos={element.albumPhotos} />
+
       <p>Amount: {element.amount}</p>
       <h2 className={styles.comment}>Add a Comment</h2>
       <Form onFinish={handleAddComment}>
