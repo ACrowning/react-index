@@ -31,6 +31,10 @@ export default function Edit({ item, onItemClick, handleToggle }) {
     }
   };
 
+  const imageUrl = item.image
+    ? `http://localhost:4000/static/${item.image}`
+    : "https://picsum.photos/300/300?random";
+
   return (
     <div>
       {isEditing ? (
@@ -50,6 +54,7 @@ export default function Edit({ item, onItemClick, handleToggle }) {
           <Link to={`/item/${item.id}`} className={styles.link}>
             {item.title}
           </Link>
+
           <EditOutlined className={styles.iconEdit} />
         </div>
       )}
@@ -58,6 +63,8 @@ export default function Edit({ item, onItemClick, handleToggle }) {
         className={isFavorite ? styles.star : styles.starDefault}
         onClick={handleIsFavorite}
       ></StarOutlined>
+
+      <img className={styles.img} src={imageUrl} alt={item.title}></img>
     </div>
   );
 }
