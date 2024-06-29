@@ -6,7 +6,7 @@ export function Navbar({
   sortByPrice,
   handleSort,
   handleSearch,
-}) {
+}: any) {
   return (
     <div className={styles.navbar}>
       <div>

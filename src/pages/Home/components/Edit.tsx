@@ -6,9 +6,9 @@ import styles from "../app.module.css";
 import { EditOutlined } from "@ant-design/icons";
 import { StarOutlined } from "@ant-design/icons";
 
-export default function Edit({ item, onItemClick, handleToggle }) {
+export default function Edit({ item, onItemClick, handleToggle }: any) {
   const [isEditing, setIsEditing] = useState(false);
-  const [editText, setEditText] = useState(item.title);
+  const [editText, setEditText] = useState<any>(item.title);
   const [isFavorite, setIsFavorite] = useState(false);
 
   const handleIsFavorite = () => {
@@ -25,7 +25,7 @@ export default function Edit({ item, onItemClick, handleToggle }) {
     onItemClick(item.id, editText);
   };
 
-  const handleInputKey = (event) => {
+  const handleInputKey = (event: any) => {
     if (event.key === "Enter") {
       handleInputEdit();
     }
@@ -47,7 +47,7 @@ export default function Edit({ item, onItemClick, handleToggle }) {
             onKeyDown={handleInputKey}
             autoFocus
           />
-          <Button onClick={() => handleInputEdit(item.title)}>Save</Button>
+          <Button onClick={() => handleInputEdit()}>Save</Button>
         </div>
       ) : (
         <div className={styles.title} onClick={handleItemClick}>

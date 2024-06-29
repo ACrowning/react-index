@@ -4,8 +4,17 @@ import styles from "../app.module.css";
 import { PlusSquareOutlined } from "@ant-design/icons";
 import { MinusSquareOutlined } from "@ant-design/icons";
 import { Button } from "antd";
-import { cart } from "../../../api/cart.js";
-import { products } from "../../../api/products.js";
+import { cart } from "../../../api/cart";
+import { products } from "../../../api/products";
+
+interface Props {
+  modalOpen: any;
+  setModalOpen: any;
+  cartItems: any;
+  setCartItems: any;
+  elements: any;
+  setElements: any;
+}
 
 export function ShopCartModal({
   modalOpen,
@@ -14,7 +23,7 @@ export function ShopCartModal({
   setCartItems,
   elements,
   setElements,
-}) {
+}: Props) {
   useEffect(() => {
     (async () => {
       const { data, error } = await cart.getCart();
@@ -26,10 +35,10 @@ export function ShopCartModal({
     })();
   }, [setCartItems]);
 
-  const handleShopCardRemove = async (itemsId) => {
-    const itemsDeleted = cartItems.filter((item) => item.id !== itemsId);
-    const removedItem = cartItems.find((item) => item.id === itemsId);
-    const elementToUpdate = elements.find((element) => element.id === itemsId);
+  const handleShopCardRemove = async (itemsId: any) => {
+    const itemsDeleted = cartItems.filter((item: any) => item.id !== itemsId);
+    const removedItem = cartItems.find((item: any) => item.id === itemsId);
+    const elementToUpdate = elements.find((element: any) => element.id === itemsId);
     const amountReturn = elementToUpdate.amount + removedItem.amount;
 
     const { error } = await cart.removeFromCart(itemsId);
@@ -39,8 +48,8 @@ export function ShopCartModal({
       setElements([]);
     } else {
       setCartItems(itemsDeleted);
-      setElements((prevElements) =>
-        prevElements.map((element) =>
+      setElements((prevElements: any) =>
+        prevElements.map((element: any) =>
           element.id === itemsId
             ? { ...element, amount: amountReturn }
             : element
@@ -49,10 +58,10 @@ export function ShopCartModal({
     }
   };
 
-  const handleCartPlus = async (productId) => {
-    const itemToUpdate = cartItems.find((item) => item.id === productId);
+  const handleCartPlus = async (productId: any) => {
+    const itemToUpdate = cartItems.find((item: any) => item.id === productId);
     const elementToUpdate = elements.find(
-      (element) => element.id === productId
+      (element: any) => element.id === productId
     );
 
     if (elementToUpdate.amount === 0) {
@@ -70,8 +79,8 @@ export function ShopCartModal({
     if (error) {
       setCartItems([]);
     } else {
-      setCartItems((prevElements) =>
-        prevElements.map((element) =>
+      setCartItems((prevElements: any) =>
+        prevElements.map((element: any) =>
           element.id === productId
             ? { ...element, amount: updatedAmount }
             : element
@@ -80,12 +89,12 @@ export function ShopCartModal({
     }
   };
 
-  const handleCartMinus = async (productId) => {
-    const itemToUpdate = cartItems.find((item) => item.id === productId);
+  const handleCartMinus = async (productId: any) => {
+    const itemToUpdate = cartItems.find((item: any) => item.id === productId);
     const elementToUpdate = elements.find(
-      (element) => element.id === productId
+      (element: any) => element.id === productId
     );
-    const itemsDeleted = cartItems.filter((item) => item.id !== productId);
+    const itemsDeleted = cartItems.filter((item: any) => item.id !== productId);
 
     const updatedAmount = itemToUpdate.amount - 1;
     const amountReturn = (elementToUpdate.amount += 1);
@@ -107,8 +116,8 @@ export function ShopCartModal({
       if (error) {
         setCartItems([]);
       } else {
-        setCartItems((prevElements) =>
-          prevElements.map((element) =>
+        setCartItems((prevElements: any) =>
+          prevElements.map((element: any) =>
             element.id === productId
               ? { ...element, amount: updatedAmount }
               : element
@@ -132,7 +141,7 @@ export function ShopCartModal({
       <List
         itemLayout="horizontal"
         dataSource={cartItems}
-        renderItem={(item) => (
+        renderItem={(item: any) => (
           <List.Item
             actions={[
               <PlusSquareOutlined

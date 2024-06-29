@@ -2,12 +2,12 @@ import PropTypes from "prop-types";
 import { Carousel } from "antd";
 import styles from "../../Item/item.module.css";
 
-const Album = ({ albumPhotos }) => {
+const Album = ({ albumPhotos }: any) => {
   return (
     <div className={styles.carouselContainer}>
       <Carousel>
         {albumPhotos && albumPhotos.length > 0 ? (
-          albumPhotos.map((photo, index) => (
+          albumPhotos.map((photo: any, index: any) => (
             <div key={index}>
               <img
                 className={styles.carouselImage}

@@ -1,16 +1,16 @@
-import { apiInstance } from "./index.js";
+import { apiInstance } from "./index";
 
 const commentRoot = "comments";
 
 export const comments = {
-  addComment: async (newComment) => {
+  addComment: async (newComment: any) => {
     try {
       const response = await apiInstance.post(
         `/${commentRoot}/comment`,
         newComment
       );
       return { data: response.data, error: null };
-    } catch (error) {
+    } catch (error: any) {
       return {
         data: null,
         error: error.response.data.message || "Network response was not ok",
@@ -18,13 +18,13 @@ export const comments = {
     }
   },
 
-  editComment: async (commentId, text) => {
+  editComment: async (commentId: any, text: any) => {
     try {
       const response = await apiInstance.put(`/${commentRoot}/${commentId}`, {
         text,
       });
       return { data: response.data, error: null };
-    } catch (error) {
+    } catch (error: any) {
       return {
         data: null,
         error: error.response.data.message || "Network response was not ok",
@@ -32,11 +32,11 @@ export const comments = {
     }
   },
 
-  deleteComment: async (commentId) => {
+  deleteComment: async (commentId: any) => {
     try {
       const response = await apiInstance.delete(`/${commentRoot}/${commentId}`);
       return { data: response.data, error: null };
-    } catch (error) {
+    } catch (error: any) {
       return {
         data: null,
         error: error.response.data.message || "Network response was not ok",
