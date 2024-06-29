@@ -8,7 +8,7 @@ const schema = Yup.object({
   price: Yup.number().positive("Price must be positive"),
   image: Yup.mixed()
     .required("Main image is required")
-    .test("fileFormat", "Unsupported Format", (value) => {
+    .test("fileFormat", "Unsupported Format", (value: any) => {
       if (value) {
         return ["image/jpg", "image/jpeg", "image/png", "image/gif"].includes(
           value.type
@@ -19,7 +19,7 @@ const schema = Yup.object({
   albumPhotos: Yup.array().of(
     Yup.mixed()
       .nullable()
-      .test("fileFormat", "Unsupported Format", (value) => {
+      .test("fileFormat", "Unsupported Format", (value: any) => {
         if (value) {
           return ["image/jpg", "image/jpeg", "image/png", "image/gif"].includes(
             value.type

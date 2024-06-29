@@ -1,9 +1,15 @@
 import React, { useState } from "react";
 import { Form, Input, Button } from "antd";
 import styles from "../../Item/item.module.css";
-import { comments } from "../../../api/comments.js";
+import { comments } from "../../../api/comments";
 
-const Comment = ({ comment, productId, refreshComments }) => {
+interface Props {
+  comment: any;
+  productId: any;
+  refreshComments: any;
+}
+
+const Comment = ({ comment, productId, refreshComments }: Props) => {
   const [replyText, setReplyText] = useState("");
   const [isReplying, setIsReplying] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -38,10 +44,10 @@ const Comment = ({ comment, productId, refreshComments }) => {
 
   const handleInputEdit = () => {
     setIsEditing(false);
-    handleUpdate(comment.id, editText);
+    handleUpdate();
   };
 
-  const handleInputKey = (event) => {
+  const handleInputKey = (event: any) => {
     if (event.key === "Enter") {
       handleInputEdit();
     }
@@ -58,7 +64,7 @@ const Comment = ({ comment, productId, refreshComments }) => {
     setShowReplies(!showReplies);
   };
 
-  const countReplies = (comment) => {
+  const countReplies = (comment: any) => {
     let count = comment.comments.length;
     for (let reply of comment.comments) {
       count += countReplies(reply);
@@ -126,7 +132,7 @@ const Comment = ({ comment, productId, refreshComments }) => {
           </Button>
           {showReplies && (
             <ul>
-              {comment.comments.map((subComment) => (
+              {comment.comments.map((subComment: any) => (
                 <Comment
                   key={subComment.id}
                   comment={subComment}

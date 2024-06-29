@@ -1,15 +1,15 @@
 import { useParams } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import styles from "../Item/item.module.css";
-import { products } from "../../api/products.js";
-import { comments } from "../../api/comments.js";
-import Comment from "./components/Comment.jsx";
-import Album from "./components/Album.jsx";
+import { products } from "../../api/products";
+import { comments } from "../../api/comments";
+import Comment from "./components/Comment";
+import Album from "./components/Album";
 import { Form, Input, Button } from "antd";
 
 export default function ItemPage() {
   const { id } = useParams();
-  const [element, setElement] = useState();
+  const [element, setElement] = useState<any>();
   const [inputComment, setInputComment] = useState("");
 
   const fetchProduct = async () => {
@@ -41,7 +41,7 @@ export default function ItemPage() {
     if (error) {
       setElement([]);
     } else {
-      setElement((prevProduct) => ({
+      setElement((prevProduct: any) => ({
         ...prevProduct,
         comments: [...prevProduct.comments, data.data],
       }));
@@ -87,7 +87,7 @@ export default function ItemPage() {
       <h2>Comments</h2>
       {element.comments.length > 0 ? (
         <ul>
-          {element.comments.map((comment) => (
+          {element.comments.map((comment: any) => (
             <Comment
               key={comment.id}
               comment={comment}

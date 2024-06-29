@@ -8,18 +8,19 @@ export default function Count({
   handleAmountEdit,
   addToCart,
   handleDeleteItem,
-}) {
-  const [inputAmount, setInputAmount] = useState(1);
+  index,
+}: any) {
+  const [inputAmount, setInputAmount] = useState<any>(1);
 
   const handleAddCount = () => {
     handleAmountEdit(item, inputAmount);
 
     addToCart(item, inputAmount);
 
-    setInputAmount(parseInt(item.amount - inputAmount && 1));
+    setInputAmount(parseInt(item.amount  - inputAmount && 1 as any));
   };
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: any) => {
     if (!e.target.value) {
       return setInputAmount(0);
     }

@@ -1,6 +1,6 @@
 import styles from "../app.module.css";
-import Edit from "./Edit.jsx";
-import Count from "./Count.jsx";
+import Edit from "./Edit";
+import Count from "./Count";
 
 export function List({
   handleToggle,
@@ -9,8 +9,8 @@ export function List({
   handleElementClick,
   handleAmountEdit,
   addToCart,
-}) {
-  return sortedElements.map((item, index) => (
+}: any) {
+  return sortedElements.map((item: any, index: any) => (
     <div key={item.id}>
       <div
         className={`${styles.itemsStyle} ${

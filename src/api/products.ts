@@ -1,9 +1,9 @@
-import { apiInstance } from "./index.js";
+import { apiInstance } from "./index";
 
 const productRoot = "products";
 
 export const products = {
-  getProducts: async (searchElement, sortByPrice, page, pageSize) => {
+  getProducts: async (searchElement: any, sortByPrice: any, page: any, pageSize: any) => {
     try {
       const response = await apiInstance.post(`/${productRoot}`, {
         title: searchElement,
@@ -13,7 +13,7 @@ export const products = {
       });
 
       return { data: response.data.data, error: null };
-    } catch (error) {
+    } catch (error: any) {
       return {
         data: null,
         error: error.response.data.message || "Network response was not ok",
@@ -21,11 +21,11 @@ export const products = {
     }
   },
 
-  getProductById: async (id) => {
+  getProductById: async (id: any) => {
     try {
       const response = await apiInstance.get(`/${productRoot}/${id}`);
       return { data: response.data, error: null };
-    } catch (error) {
+    } catch (error: any) {
       return {
         data: null,
         error: error.response.data.message || "Network response was not ok",
@@ -33,11 +33,11 @@ export const products = {
     }
   },
 
-  deleteProduct: async (itemsId) => {
+  deleteProduct: async (itemsId: any) => {
     try {
       const response = await apiInstance.delete(`/${productRoot}/${itemsId}`);
       return { data: response.data, error: null };
-    } catch (error) {
+    } catch (error: any) {
       return {
         data: null,
         error: error.response.data.message || "Network response was not ok",
@@ -45,14 +45,14 @@ export const products = {
     }
   },
 
-  addProduct: async (newItem) => {
+  addProduct: async (newItem: any) => {
     try {
       const response = await apiInstance.post(
         `/${productRoot}/create`,
         newItem
       );
       return { data: response.data, error: null };
-    } catch (error) {
+    } catch (error: any) {
       return {
         data: null,
         error: error.response.data.message || "Network response was not ok",
@@ -60,13 +60,13 @@ export const products = {
     }
   },
 
-  editTitle: async (productId, newText) => {
+  editTitle: async (productId: any, newText: any) => {
     try {
       const response = await apiInstance.put(`/${productRoot}/${productId}`, {
         title: newText,
       });
       return { data: response.data, error: null };
-    } catch (error) {
+    } catch (error: any) {
       return {
         data: null,
         error: error.response.data.message || "Network response was not ok",
@@ -74,14 +74,14 @@ export const products = {
     }
   },
 
-  changeAmount: async (productId, newCount) => {
+  changeAmount: async (productId: any, newCount: any) => {
     try {
       const response = await apiInstance.put(
         `/${productRoot}/${productId}`,
         newCount
       );
       return { data: response.data, error: null };
-    } catch (error) {
+    } catch (error: any) {
       return {
         data: null,
         error: error.response.data.message || "Network response was not ok",
@@ -89,13 +89,13 @@ export const products = {
     }
   },
 
-  updateProductAmount: async (itemsId, amount) => {
+  updateProductAmount: async (itemsId: any, amount: any) => {
     try {
       const response = await apiInstance.put(`/${productRoot}/${itemsId}`, {
         amount,
       });
       return { data: response.data, error: null };
-    } catch (error) {
+    } catch (error: any) {
       return {
         data: null,
         error: error.response.data.message || "Network response was not ok",

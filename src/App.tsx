@@ -1,9 +1,10 @@
-import ItemPage from "./pages/Item/index.jsx";
-import Home from "./pages/Home/index.jsx";
-import ProductForm from "./pages/Form/index.jsx";
+import ItemPage from "./pages/Item";
+import Home from "./pages/Home";
+import ProductForm from "./pages/Form";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { ReactElement } from "react";
 
-function App() {
+function App(): ReactElement {
   return (
     <>
       <Router>

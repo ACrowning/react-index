@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import styles from "../Home/app.module.css";
-import { List } from "./components/List.jsx";
-import { Navbar } from "./components/Navbar.jsx";
+import { List } from "./components/List";
+import { Navbar } from "./components/Navbar";
 import { ShoppingCartOutlined, PlusOutlined } from "@ant-design/icons";
-import { ShopCartModal } from "./components/ShopCartModal.jsx";
-import { cart } from "../../api/cart.js";
-import { products } from "../../api/products.js";
+import { ShopCartModal } from "./components/ShopCartModal";
+import { cart } from "../../api/cart";
+import { products } from "../../api/products";
 import { Pagination } from "antd";
 import { useNavigate } from "react-router-dom";
 import { useSearchParams } from "react-router-dom";
@@ -14,13 +14,13 @@ import {
   DEFAULT_LIMIT,
   DEFAULT_SORT,
   DEFAULT_SIZE,
-} from "../../constants/index.js";
+} from "../../constants/index";
 
 function Home() {
   const [elements, setElements] = useState([]);
   const [searchElement, setSearchElement] = useState("");
   const [sumCard, setSumCard] = useState(0);
-  const [cartItems, setCartItems] = useState([]);
+  const [cartItems, setCartItems] = useState<any[]>([]);
   const [sortByPrice, setSortByPrice] = useState(DEFAULT_SORT);
   const [modalOpen, setModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(DEFAULT_PAGE);
@@ -29,7 +29,7 @@ function Home() {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  const fetchProducts = async (page, pageSize) => {
+  const fetchProducts = async (page: any, pageSize: any) => {
     const { data, error } = await products.getProducts(
       searchElement,
       sortByPrice,
@@ -49,39 +49,39 @@ function Home() {
   }, [searchElement, sortByPrice, currentPage, pageSize]);
 
   useEffect(() => {
-    const sort = searchParams.get("sort");
-    const current = searchParams.get("page");
-    const size = parseInt(searchParams.get("size"));
+    const sort: any = searchParams.get("sort");
+    const current: any = searchParams.get("page");
+    const size = parseInt(searchParams.get("size") as any);
     setSortByPrice(sort || DEFAULT_SORT);
     setCurrentPage(current || DEFAULT_PAGE);
     setPageSize(size || DEFAULT_LIMIT);
   }, [searchParams]);
 
-  const handleSort = (e) => {
+  const handleSort = (e: any) => {
     setSortByPrice(e.target.value);
     setSearchParams({
       page: DEFAULT_PAGE,
       size: pageSize,
       sort: e.target.value,
-    });
+    }as any);
   };
 
-  const handleSearch = (e) => {
+  const handleSearch = (e: any) => {
     setSearchElement(e.target.value);
     setSearchParams({
       page: DEFAULT_PAGE,
       size: DEFAULT_LIMIT,
       sort: DEFAULT_SORT,
-    });
+    } as any);
   };
 
-  const handlePageChange = (current, size) => {
+  const handlePageChange = (current: any, size: any) => {
     const page = size !== pageSize ? DEFAULT_PAGE : current;
     setSearchParams({ page: page, size: size, sort: sortByPrice });
   };
 
-  const handleDeleteItem = async (itemsId) => {
-    const itemsDeleted = elements.filter((element) => element.id !== itemsId);
+  const handleDeleteItem = async (itemsId: any) => {
+    const itemsDeleted = elements.filter((element: any) => element.id !== itemsId);
 
     const { error } = await products.deleteProduct(itemsId);
 
@@ -92,9 +92,9 @@ function Home() {
     }
   };
 
-  const handleToggle = (productId) => {
-    setElements((prevElements) =>
-      prevElements.map((element) =>
+  const handleToggle = (productId: any) => {
+    setElements((prevElements: any) =>
+      prevElements.map((element: any) =>
         element.id === productId
           ? { ...element, favorite: !element.favorite }
           : element
@@ -102,31 +102,31 @@ function Home() {
     );
   };
 
-  const handleElementClick = async (productId, newText) => {
+  const handleElementClick = async (productId: any, newText: any) => {
     const { error } = await products.editTitle(productId, newText);
 
     if (error) {
       setElements([]);
     } else {
-      setElements((prevElements) =>
-        prevElements.map((element) =>
+      setElements((prevElements: any) =>
+        prevElements.map((element: any) =>
           element.id === productId ? { ...element, title: newText } : element
         )
       );
     }
   };
 
-  const handleAmountEdit = async (productId, newCount) => {
+  const handleAmountEdit = async (productId: any, newCount: any) => {
     const changes = {
-      amount: parseInt(productId.amount - newCount),
+      amount: parseInt(productId.amount - newCount as any),
     };
     const { error } = await products.changeAmount(productId.id, changes);
 
     if (error) {
       setElements([]);
     } else {
-      setElements((prevElements) =>
-        prevElements.map((element) =>
+      setElements((prevElements: any) =>
+        prevElements.map((element: any) =>
           element.id === productId.id
             ? {
                 ...element,
@@ -140,20 +140,20 @@ function Home() {
 
   useEffect(() => {
     const totalItems = cartItems.reduce(
-      (total, item) => total + item.amount,
+      (total, item: any) => total + item.amount,
       0
     );
     setSumCard(totalItems);
   }, [cartItems]);
 
-  const addToCart = async (element, newCount) => {
+  const addToCart = async (element: any, newCount: any) => {
     const newItem = {
       id: element.id,
       title: element.title,
       amount: parseInt(newCount),
       price: element.price,
     };
-    const existingItemIndex = cartItems.findIndex(
+    const existingItemIndex: any = cartItems.findIndex(
       (item) => item.id === newItem.id
     );
 

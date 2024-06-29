@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import styles from "../Form/form.module.css";
-import { products } from "../../api/products.js";
-import schema from "../Form/schema.js";
+import { products } from "../../api/products";
+import schema from "./schema";
 import { useNavigate } from "react-router-dom";
 import { Alert } from "antd";
 
 const ProductForm = () => {
   const [errorMessage, setErrorMessage] = useState("");
-  const [message, setMessage] = useState({ type: "", content: "" });
+  const [message, setMessage] = useState<any>({ type: "", content: "" });
   const navigate = useNavigate();
 
   const initialValues = {
@@ -20,7 +20,7 @@ const ProductForm = () => {
     albumPhotos: [],
   };
 
-  const handleSubmit = async (values, { setSubmitting, resetForm }) => {
+  const handleSubmit = async (values: any, { setSubmitting, resetForm }: any) => {
     const formData = new FormData();
     formData.append("title", values.title);
     formData.append("amount", values.amount);
@@ -117,7 +117,7 @@ const ProductForm = () => {
                 id="image"
                 name="image"
                 accept="image/*"
-                onChange={(event) => {
+                onChange={(event: any) => {
                   setFieldValue("image", event.currentTarget.files[0]);
                 }}
               />
@@ -135,7 +135,7 @@ const ProductForm = () => {
                 name="albumPhotos"
                 accept="image/*"
                 multiple
-                onChange={(event) => {
+                onChange={(event: any) => {
                   setFieldValue(
                     "albumPhotos",
                     Array.from(event.currentTarget.files)
