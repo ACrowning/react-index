@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import styles from "../Home/app.module.css";
 import { List } from "./components/List";
 import { Navbar } from "./components/Navbar";
+import Main from "./components/Login";
 import { ShoppingCartOutlined, PlusOutlined } from "@ant-design/icons";
 import { ShopCartModal } from "./components/ShopCartModal";
 import { cart } from "../../api/cart";
@@ -63,7 +64,7 @@ function Home() {
       page: DEFAULT_PAGE,
       size: pageSize,
       sort: e.target.value,
-    }as any);
+    } as any);
   };
 
   const handleSearch = (e: any) => {
@@ -81,7 +82,9 @@ function Home() {
   };
 
   const handleDeleteItem = async (itemsId: any) => {
-    const itemsDeleted = elements.filter((element: any) => element.id !== itemsId);
+    const itemsDeleted = elements.filter(
+      (element: any) => element.id !== itemsId
+    );
 
     const { error } = await products.deleteProduct(itemsId);
 
@@ -118,7 +121,7 @@ function Home() {
 
   const handleAmountEdit = async (productId: any, newCount: any) => {
     const changes = {
-      amount: parseInt(productId.amount - newCount as any),
+      amount: parseInt((productId.amount - newCount) as any),
     };
     const { error } = await products.changeAmount(productId.id, changes);
 
@@ -192,6 +195,10 @@ function Home() {
               className={styles.iconForm}
               onClick={goToForm}
             ></PlusOutlined>
+
+            <div className={styles.login}>
+              <Main />
+            </div>
           </header>
           <div>
             <ShopCartModal

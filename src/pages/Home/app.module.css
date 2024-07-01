@@ -50,6 +50,11 @@ body {
   cursor: pointer;
 }
 
+.login {
+  color: rgb(7, 85, 7);
+  margin-right: 120px;
+}
+
 .circle {
   position: absolute;
   width: 25px;
