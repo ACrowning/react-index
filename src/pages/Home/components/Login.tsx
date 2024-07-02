@@ -1,11 +1,26 @@
-import { useState } from "react";
-import { Button, Modal, Form, Input, Avatar, Dropdown, Menu } from "antd";
-import { UserProvider, useUser } from "./UserContext";
-import { users } from "../../../api/users";
+import React, { useState, useContext } from "react";
+import {
+  Button,
+  Modal,
+  Form,
+  Input,
+  Avatar,
+  Dropdown,
+  Menu,
+  Select,
+} from "antd";
+import { AuthContext } from "../../../context/AuthContext";
+import { users, Role } from "../../../api/users";
+
+const { Option } = Select;
 
 const Login: React.FC = () => {
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
-  const { user, setUser } = useUser();
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("UserContext must be used within a UserProvider");
+  }
+  const { user, setUser } = context;
 
   const showModal = () => {
     setIsModalVisible(true);
@@ -30,13 +45,15 @@ const Login: React.FC = () => {
     setUser(null);
   };
 
-  const menu = (
-    <Menu>
-      <Menu.Item key="logout" onClick={handleLogout}>
-        Logout
-      </Menu.Item>
-    </Menu>
-  );
+  const menuItems = [
+    {
+      key: "logout",
+      label: "Logout",
+      onClick: handleLogout,
+    },
+  ];
+
+  const menu = <Menu items={menuItems} />;
 
   return (
     <div style={{ padding: "20px", textAlign: "right" }}>
@@ -84,7 +101,10 @@ const Login: React.FC = () => {
             name="role"
             rules={[{ required: true, message: "Please select your role!" }]}
           >
-            <Input placeholder="Role" />
+            <Select placeholder="Select a role">
+              <Option value={Role.GUEST}>{Role.GUEST}</Option>
+              <Option value={Role.ADMIN}>{Role.ADMIN}</Option>
+            </Select>
           </Form.Item>
           <Form.Item>
             <Button type="primary" htmlType="submit">
@@ -97,10 +117,4 @@ const Login: React.FC = () => {
   );
 };
 
-const Main: React.FC = () => (
-  <UserProvider>
-    <Login />
-  </UserProvider>
-);
-
-export default Main;
+export default Login;

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import styles from "../Home/app.module.css";
 import { List } from "./components/List";
 import { Navbar } from "./components/Navbar";
-import Main from "./components/Login";
+import Login from "./components/Login";
 import { ShoppingCartOutlined, PlusOutlined } from "@ant-design/icons";
 import { ShopCartModal } from "./components/ShopCartModal";
 import { cart } from "../../api/cart";
@@ -197,7 +197,7 @@ function Home() {
             ></PlusOutlined>
 
             <div className={styles.login}>
-              <Main />
+              <Login />
             </div>
           </header>
           <div>
