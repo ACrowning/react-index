@@ -1,4 +1,5 @@
 import { apiInstance } from "./index";
+import { localStorageService } from "./localStorageService";
 
 const authRoot = "auth";
 
@@ -26,5 +27,18 @@ export const users = {
       password,
     });
     return response.data;
+  },
+
+  getUserByToken: async (token: string): Promise<UserRegisterPayload> => {
+    const response = await apiInstance.get(`${authRoot}/user`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data.user;
+  },
+
+  logoutUser: () => {
+    localStorageService.removeToken();
   },
 };

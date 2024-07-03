@@ -6,11 +6,11 @@ import {
   Input,
   Avatar,
   Dropdown,
-  Menu,
+  MenuProps,
   Select,
 } from "antd";
 import { AuthContext } from "../../../context/AuthContext";
-import { users, Role } from "../../../api/users";
+import { users, UserRegisterPayload, Role } from "../../../api/users";
 
 const { Option } = Select;
 
@@ -20,7 +20,7 @@ const Login: React.FC = () => {
   if (!context) {
     throw new Error("UserContext must be used within a UserProvider");
   }
-  const { user, setUser } = context;
+  const { user, setUser, logout } = context;
 
   const showModal = () => {
     setIsModalVisible(true);
@@ -30,36 +30,47 @@ const Login: React.FC = () => {
     setIsModalVisible(false);
   };
 
-  const handleRegister = async (values: any) => {
+  const handleRegister = async (values: UserRegisterPayload) => {
     try {
-      const response = await users.registerUser(values);
-      const { user, token } = response;
-      setUser({ username: user.username, token });
+      const user = await users.registerUser(values);
+      setUser({ username: user.username, token: user.token });
       setIsModalVisible(false);
     } catch (error) {
       console.error("Registration failed:", error);
     }
   };
 
-  const handleLogout = () => {
-    setUser(null);
+  const handleLogin = async (values: { email: string; password: string }) => {
+    try {
+      const user = await users.loginUser(values.email, values.password);
+      setUser({ username: user.username, token: user.token });
+      setIsModalVisible(false);
+    } catch (error) {
+      console.error("Login failed:", error);
+    }
   };
 
-  const menuItems = [
+  // const handleLogout = () => {
+  //   setUser(null);
+  // };
+
+  const menuItems: MenuProps["items"] = [
     {
       key: "logout",
       label: "Logout",
-      onClick: handleLogout,
+      onClick: logout,
     },
   ];
 
-  const menu = <Menu items={menuItems} />;
+  // const menu = <Menu items={menuItems} />;
 
   return (
     <div style={{ padding: "20px", textAlign: "right" }}>
       {user ? (
-        <Dropdown overlay={menu} placement="bottomRight">
-          <Avatar>{user.username.charAt(0).toUpperCase()}</Avatar>
+        <Dropdown menu={{ items: menuItems }} placement="bottomRight">
+          <Avatar>
+            {user.username ? user.username.charAt(0).toUpperCase() : ""}
+          </Avatar>
         </Dropdown>
       ) : (
         <Button type="primary" onClick={showModal}>
@@ -67,7 +78,7 @@ const Login: React.FC = () => {
         </Button>
       )}
       <Modal
-        title="Register"
+        title="Authentication"
         open={isModalVisible}
         onCancel={handleCancel}
         footer={null}
@@ -109,6 +120,25 @@ const Login: React.FC = () => {
           <Form.Item>
             <Button type="primary" htmlType="submit">
               Register
+            </Button>
+          </Form.Item>
+        </Form>
+        <Form onFinish={handleLogin}>
+          <Form.Item
+            name="email"
+            rules={[{ required: true, message: "Please input your email!" }]}
+          >
+            <Input placeholder="Email" />
+          </Form.Item>
+          <Form.Item
+            name="password"
+            rules={[{ required: true, message: "Please input your password!" }]}
+          >
+            <Input.Password placeholder="Password" />
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit">
+              Login
             </Button>
           </Form.Item>
         </Form>
