@@ -1,15 +1,12 @@
-import React, {
-  createContext,
-  useState,
-  useEffect,
-  ReactNode,
-  useContext,
-} from "react";
+import React, { createContext, useState, useEffect, ReactNode } from "react";
 import { users } from "../api/users";
-import { localStorageService } from "../api/localStorageService";
+import { storage } from "../api/storage";
+
+const TOKEN_KEY = "authToken";
 
 interface User {
   username: string;
+  role: string;
   token: string;
 }
 
@@ -30,28 +27,28 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
   useEffect(() => {
     const fetchUser = async () => {
-      const token = localStorageService.getToken();
+      const token = storage.get(TOKEN_KEY);
       if (token) {
         try {
           const user = await users.getUserByToken(token);
           if (user) {
-            setUser({ username: user.username, token });
+            setUser({ username: user.username, role: user.role, token });
           }
         } catch (error) {
           console.error("Failed to fetch user by token:", error);
-          localStorageService.removeToken();
+          storage.set(TOKEN_KEY, null);
         }
       }
     };
     fetchUser();
   }, []);
 
-  const setUserAndStoreToken = (user: User | null) => {
-    setUser(user);
-    if (user) {
-      localStorageService.setToken(user.token);
+  const setUserAndStoreToken = (newUser: User | null) => {
+    setUser(newUser);
+    if (newUser) {
+      storage.set(TOKEN_KEY, newUser.token);
     } else {
-      localStorageService.removeToken();
+      storage.set(TOKEN_KEY, null);
     }
   };
 
@@ -72,12 +69,4 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       {children}
     </AuthContext.Provider>
   );
-};
-
-export const useAuth = (): AuthContextType => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
 };

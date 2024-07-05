@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import styles from "../Home/app.module.css";
 import { List } from "./components/List";
 import { Navbar } from "./components/Navbar";
@@ -9,6 +9,7 @@ import { cart } from "../../api/cart";
 import { products } from "../../api/products";
 import { Pagination } from "antd";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext";
 import { useSearchParams } from "react-router-dom";
 import {
   DEFAULT_PAGE,
@@ -29,6 +30,11 @@ function Home() {
   const [totalPages, setTotalPages] = useState(1);
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("UserContext must be used within a UserProvider");
+  }
+  const { user } = context;
 
   const fetchProducts = async (page: any, pageSize: any) => {
     const { data, error } = await products.getProducts(
@@ -190,11 +196,14 @@ function Home() {
               className={styles.iconCart}
               onClick={handleShopCardClick}
             />
-
-            <PlusOutlined
-              className={styles.iconForm}
-              onClick={goToForm}
-            ></PlusOutlined>
+            <div>
+              {user && user.role !== "GUEST" && (
+                <PlusOutlined
+                  className={styles.iconForm}
+                  onClick={goToForm}
+                ></PlusOutlined>
+              )}
+            </div>
 
             <div className={styles.login}>
               <Login />

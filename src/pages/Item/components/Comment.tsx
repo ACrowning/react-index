@@ -24,6 +24,7 @@ const Comment = ({ comment, productId, refreshComments }: Props) => {
     const newComment = {
       productId,
       text: replyText,
+      user: comment.user,
       parentCommentId: comment.id,
     };
     const { data, error } = await comments.addComment(newComment);
@@ -32,6 +33,11 @@ const Comment = ({ comment, productId, refreshComments }: Props) => {
       setReplyText("");
       setIsReplying(false);
     }
+  };
+
+  const handleReplyClick = () => {
+    setIsReplying(true);
+    setReplyText(`${comment.user.name}, `);
   };
 
   const handleUpdate = async () => {
@@ -75,6 +81,9 @@ const Comment = ({ comment, productId, refreshComments }: Props) => {
   return (
     <li>
       <p>
+        <strong>{comment.user.name}</strong>
+      </p>
+      <p>
         {isEditing ? (
           <Input.TextArea
             value={editText}
@@ -101,7 +110,7 @@ const Comment = ({ comment, productId, refreshComments }: Props) => {
           <Button type="link" onClick={() => setIsEditing(true)}>
             Edit
           </Button>
-          <Button type="link" onClick={() => setIsReplying(!isReplying)}>
+          <Button type="link" onClick={handleReplyClick}>
             {isReplying ? "Cancel" : "Reply"}
           </Button>
           <Button type="link" danger onClick={handleDelete}>

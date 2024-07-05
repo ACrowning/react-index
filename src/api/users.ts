@@ -1,5 +1,4 @@
 import { apiInstance } from "./index";
-import { localStorageService } from "./localStorageService";
 
 const authRoot = "auth";
 
@@ -36,9 +35,5 @@ export const users = {
       },
     });
     return response.data.user;
-  },
-
-  logoutUser: () => {
-    localStorageService.removeToken();
   },
 };

@@ -1,23 +1,28 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Button } from "antd";
 import { Input } from "antd";
 import styles from "../app.module.css";
+import { AuthContext } from "../../../context/AuthContext";
 
 export default function Count({
   item,
   handleAmountEdit,
   addToCart,
   handleDeleteItem,
-  index,
 }: any) {
   const [inputAmount, setInputAmount] = useState<any>(1);
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("UserContext must be used within a UserProvider");
+  }
+  const { user } = context;
 
   const handleAddCount = () => {
     handleAmountEdit(item, inputAmount);
 
     addToCart(item, inputAmount);
 
-    setInputAmount(parseInt(item.amount  - inputAmount && 1 as any));
+    setInputAmount(parseInt(item.amount - inputAmount && (1 as any)));
   };
 
   const handleInputChange = (e: any) => {
@@ -84,13 +89,15 @@ export default function Count({
           </Button>
         </div>
         <div>
-          <Button
-            type="primary"
-            onClick={() => handleDeleteItem(item.id)}
-            className={styles.btnDelete}
-          >
-            Delete
-          </Button>
+          {user && user.role !== "GUEST" && (
+            <Button
+              type="primary"
+              onClick={() => handleDeleteItem(item.id)}
+              className={styles.btnDelete}
+            >
+              Delete
+            </Button>
+          )}
         </div>
       </div>
     </div>
