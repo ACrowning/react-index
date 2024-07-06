@@ -1,21 +1,28 @@
 import { useParams } from "react-router-dom";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import styles from "../Item/item.module.css";
 import { products } from "../../api/products";
 import { comments } from "../../api/comments";
 import Comment from "./components/Comment";
 import Album from "./components/Album";
 import { Form, Input, Button } from "antd";
+import { Product, User, Comment as CommentType } from "./types";
+import { AuthContext } from "../../context/AuthContext";
 
-export default function ItemPage() {
-  const { id } = useParams();
-  const [element, setElement] = useState<any>();
-  const [inputComment, setInputComment] = useState("");
+const ItemPage: React.FC = () => {
+  const { id } = useParams<any>();
+  const [element, setElement] = useState<Product | null>(null);
+  const [inputComment, setInputComment] = useState<string>("");
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("UserContext must be used within a UserProvider");
+  }
+  const { user } = context;
 
   const fetchProduct = async () => {
     const { data, error } = await products.getProductById(id);
     if (error) {
-      setElement([]);
+      setElement(null);
     } else {
       setElement(data.data);
     }
@@ -32,22 +39,24 @@ export default function ItemPage() {
       alert("Comment cannot be empty");
       return;
     }
+    const user: User = { name: "CurrentUser", id: "currentUserId" };
     const newComment = {
       productId: id,
       text: inputComment,
+      user,
     };
     const { data, error } = await comments.addComment(newComment);
 
     if (error) {
-      setElement([]);
+      setElement(null);
     } else {
-      setElement((prevProduct: any) => ({
-        ...prevProduct,
-        comments: [...prevProduct.comments, data.data],
+      setElement((prevProduct) => ({
+        ...prevProduct!,
+        comments: [...prevProduct!.comments, data.data],
       }));
     }
-    fetchProduct();
     setInputComment("");
+    fetchProduct();
   };
 
   const refreshComments = () => {
@@ -70,28 +79,37 @@ export default function ItemPage() {
       </div>
 
       <p>Amount: {element.amount}</p>
-      <h2 className={styles.comment}>Add a Comment</h2>
-      <Form onFinish={handleAddComment}>
-        <Form.Item label="Comment" required>
-          <Input.TextArea
-            value={inputComment}
-            onChange={(e) => setInputComment(e.target.value)}
-          />
-        </Form.Item>
-        <Form.Item>
-          <Button className={styles.buttons} type="primary" htmlType="submit">
-            Add Comment
-          </Button>
-        </Form.Item>
-      </Form>
+      <h2 className={styles.comment}>{user && "Add a Comment"}</h2>
+      <div>
+        {user && (
+          <Form onFinish={handleAddComment}>
+            <Form.Item label="Comment" required>
+              <Input.TextArea
+                value={inputComment}
+                onChange={(e) => setInputComment(e.target.value)}
+              />
+            </Form.Item>
+            <Form.Item>
+              <Button
+                className={styles.buttons}
+                type="primary"
+                htmlType="submit"
+              >
+                Add Comment
+              </Button>
+            </Form.Item>
+          </Form>
+        )}
+      </div>
+
       <h2>Comments</h2>
       {element.comments.length > 0 ? (
         <ul>
-          {element.comments.map((comment: any) => (
+          {element.comments.map((comment: CommentType) => (
             <Comment
               key={comment.id}
               comment={comment}
-              productId={id}
+              productId={id!}
               refreshComments={refreshComments}
             />
           ))}
@@ -101,4 +119,6 @@ export default function ItemPage() {
       )}
     </div>
   );
-}
+};
+
+export default ItemPage;

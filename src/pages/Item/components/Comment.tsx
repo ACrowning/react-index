@@ -1,12 +1,14 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Form, Input, Button } from "antd";
 import styles from "../../Item/item.module.css";
 import { comments } from "../../../api/comments";
+import { Comment as CommentType } from "../types";
+import { AuthContext } from "../../../context/AuthContext";
 
 interface Props {
-  comment: any;
-  productId: any;
-  refreshComments: any;
+  comment: CommentType;
+  productId: string;
+  refreshComments: () => void;
 }
 
 const Comment = ({ comment, productId, refreshComments }: Props) => {
@@ -15,6 +17,11 @@ const Comment = ({ comment, productId, refreshComments }: Props) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(comment.text);
   const [showReplies, setShowReplies] = useState(false);
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("UserContext must be used within a UserProvider");
+  }
+  const { user } = context;
 
   const handleReply = async () => {
     if (!replyText.trim()) {
@@ -107,15 +114,21 @@ const Comment = ({ comment, productId, refreshComments }: Props) => {
         </>
       ) : (
         <>
-          <Button type="link" onClick={() => setIsEditing(true)}>
-            Edit
-          </Button>
-          <Button type="link" onClick={handleReplyClick}>
-            {isReplying ? "Cancel" : "Reply"}
-          </Button>
-          <Button type="link" danger onClick={handleDelete}>
-            Delete
-          </Button>
+          {user && (
+            <Button type="link" onClick={() => setIsEditing(true)}>
+              Edit
+            </Button>
+          )}
+          {user && (
+            <Button type="link" onClick={handleReplyClick}>
+              {isReplying ? "Cancel" : "Reply"}
+            </Button>
+          )}
+          {user && (
+            <Button type="link" danger onClick={handleDelete}>
+              Delete
+            </Button>
+          )}
         </>
       )}
       {isReplying && (
