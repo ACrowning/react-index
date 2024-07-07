@@ -5,14 +5,16 @@ import { storage } from "../api/storage";
 const TOKEN_KEY = "authToken";
 
 interface User {
+  id: string;
   username: string;
+  email: string;
   role: string;
   token: string;
 }
 
 interface AuthContextType {
   user: User | null;
-  setUser: React.Dispatch<React.SetStateAction<User | null>>;
+  setUser: (user: User | null) => void;
   logout: () => void;
 }
 
@@ -23,7 +25,7 @@ export const AuthContext = createContext<AuthContextType | undefined>(
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUserState] = useState<User | null>(null);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -32,7 +34,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         try {
           const user = await users.getUserByToken(token);
           if (user) {
-            setUser({ username: user.username, role: user.role, token });
+            setUserState({ ...user, token });
           }
         } catch (error) {
           console.error("Failed to fetch user by token:", error);
@@ -43,8 +45,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     fetchUser();
   }, []);
 
-  const setUserAndStoreToken = (newUser: User | null) => {
-    setUser(newUser);
+  const setUser = (newUser: User | null) => {
+    setUserState(newUser);
     if (newUser) {
       storage.set(TOKEN_KEY, newUser.token);
     } else {
@@ -53,16 +55,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   };
 
   const logout = () => {
-    setUserAndStoreToken(null);
+    setUser(null);
   };
 
   return (
     <AuthContext.Provider
       value={{
         user,
-        setUser: setUserAndStoreToken as React.Dispatch<
-          React.SetStateAction<User | null>
-        >,
+        setUser,
         logout,
       }}
     >

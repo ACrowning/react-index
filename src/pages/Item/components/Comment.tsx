@@ -1,27 +1,22 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { Form, Input, Button } from "antd";
 import styles from "../../Item/item.module.css";
 import { comments } from "../../../api/comments";
-import { Comment as CommentType } from "../types";
-import { AuthContext } from "../../../context/AuthContext";
+import { User, Comment as CommentType } from "../types";
 
 interface Props {
   comment: CommentType;
   productId: string;
   refreshComments: () => void;
+  user: User | null;
 }
 
-const Comment = ({ comment, productId, refreshComments }: Props) => {
+const Comment = ({ comment, productId, user, refreshComments }: Props) => {
   const [replyText, setReplyText] = useState("");
   const [isReplying, setIsReplying] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(comment.text);
   const [showReplies, setShowReplies] = useState(false);
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("UserContext must be used within a UserProvider");
-  }
-  const { user } = context;
 
   const handleReply = async () => {
     if (!replyText.trim()) {
@@ -31,7 +26,7 @@ const Comment = ({ comment, productId, refreshComments }: Props) => {
     const newComment = {
       productId,
       text: replyText,
-      user: comment.user,
+      user,
       parentCommentId: comment.id,
     };
     const { data, error } = await comments.addComment(newComment);
@@ -44,7 +39,7 @@ const Comment = ({ comment, productId, refreshComments }: Props) => {
 
   const handleReplyClick = () => {
     setIsReplying(true);
-    setReplyText(`${comment.user.name}, `);
+    setReplyText(`${comment.user.username}, `);
   };
 
   const handleUpdate = async () => {
@@ -88,7 +83,7 @@ const Comment = ({ comment, productId, refreshComments }: Props) => {
   return (
     <li>
       <p>
-        <strong>{comment.user.name}</strong>
+        <strong>{comment.user.username}</strong>
       </p>
       <p>
         {isEditing ? (
@@ -159,6 +154,7 @@ const Comment = ({ comment, productId, refreshComments }: Props) => {
                   key={subComment.id}
                   comment={subComment}
                   productId={productId}
+                  user={user}
                   refreshComments={refreshComments}
                 />
               ))}

@@ -6,7 +6,7 @@ import { comments } from "../../api/comments";
 import Comment from "./components/Comment";
 import Album from "./components/Album";
 import { Form, Input, Button } from "antd";
-import { Product, User, Comment as CommentType } from "./types";
+import { Product, Comment as CommentType } from "./types";
 import { AuthContext } from "../../context/AuthContext";
 
 const ItemPage: React.FC = () => {
@@ -39,7 +39,6 @@ const ItemPage: React.FC = () => {
       alert("Comment cannot be empty");
       return;
     }
-    const user: User = { name: "CurrentUser", id: "currentUserId" };
     const newComment = {
       productId: id,
       text: inputComment,
@@ -109,6 +108,7 @@ const ItemPage: React.FC = () => {
             <Comment
               key={comment.id}
               comment={comment}
+              user={user}
               productId={id!}
               refreshComments={refreshComments}
             />

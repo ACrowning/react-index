@@ -14,21 +14,29 @@ export interface UserRegisterPayload {
   role: Role;
 }
 
+export interface User {
+  id: string;
+  username: string;
+  email: string;
+  role: Role;
+  token: string;
+}
+
 export const users = {
-  registerUser: async (user: UserRegisterPayload) => {
+  registerUser: async (user: UserRegisterPayload): Promise<User> => {
     const response = await apiInstance.post(`/${authRoot}/signup`, user);
-    return response.data;
+    return response.data.user;
   },
 
-  loginUser: async (email: string, password: string) => {
+  loginUser: async (email: string, password: string): Promise<User> => {
     const response = await apiInstance.post(`/${authRoot}/login`, {
       email,
       password,
     });
-    return response.data;
+    return response.data.user;
   },
 
-  getUserByToken: async (token: string): Promise<UserRegisterPayload> => {
+  getUserByToken: async (token: string): Promise<User> => {
     const response = await apiInstance.get(`${authRoot}/user`, {
       headers: {
         Authorization: `Bearer ${token}`,

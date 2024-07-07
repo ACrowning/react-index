@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import {
   Button,
   Modal,
@@ -12,6 +12,7 @@ import {
 } from "antd";
 import { AuthContext } from "../../../context/AuthContext";
 import { users, UserRegisterPayload, Role } from "../../../api/users";
+import { storage } from "../../../api/storage";
 
 const { Option } = Select;
 
@@ -20,11 +21,24 @@ const Login: React.FC = () => {
   const [formType, setFormType] = useState<"login" | "register">("login");
   const [form] = Form.useForm();
   const context = useContext(AuthContext);
-  // const { user, setUser, logout } = useContext(AuthContext);
   if (!context) {
     throw new Error("UserContext must be used within a UserProvider");
   }
   const { user, setUser, logout } = context;
+
+  useEffect(() => {
+    const token = storage.get("token");
+    if (token) {
+      users
+        .getUserByToken(token)
+        .then((user) => {
+          setUser({ ...user, token });
+        })
+        .catch((error) => {
+          console.error("Error fetching user:", error);
+        });
+    }
+  }, [setUser]);
 
   const showModal = () => {
     setFormType("login");
@@ -38,7 +52,7 @@ const Login: React.FC = () => {
   const handleRegister = async (values: UserRegisterPayload) => {
     try {
       const user = await users.registerUser(values);
-      setUser({ username: user.username, role: user.role, token: user.token });
+      setUser(user);
       notification.success({
         message: "Registration Successful",
         description: "You have been registered successfully!",
@@ -56,7 +70,7 @@ const Login: React.FC = () => {
   const handleLogin = async (values: { email: string; password: string }) => {
     try {
       const user = await users.loginUser(values.email, values.password);
-      setUser({ username: user.username, role: user.role, token: user.token });
+      setUser(user);
       notification.success({
         message: "Login Successful",
         description: "You have logged in successfully!",
