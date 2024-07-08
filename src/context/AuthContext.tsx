@@ -25,7 +25,7 @@ export const AuthContext = createContext<AuthContextType | undefined>(
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [user, setUserState] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -34,7 +34,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         try {
           const user = await users.getUserByToken(token);
           if (user) {
-            setUserState({ ...user, token });
+            setUser({ ...user, token });
           }
         } catch (error) {
           console.error("Failed to fetch user by token:", error);
@@ -45,8 +45,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     fetchUser();
   }, []);
 
-  const setUser = (newUser: User | null) => {
-    setUserState(newUser);
+  const setUserAndStoreToken = (newUser: User | null) => {
+    setUser(newUser);
     if (newUser) {
       storage.set(TOKEN_KEY, newUser.token);
     } else {
@@ -55,16 +55,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   };
 
   const logout = () => {
-    setUser(null);
+    setUserAndStoreToken(null);
   };
 
   return (
     <AuthContext.Provider
-      value={{
-        user,
-        setUser,
-        logout,
-      }}
+      value={{ user, setUser: setUserAndStoreToken, logout }}
     >
       {children}
     </AuthContext.Provider>

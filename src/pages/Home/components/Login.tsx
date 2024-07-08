@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext } from "react";
 import {
   Button,
   Modal,
@@ -6,42 +6,27 @@ import {
   Input,
   Avatar,
   Dropdown,
-  MenuProps,
+  Menu,
   Select,
   notification,
 } from "antd";
 import { AuthContext } from "../../../context/AuthContext";
-import { users, UserRegisterPayload, Role } from "../../../api/users";
-import { storage } from "../../../api/storage";
+import { users, Role, UserRegisterPayload } from "../../../api/users";
 
 const { Option } = Select;
 
-const Login: React.FC = () => {
+const AuthModal: React.FC = () => {
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [formType, setFormType] = useState<"login" | "register">("login");
   const [form] = Form.useForm();
+
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error("UserContext must be used within a UserProvider");
+    throw new Error("AuthContext must be used within a AuthProvider");
   }
-  const { user, setUser, logout } = context;
-
-  useEffect(() => {
-    const token = storage.get("token");
-    if (token) {
-      users
-        .getUserByToken(token)
-        .then((user) => {
-          setUser({ ...user, token });
-        })
-        .catch((error) => {
-          console.error("Error fetching user:", error);
-        });
-    }
-  }, [setUser]);
+  const { user, setUser } = context;
 
   const showModal = () => {
-    setFormType("login");
     setIsModalVisible(true);
   };
 
@@ -51,12 +36,8 @@ const Login: React.FC = () => {
 
   const handleRegister = async (values: UserRegisterPayload) => {
     try {
-      const user = await users.registerUser(values);
-      setUser(user);
-      notification.success({
-        message: "Registration Successful",
-        description: "You have been registered successfully!",
-      });
+      const { user, token } = await users.registerUser(values);
+      setUser({ ...user, token });
       setIsModalVisible(false);
     } catch (error) {
       notification.error({
@@ -67,10 +48,19 @@ const Login: React.FC = () => {
     }
   };
 
+  const handleLogout = () => {
+    setUser(null);
+  };
+
   const handleLogin = async (values: { email: string; password: string }) => {
     try {
-      const user = await users.loginUser(values.email, values.password);
-      setUser(user);
+      const { user, token } = await users.loginUser(
+        values.email,
+        values.password
+      );
+
+      setUser({ ...user, token });
+
       notification.success({
         message: "Login Successful",
         description: "You have logged in successfully!",
@@ -85,21 +75,21 @@ const Login: React.FC = () => {
     }
   };
 
-  const menuItems: MenuProps["items"] = [
+  const menuItems = [
     {
       key: "logout",
       label: "Logout",
-      onClick: logout,
+      onClick: handleLogout,
     },
   ];
+
+  const menu = <Menu items={menuItems} />;
 
   return (
     <div style={{ padding: "20px", textAlign: "right" }}>
       {user ? (
         <Dropdown menu={{ items: menuItems }} placement="bottomRight">
-          <Avatar>
-            {user.username ? user.username.charAt(0).toUpperCase() : ""}
-          </Avatar>
+          <Avatar>{user.username.charAt(0).toUpperCase()}</Avatar>
         </Dropdown>
       ) : (
         <Button type="primary" onClick={showModal}>
@@ -180,4 +170,4 @@ const Login: React.FC = () => {
   );
 };
 
-export default Login;
+export default AuthModal;

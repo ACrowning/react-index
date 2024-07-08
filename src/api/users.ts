@@ -23,17 +23,22 @@ export interface User {
 }
 
 export const users = {
-  registerUser: async (user: UserRegisterPayload): Promise<User> => {
+  registerUser: async (
+    user: UserRegisterPayload
+  ): Promise<{ user: User; token: string }> => {
     const response = await apiInstance.post(`/${authRoot}/signup`, user);
-    return response.data.user;
+    return response.data;
   },
 
-  loginUser: async (email: string, password: string): Promise<User> => {
+  loginUser: async (
+    email: string,
+    password: string
+  ): Promise<{ user: User; token: string }> => {
     const response = await apiInstance.post(`/${authRoot}/login`, {
       email,
       password,
     });
-    return response.data.user;
+    return response.data;
   },
 
   getUserByToken: async (token: string): Promise<User> => {
