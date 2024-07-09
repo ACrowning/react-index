@@ -3,7 +3,12 @@ import { apiInstance } from "./index";
 const productRoot = "products";
 
 export const products = {
-  getProducts: async (searchElement: any, sortByPrice: any, page: any, pageSize: any) => {
+  getProducts: async (
+    searchElement: any,
+    sortByPrice: any,
+    page: any,
+    pageSize: any
+  ) => {
     try {
       const response = await apiInstance.post(`/${productRoot}`, {
         title: searchElement,
@@ -13,6 +18,18 @@ export const products = {
       });
 
       return { data: response.data.data, error: null };
+    } catch (error: any) {
+      return {
+        data: null,
+        error: error.response.data.message || "Network response was not ok",
+      };
+    }
+  },
+
+  getAllProducts: async () => {
+    try {
+      const response = await apiInstance.get(`/${productRoot}/all`);
+      return { data: response.data, error: null };
     } catch (error: any) {
       return {
         data: null,

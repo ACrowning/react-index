@@ -47,46 +47,52 @@ export default function Count({
       <div className={styles.price}>price: {item.price}</div>
       <div className={styles.amount}>amount: {item.amount}</div>
       <div className={styles.flexItem}>
-        <div>
-          <Button
-            type="primary"
-            disabled={inputAmount === 0}
-            onClick={() => minus()}
-            className={styles.buttonSize}
-          >
-            -
-          </Button>
-        </div>
-        <div className={styles.inputNum}>
-          <Input
-            type="number"
-            value={inputAmount}
-            onChange={handleInputChange}
-            min={0}
-          />
-        </div>
-        <div>
-          <Button
-            type="primary"
-            disabled={inputAmount >= item.amount && !isNaN(inputAmount)}
-            onClick={() => plus()}
-            className={styles.buttonSize}
-          >
-            +
-          </Button>
-        </div>
+        {user && (
+          <>
+            <div>
+              <Button
+                type="primary"
+                disabled={inputAmount === 0}
+                onClick={() => minus()}
+                className={styles.buttonSize}
+              >
+                -
+              </Button>
+            </div>
+            <div className={styles.inputNum}>
+              <Input
+                type="number"
+                value={inputAmount}
+                onChange={handleInputChange}
+                min={0}
+              />
+            </div>
+            <div>
+              <Button
+                type="primary"
+                disabled={inputAmount >= item.amount && !isNaN(inputAmount)}
+                onClick={() => plus()}
+                className={styles.buttonSize}
+              >
+                +
+              </Button>
+            </div>
+          </>
+        )}
       </div>
 
       <div className={styles.flexBtn}>
         <div>
-          <Button
-            type="primary"
-            disabled={inputAmount === 0}
-            onClick={() => handleAddCount()}
-            className={styles.btnAdd}
-          >
-            Add to card
-          </Button>
+          {user && (
+            <Button
+              type="primary"
+              disabled={inputAmount === 0}
+              onClick={() => handleAddCount()}
+              className={styles.btnAdd}
+            >
+              Add to card
+            </Button>
+          )}
         </div>
         <div>
           {user && user.role !== "GUEST" && (

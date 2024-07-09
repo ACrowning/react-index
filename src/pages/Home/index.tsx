@@ -7,7 +7,7 @@ import { ShoppingCartOutlined, PlusOutlined } from "@ant-design/icons";
 import { ShopCartModal } from "./components/ShopCartModal";
 import { cart } from "../../api/cart";
 import { products } from "../../api/products";
-import { Pagination } from "antd";
+import { Pagination, Button } from "antd";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import { useSearchParams } from "react-router-dom";
@@ -186,6 +186,10 @@ function Home() {
     navigate("/new_product");
   };
 
+  const goToPanel = () => {
+    navigate("/admin-panel");
+  };
+
   return (
     <>
       <div>
@@ -196,6 +200,17 @@ function Home() {
               className={styles.iconCart}
               onClick={handleShopCardClick}
             />
+            <div>
+              {user && user.role !== "GUEST" && (
+                <Button
+                  type="primary"
+                  className={styles.iconAdmin}
+                  onClick={goToPanel}
+                >
+                  Admin
+                </Button>
+              )}
+            </div>
             <div>
               {user && user.role !== "GUEST" && (
                 <PlusOutlined

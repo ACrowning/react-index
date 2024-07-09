@@ -44,6 +44,14 @@ body {
   margin-right: 85px;
 }
 
+.iconAdmin {
+  position: absolute;
+  margin-left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgb(7, 85, 7);
+}
+
 .iconEdit {
   font-size: 15px;
   margin-left: 10px;
