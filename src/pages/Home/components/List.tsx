@@ -4,7 +4,6 @@ import Count from "./Count";
 
 export function List({
   handleToggle,
-  handleDeleteItem,
   sortedElements,
   handleElementClick,
   handleAmountEdit,
@@ -30,7 +29,6 @@ export function List({
             item={item}
             handleAmountEdit={handleAmountEdit}
             addToCart={addToCart}
-            handleDeleteItem={handleDeleteItem}
             index={index}
           />
         </div>

@@ -4,12 +4,7 @@ import { Input } from "antd";
 import styles from "../app.module.css";
 import { AuthContext } from "../../../context/AuthContext";
 
-export default function Count({
-  item,
-  handleAmountEdit,
-  addToCart,
-  handleDeleteItem,
-}: any) {
+export default function Count({ item, handleAmountEdit, addToCart }: any) {
   const [inputAmount, setInputAmount] = useState<any>(1);
   const context = useContext(AuthContext);
   if (!context) {
@@ -91,17 +86,6 @@ export default function Count({
               className={styles.btnAdd}
             >
               Add to card
-            </Button>
-          )}
-        </div>
-        <div>
-          {user && user.role !== "GUEST" && (
-            <Button
-              type="primary"
-              onClick={() => handleDeleteItem(item.id)}
-              className={styles.btnDelete}
-            >
-              Delete
             </Button>
           )}
         </div>

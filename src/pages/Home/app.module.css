@@ -159,8 +159,7 @@ body {
 
 .flexBtn {
   display: flex;
-  padding: 5px;
-  justify-content: center;
+  padding: 10px;
 }
 
 .flexItem {

@@ -87,20 +87,6 @@ function Home() {
     setSearchParams({ page: page, size: size, sort: sortByPrice });
   };
 
-  const handleDeleteItem = async (itemsId: any) => {
-    const itemsDeleted = elements.filter(
-      (element: any) => element.id !== itemsId
-    );
-
-    const { error } = await products.deleteProduct(itemsId);
-
-    if (error) {
-      setElements([]);
-    } else {
-      setElements([...itemsDeleted]);
-    }
-  };
-
   const handleToggle = (productId: any) => {
     setElements((prevElements: any) =>
       prevElements.map((element: any) =>
@@ -247,7 +233,6 @@ function Home() {
 
           <div className={styles.container}>
             <List
-              handleDeleteItem={handleDeleteItem}
               handleToggle={handleToggle}
               sortedElements={elements}
               handleElementClick={handleElementClick}

@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Table, Checkbox, Button, Modal, message } from "antd";
+import { Table, Button, Modal, message } from "antd";
 import { products } from "../../api/products";
 import styles from "./panel.module.css";
 
 interface Product {
   id: string;
   title: string;
+  amount: number;
+  price: number;
+  favorite: boolean;
+  image?: string | null;
+  albumPhotos?: string[];
 }
 
 const AdminPanel: React.FC = () => {
@@ -69,6 +74,9 @@ const AdminPanel: React.FC = () => {
         columns={columns}
         dataSource={product}
         rowKey="id"
+        rowClassName={(record: Product) =>
+          record.amount === 0 ? styles.outOfStock : ""
+        }
       />
       {selectedRowKeys.length > 0 && (
         <Button type="primary" danger onClick={() => setIsModalVisible(true)}>
