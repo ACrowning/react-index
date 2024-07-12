@@ -37,12 +37,14 @@ function Home() {
   const { user } = context;
 
   const fetchProducts = async (page: any, pageSize: any) => {
-    const { data, error } = await products.getProducts(
+    const params = {
       searchElement,
       sortByPrice,
       page,
-      pageSize
-    );
+      pageSize,
+    };
+
+    const { data, error } = await products.getProducts(params);
     if (error) {
       setElements([]);
     } else {
