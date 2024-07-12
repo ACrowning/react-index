@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Table, Button, Modal, message } from "antd";
 import { products } from "../../api/products";
 import styles from "./panel.module.css";
+import withAdminAccess from "../../hoc/withAdminAccess";
 
 interface Product {
   id: string;
@@ -97,4 +98,4 @@ const AdminPanel: React.FC = () => {
   );
 };
 
-export default AdminPanel;
+export default withAdminAccess(AdminPanel);
