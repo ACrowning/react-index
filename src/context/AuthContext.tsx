@@ -16,6 +16,7 @@ interface AuthContextType {
   user: User | null;
   setUser: (user: User | null) => void;
   logout: () => void;
+  loading: boolean;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(
@@ -26,6 +27,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -41,6 +43,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
           storage.set(TOKEN_KEY, null);
         }
       }
+      setLoading(false);
     };
     fetchUser();
   }, []);
@@ -60,7 +63,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
   return (
     <AuthContext.Provider
-      value={{ user, setUser: setUserAndStoreToken, logout }}
+      value={{ user, setUser: setUserAndStoreToken, logout, loading }}
     >
       {children}
     </AuthContext.Provider>

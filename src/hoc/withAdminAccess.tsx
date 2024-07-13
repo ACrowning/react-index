@@ -8,7 +8,11 @@ const withAdminAccess = (WrappedComponent: React.ComponentType) => {
     if (!context) {
       throw new Error("UserContext must be used within a UserProvider");
     }
-    const { user } = context;
+    const { user, loading } = context;
+
+    if (loading) {
+      return <div>Loading...</div>;
+    }
 
     if (!user || user.role !== "ADMIN") {
       return <Navigate to="/" replace />;
