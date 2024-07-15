@@ -38,7 +38,9 @@ export function ShopCartModal({
   const handleShopCardRemove = async (itemsId: any) => {
     const itemsDeleted = cartItems.filter((item: any) => item.id !== itemsId);
     const removedItem = cartItems.find((item: any) => item.id === itemsId);
-    const elementToUpdate = elements.find((element: any) => element.id === itemsId);
+    const elementToUpdate = elements.find(
+      (element: any) => element.id === itemsId
+    );
     const amountReturn = elementToUpdate.amount + removedItem.amount;
 
     const { error } = await cart.removeFromCart(itemsId);

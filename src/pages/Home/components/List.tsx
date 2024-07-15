@@ -9,7 +9,7 @@ export function List({
   handleAmountEdit,
   addToCart,
 }: any) {
-  return sortedElements.map((item: any, index: any) => (
+  return sortedElements.map((item: any) => (
     <div key={item.id}>
       <div
         className={`${styles.itemsStyle} ${
@@ -29,7 +29,6 @@ export function List({
             item={item}
             handleAmountEdit={handleAmountEdit}
             addToCart={addToCart}
-            index={index}
           />
         </div>
       </div>
