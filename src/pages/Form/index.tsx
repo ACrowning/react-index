@@ -4,7 +4,7 @@ import styles from "../Form/form.module.css";
 import { products } from "../../api/products";
 import schema from "./schema";
 import { useNavigate } from "react-router-dom";
-import { notification, Button, Checkbox, Input } from "antd";
+import { notification, Button, Input } from "antd";
 
 const ProductForm = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -136,16 +136,7 @@ const ProductForm = () => {
                 component="div"
               />
             </div>
-            <div className={styles.formItem}>
-              <label htmlFor="favorite">Favorite:</label>
-              <Checkbox
-                id="favorite"
-                checked={values.favorite}
-                onChange={(e) => setFieldValue("favorite", e.target.checked)}
-              >
-                Favorite
-              </Checkbox>
-            </div>
+
             <div className={styles.formItem}>
               <label htmlFor="image">Main Image:</label>
               <input

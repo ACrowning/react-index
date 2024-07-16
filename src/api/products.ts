@@ -33,18 +33,6 @@ export const products = {
     }
   },
 
-  getAllProducts: async () => {
-    try {
-      const response = await apiInstance.get(`/${productRoot}/all`);
-      return { data: response.data, error: null };
-    } catch (error: any) {
-      return {
-        data: null,
-        error: error.response.data.message || "Network response was not ok",
-      };
-    }
-  },
-
   getProductById: async (id: any) => {
     try {
       const response = await apiInstance.get(`/${productRoot}/${id}`);
