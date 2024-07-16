@@ -1,0 +1,12 @@
+.adminPanel {
+  padding: 20px;
+}
+
+.adminPanel .ant-btn-primary {
+  margin-top: 20px;
+}
+
+.outOfStock {
+  background-color: #f0f0f0 !important;
+  color: grey;
+}

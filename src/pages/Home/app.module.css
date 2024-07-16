@@ -44,10 +44,23 @@ body {
   margin-right: 85px;
 }
 
+.iconAdmin {
+  position: absolute;
+  margin-left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgb(7, 85, 7);
+}
+
 .iconEdit {
   font-size: 15px;
   margin-left: 10px;
   cursor: pointer;
+}
+
+.login {
+  color: rgb(7, 85, 7);
+  margin-right: 120px;
 }
 
 .circle {
@@ -146,8 +159,7 @@ body {
 
 .flexBtn {
   display: flex;
-  padding: 5px;
-  justify-content: center;
+  padding: 10px;
 }
 
 .flexItem {

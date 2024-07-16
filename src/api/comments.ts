@@ -1,9 +1,15 @@
+import { User } from "../pages/Item/types";
 import { apiInstance } from "./index";
 
 const commentRoot = "comments";
 
 export const comments = {
-  addComment: async (newComment: any) => {
+  addComment: async (
+    newComment: any,
+    replyText?: string,
+    user?: User,
+    id?: string
+  ) => {
     try {
       const response = await apiInstance.post(
         `/${commentRoot}/comment`,

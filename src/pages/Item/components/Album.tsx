@@ -1,13 +1,17 @@
-import PropTypes from "prop-types";
+import React from "react";
 import { Carousel } from "antd";
 import styles from "../../Item/item.module.css";
 
-const Album = ({ albumPhotos }: any) => {
+interface AlbumProps {
+  albumPhotos?: string[];
+}
+
+const Album: React.FC<AlbumProps> = ({ albumPhotos }) => {
   return (
     <div className={styles.carouselContainer}>
       <Carousel>
         {albumPhotos && albumPhotos.length > 0 ? (
-          albumPhotos.map((photo: any, index: any) => (
+          albumPhotos.map((photo, index) => (
             <div key={index}>
               <img
                 className={styles.carouselImage}
@@ -22,10 +26,6 @@ const Album = ({ albumPhotos }: any) => {
       </Carousel>
     </div>
   );
-};
-
-Album.propTypes = {
-  albumPhotos: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
 export default Album;

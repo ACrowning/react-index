@@ -4,13 +4,12 @@ import Count from "./Count";
 
 export function List({
   handleToggle,
-  handleDeleteItem,
   sortedElements,
   handleElementClick,
   handleAmountEdit,
   addToCart,
 }: any) {
-  return sortedElements.map((item: any, index: any) => (
+  return sortedElements.map((item: any) => (
     <div key={item.id}>
       <div
         className={`${styles.itemsStyle} ${
@@ -30,8 +29,6 @@ export function List({
             item={item}
             handleAmountEdit={handleAmountEdit}
             addToCart={addToCart}
-            handleDeleteItem={handleDeleteItem}
-            index={index}
           />
         </div>
       </div>

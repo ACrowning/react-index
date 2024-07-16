@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import styles from "../Home/app.module.css";
 import { List } from "./components/List";
 import { Navbar } from "./components/Navbar";
+import Login from "./components/Login";
 import { ShoppingCartOutlined, PlusOutlined } from "@ant-design/icons";
 import { ShopCartModal } from "./components/ShopCartModal";
 import { cart } from "../../api/cart";
 import { products } from "../../api/products";
-import { Pagination } from "antd";
+import { Pagination, Button } from "antd";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext";
 import { useSearchParams } from "react-router-dom";
 import {
   DEFAULT_PAGE,
@@ -28,14 +30,21 @@ function Home() {
   const [totalPages, setTotalPages] = useState(1);
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("UserContext must be used within a UserProvider");
+  }
+  const { user } = context;
 
   const fetchProducts = async (page: any, pageSize: any) => {
-    const { data, error } = await products.getProducts(
+    const params = {
       searchElement,
       sortByPrice,
       page,
-      pageSize
-    );
+      pageSize,
+    };
+
+    const { data, error } = await products.getProducts(params);
     if (error) {
       setElements([]);
     } else {
@@ -63,7 +72,7 @@ function Home() {
       page: DEFAULT_PAGE,
       size: pageSize,
       sort: e.target.value,
-    }as any);
+    } as any);
   };
 
   const handleSearch = (e: any) => {
@@ -78,18 +87,6 @@ function Home() {
   const handlePageChange = (current: any, size: any) => {
     const page = size !== pageSize ? DEFAULT_PAGE : current;
     setSearchParams({ page: page, size: size, sort: sortByPrice });
-  };
-
-  const handleDeleteItem = async (itemsId: any) => {
-    const itemsDeleted = elements.filter((element: any) => element.id !== itemsId);
-
-    const { error } = await products.deleteProduct(itemsId);
-
-    if (error) {
-      setElements([]);
-    } else {
-      setElements([...itemsDeleted]);
-    }
   };
 
   const handleToggle = (productId: any) => {
@@ -118,7 +115,7 @@ function Home() {
 
   const handleAmountEdit = async (productId: any, newCount: any) => {
     const changes = {
-      amount: parseInt(productId.amount - newCount as any),
+      amount: parseInt((productId.amount - newCount) as any),
     };
     const { error } = await products.changeAmount(productId.id, changes);
 
@@ -177,6 +174,10 @@ function Home() {
     navigate("/new_product");
   };
 
+  const goToPanel = () => {
+    navigate("/admin-panel");
+  };
+
   return (
     <>
       <div>
@@ -187,11 +188,29 @@ function Home() {
               className={styles.iconCart}
               onClick={handleShopCardClick}
             />
+            <div>
+              {user && user.role !== "GUEST" && (
+                <Button
+                  type="primary"
+                  className={styles.iconAdmin}
+                  onClick={goToPanel}
+                >
+                  Admin
+                </Button>
+              )}
+            </div>
+            <div>
+              {user && user.role !== "GUEST" && (
+                <PlusOutlined
+                  className={styles.iconForm}
+                  onClick={goToForm}
+                ></PlusOutlined>
+              )}
+            </div>
 
-            <PlusOutlined
-              className={styles.iconForm}
-              onClick={goToForm}
-            ></PlusOutlined>
+            <div className={styles.login}>
+              <Login />
+            </div>
           </header>
           <div>
             <ShopCartModal
@@ -216,7 +235,6 @@ function Home() {
 
           <div className={styles.container}>
             <List
-              handleDeleteItem={handleDeleteItem}
               handleToggle={handleToggle}
               sortedElements={elements}
               handleElementClick={handleElementClick}

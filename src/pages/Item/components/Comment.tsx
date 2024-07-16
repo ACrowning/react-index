@@ -2,14 +2,16 @@ import React, { useState } from "react";
 import { Form, Input, Button } from "antd";
 import styles from "../../Item/item.module.css";
 import { comments } from "../../../api/comments";
+import { User, Comment as CommentType } from "../types";
 
 interface Props {
-  comment: any;
-  productId: any;
-  refreshComments: any;
+  comment: CommentType;
+  productId: string;
+  refreshComments: () => void;
+  user: User | null;
 }
 
-const Comment = ({ comment, productId, refreshComments }: Props) => {
+const Comment = ({ comment, productId, user, refreshComments }: Props) => {
   const [replyText, setReplyText] = useState("");
   const [isReplying, setIsReplying] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -24,6 +26,7 @@ const Comment = ({ comment, productId, refreshComments }: Props) => {
     const newComment = {
       productId,
       text: replyText,
+      user,
       parentCommentId: comment.id,
     };
     const { data, error } = await comments.addComment(newComment);
@@ -32,6 +35,11 @@ const Comment = ({ comment, productId, refreshComments }: Props) => {
       setReplyText("");
       setIsReplying(false);
     }
+  };
+
+  const handleReplyClick = () => {
+    setIsReplying(true);
+    setReplyText(`${comment.user.username}, `);
   };
 
   const handleUpdate = async () => {
@@ -75,6 +83,9 @@ const Comment = ({ comment, productId, refreshComments }: Props) => {
   return (
     <li>
       <p>
+        <strong>{comment.user.username}</strong>
+      </p>
+      <p>
         {isEditing ? (
           <Input.TextArea
             value={editText}
@@ -98,15 +109,21 @@ const Comment = ({ comment, productId, refreshComments }: Props) => {
         </>
       ) : (
         <>
-          <Button type="link" onClick={() => setIsEditing(true)}>
-            Edit
-          </Button>
-          <Button type="link" onClick={() => setIsReplying(!isReplying)}>
-            {isReplying ? "Cancel" : "Reply"}
-          </Button>
-          <Button type="link" danger onClick={handleDelete}>
-            Delete
-          </Button>
+          {user && (
+            <Button type="link" onClick={() => setIsEditing(true)}>
+              Edit
+            </Button>
+          )}
+          {user && (
+            <Button type="link" onClick={handleReplyClick}>
+              {isReplying ? "Cancel" : "Reply"}
+            </Button>
+          )}
+          {user && (
+            <Button type="link" danger onClick={handleDelete}>
+              Delete
+            </Button>
+          )}
         </>
       )}
       {isReplying && (
@@ -137,6 +154,7 @@ const Comment = ({ comment, productId, refreshComments }: Props) => {
                   key={subComment.id}
                   comment={subComment}
                   productId={productId}
+                  user={user}
                   refreshComments={refreshComments}
                 />
               ))}

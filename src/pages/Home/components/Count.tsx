@@ -1,23 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Button } from "antd";
 import { Input } from "antd";
 import styles from "../app.module.css";
+import { AuthContext } from "../../../context/AuthContext";
 
-export default function Count({
-  item,
-  handleAmountEdit,
-  addToCart,
-  handleDeleteItem,
-  index,
-}: any) {
+export default function Count({ item, handleAmountEdit, addToCart }: any) {
   const [inputAmount, setInputAmount] = useState<any>(1);
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("UserContext must be used within a UserProvider");
+  }
+  const { user } = context;
 
   const handleAddCount = () => {
     handleAmountEdit(item, inputAmount);
 
     addToCart(item, inputAmount);
 
-    setInputAmount(parseInt(item.amount  - inputAmount && 1 as any));
+    setInputAmount(parseInt(item.amount - inputAmount && (1 as any)));
   };
 
   const handleInputChange = (e: any) => {
@@ -42,55 +42,52 @@ export default function Count({
       <div className={styles.price}>price: {item.price}</div>
       <div className={styles.amount}>amount: {item.amount}</div>
       <div className={styles.flexItem}>
-        <div>
-          <Button
-            type="primary"
-            disabled={inputAmount === 0}
-            onClick={() => minus()}
-            className={styles.buttonSize}
-          >
-            -
-          </Button>
-        </div>
-        <div className={styles.inputNum}>
-          <Input
-            type="number"
-            value={inputAmount}
-            onChange={handleInputChange}
-            min={0}
-          />
-        </div>
-        <div>
-          <Button
-            type="primary"
-            disabled={inputAmount >= item.amount && !isNaN(inputAmount)}
-            onClick={() => plus()}
-            className={styles.buttonSize}
-          >
-            +
-          </Button>
-        </div>
+        {user && (
+          <>
+            <div>
+              <Button
+                type="primary"
+                disabled={inputAmount === 0}
+                onClick={() => minus()}
+                className={styles.buttonSize}
+              >
+                -
+              </Button>
+            </div>
+            <div className={styles.inputNum}>
+              <Input
+                type="number"
+                value={inputAmount}
+                onChange={handleInputChange}
+                min={0}
+              />
+            </div>
+            <div>
+              <Button
+                type="primary"
+                disabled={inputAmount >= item.amount && !isNaN(inputAmount)}
+                onClick={() => plus()}
+                className={styles.buttonSize}
+              >
+                +
+              </Button>
+            </div>
+          </>
+        )}
       </div>
 
       <div className={styles.flexBtn}>
         <div>
-          <Button
-            type="primary"
-            disabled={inputAmount === 0}
-            onClick={() => handleAddCount()}
-            className={styles.btnAdd}
-          >
-            Add to card
-          </Button>
-        </div>
-        <div>
-          <Button
-            type="primary"
-            onClick={() => handleDeleteItem(item.id)}
-            className={styles.btnDelete}
-          >
-            Delete
-          </Button>
+          {user && (
+            <Button
+              type="primary"
+              disabled={inputAmount === 0}
+              onClick={() => handleAddCount()}
+              className={styles.btnAdd}
+            >
+              Add to card
+            </Button>
+          )}
         </div>
       </div>
     </div>

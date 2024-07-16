@@ -2,8 +2,20 @@ import { apiInstance } from "./index";
 
 const productRoot = "products";
 
+interface GetProductsParams {
+  searchElement: any;
+  sortByPrice: any;
+  page: any;
+  pageSize: any;
+}
+
 export const products = {
-  getProducts: async (searchElement: any, sortByPrice: any, page: any, pageSize: any) => {
+  getProducts: async ({
+    searchElement,
+    sortByPrice,
+    page,
+    pageSize,
+  }: GetProductsParams) => {
     try {
       const response = await apiInstance.post(`/${productRoot}`, {
         title: searchElement,
