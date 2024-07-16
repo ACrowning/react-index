@@ -4,12 +4,11 @@ import styles from "../Form/form.module.css";
 import { products } from "../../api/products";
 import schema from "./schema";
 import { useNavigate } from "react-router-dom";
-import { notification, Modal, Button, Checkbox, Input } from "antd";
+import { notification, Button, Checkbox, Input } from "antd";
 
 const ProductForm = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [albumPhotoPreviews, setAlbumPhotoPreviews] = useState<string[]>([]);
-  const [isModalVisible, setIsModalVisible] = useState(true);
   const navigate = useNavigate();
 
   const initialValues = {
@@ -48,6 +47,7 @@ const ProductForm = () => {
         message: "Success",
         description: "Product added successfully!",
       });
+
       navigate("/");
     } else {
       notification.error({
@@ -57,7 +57,6 @@ const ProductForm = () => {
     }
 
     setSubmitting(false);
-    setIsModalVisible(false);
   };
 
   const handleImageChange = (
@@ -94,131 +93,115 @@ const ProductForm = () => {
     });
   };
 
-  const handleCancel = () => {
-    setIsModalVisible(false);
-    navigate("/");
-  };
-
   return (
-    <div>
-      <Modal
-        title="Add New Product"
-        open={isModalVisible}
-        onCancel={handleCancel}
-        footer={null}
-        className={styles.modal}
+    <div className={styles.formContainer}>
+      <h2>Add New Product</h2>
+      <Formik
+        initialValues={initialValues}
+        validationSchema={schema}
+        onSubmit={handleSubmit}
       >
-        <Formik
-          initialValues={initialValues}
-          validationSchema={schema}
-          onSubmit={handleSubmit}
-        >
-          {({ setFieldValue, values, isSubmitting }) => (
-            <Form className={styles.form}>
-              <div className={styles.formItem}>
-                <label htmlFor="title">Title:</label>
-                <Field as={Input} type="text" id="title" name="title" />
-                <ErrorMessage
-                  className={styles.error}
-                  name="title"
-                  component="div"
-                />
-              </div>
-              <div className={styles.formItem}>
-                <label htmlFor="amount">Amount:</label>
-                <Field as={Input} type="number" id="amount" name="amount" />
-                <ErrorMessage
-                  className={styles.error}
-                  name="amount"
-                  component="div"
-                />
-              </div>
-              <div className={styles.formItem}>
-                <label htmlFor="price">Price:</label>
-                <Field
-                  as={Input}
-                  type="number"
-                  step="0.01"
-                  id="price"
-                  name="price"
-                />
-                <ErrorMessage
-                  className={styles.error}
-                  name="price"
-                  component="div"
-                />
-              </div>
-              <div className={styles.formItem}>
-                <label htmlFor="favorite">Favorite:</label>
-                <Checkbox
-                  id="favorite"
-                  checked={values.favorite}
-                  onChange={(e) => setFieldValue("favorite", e.target.checked)}
-                >
-                  Favorite
-                </Checkbox>
-              </div>
-              <div className={styles.formItem}>
-                <label htmlFor="image">Main Image:</label>
-                <input
-                  type="file"
-                  id="image"
-                  name="image"
-                  accept="image/*"
-                  onChange={(event) => handleImageChange(event, setFieldValue)}
-                />
-                {imagePreview && (
-                  <img
-                    src={imagePreview}
-                    alt="Image preview"
-                    className={styles.imagePreviews}
-                    width={100}
-                    height={100}
-                  />
-                )}
-                <ErrorMessage
-                  className={styles.error}
-                  name="image"
-                  component="div"
-                />
-              </div>
-              <div className={styles.formItem}>
-                <label htmlFor="albumPhotos">Album Photos:</label>
-                <input
-                  type="file"
-                  id="albumPhotos"
-                  name="albumPhotos"
-                  accept="image/*"
-                  multiple
-                  onChange={(event) =>
-                    handleAlbumPhotosChange(event, setFieldValue)
-                  }
-                />
-                <div className={styles.imagePreviews}>
-                  {albumPhotoPreviews.map((preview, index) => (
-                    <img
-                      key={index}
-                      src={preview}
-                      alt={`Album preview ${index + 1}`}
-                      className={styles.imagePreviews}
-                      width={100}
-                      height={100}
-                    />
-                  ))}
-                </div>
-              </div>
-              <Button
-                type="primary"
-                htmlType="submit"
-                disabled={isSubmitting}
-                className={styles.submitButton}
+        {({ setFieldValue, values, isSubmitting }) => (
+          <Form className={styles.form}>
+            <div className={styles.formItem}>
+              <label htmlFor="title">Title:</label>
+              <Field as={Input} type="text" id="title" name="title" />
+              <ErrorMessage
+                className={styles.error}
+                name="title"
+                component="div"
+              />
+            </div>
+            <div className={styles.formItem}>
+              <label htmlFor="amount">Amount:</label>
+              <Field as={Input} type="number" id="amount" name="amount" />
+              <ErrorMessage
+                className={styles.error}
+                name="amount"
+                component="div"
+              />
+            </div>
+            <div className={styles.formItem}>
+              <label htmlFor="price">Price:</label>
+              <Field
+                as={Input}
+                type="number"
+                step="0.01"
+                id="price"
+                name="price"
+              />
+              <ErrorMessage
+                className={styles.error}
+                name="price"
+                component="div"
+              />
+            </div>
+            <div className={styles.formItem}>
+              <label htmlFor="favorite">Favorite:</label>
+              <Checkbox
+                id="favorite"
+                checked={values.favorite}
+                onChange={(e) => setFieldValue("favorite", e.target.checked)}
               >
-                Submit
-              </Button>
-            </Form>
-          )}
-        </Formik>
-      </Modal>
+                Favorite
+              </Checkbox>
+            </div>
+            <div className={styles.formItem}>
+              <label htmlFor="image">Main Image:</label>
+              <input
+                type="file"
+                id="image"
+                name="image"
+                accept="image/*"
+                onChange={(event) => handleImageChange(event, setFieldValue)}
+              />
+              {imagePreview && (
+                <img
+                  src={imagePreview}
+                  alt="Image preview"
+                  className={styles.imagePreview}
+                />
+              )}
+              <ErrorMessage
+                className={styles.error}
+                name="image"
+                component="div"
+              />
+            </div>
+            <div className={styles.formItem}>
+              <label htmlFor="albumPhotos">Album Photos:</label>
+              <input
+                type="file"
+                id="albumPhotos"
+                name="albumPhotos"
+                accept="image/*"
+                multiple
+                onChange={(event) =>
+                  handleAlbumPhotosChange(event, setFieldValue)
+                }
+              />
+              <div className={styles.imagePreviews}>
+                {albumPhotoPreviews.map((preview, index) => (
+                  <img
+                    key={index}
+                    src={preview}
+                    alt={`Album preview ${index + 1}`}
+                    className={styles.imagePreview}
+                  />
+                ))}
+              </div>
+            </div>
+            <Button
+              type="primary"
+              htmlType="submit"
+              disabled={isSubmitting}
+              className={styles.submitButton}
+            >
+              Submit
+            </Button>
+          </Form>
+        )}
+      </Formik>
     </div>
   );
 };

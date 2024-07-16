@@ -8,41 +8,50 @@
   margin-top: 0.25rem;
 }
 
+.formContainer {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background-color: #fff;
+}
+
 .form {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 15px;
 }
 
 .formItem {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+}
+
+.label {
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.input {
   width: 100%;
 }
 
-.error {
-  color: red;
-  font-size: 12px;
-}
-
-.imagePreviews {
+.checkbox {
   display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
+  align-items: center;
 }
 
-.modal {
-  .ant-modal-content {
-    border-radius: 8px;
-    padding: 20px;
-  }
+.imagePreview {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  margin-right: 4px;
 }
 
 .submitButton {
-  width: 100%;
   margin-bottom: 20px;
   color: white;
   background-color: rgb(7, 85, 7);
+  align-self: flex-end;
 }
