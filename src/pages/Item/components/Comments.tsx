@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, useCallback } from "react";
-import { List, Button, Input, Form } from "antd";
+import { Button, Input, Form } from "antd";
 import { CommentType } from "../types";
 import { comments } from "../../../api/comments";
 import { AuthContext } from "../../../context/AuthContext";
@@ -7,6 +7,10 @@ import styles from "../../Item/item.module.css";
 
 interface Props {
   productId: string;
+}
+
+interface CommentTree extends CommentType {
+  replies?: CommentTree[];
 }
 
 const CommentSection: React.FC<Props> = ({ productId }) => {
@@ -33,8 +37,6 @@ const CommentSection: React.FC<Props> = ({ productId }) => {
     const response = await comments.getComments();
     if (response.data) {
       setCommentList(response.data);
-    } else {
-      console.error("Error fetching comments:", response.error);
     }
     setLoading(false);
   }, []);
@@ -105,140 +107,99 @@ const CommentSection: React.FC<Props> = ({ productId }) => {
     setReplyingTo(parentId);
   };
 
-  const renderReplies = (parentId: string) => {
-    return commentList
-      .filter((reply) => reply.parentId === parentId)
-      .map((reply) => (
-        <div key={reply.id} className={styles.replyContainer}>
-          <div className={styles.username}>{reply.user.username}</div>
-          <p>{reply.text}</p>
-          <div className={styles.commentDate}>
-            {new Date(reply.date).toLocaleString()}
-          </div>
-          {replyingTo === reply.id && (
-            <div className={styles.replyInputContainer}>
-              <Input.TextArea
-                rows={2}
-                value={replyTexts[reply.id] || ""}
-                onChange={(e) =>
-                  setReplyTexts((prev) => ({
-                    ...prev,
-                    [reply.id]: e.target.value,
-                  }))
-                }
-                placeholder="Write a reply..."
-              />
-              <Button
-                type="primary"
-                style={{ marginTop: 8 }}
-                onClick={() => handleAddReply(reply.id)}
-              >
-                Submit Reply
-              </Button>
-            </div>
-          )}
-          <div className={styles.buttonContainer}>
-            <Button type="link" onClick={() => handleReplyToComment(reply.id)}>
-              Reply
-            </Button>
-            <Button
-              type="link"
-              onClick={() =>
-                setEditingComment({ id: reply.id, text: reply.text })
-              }
-            >
-              Edit
-            </Button>
-            <Button
-              type="link"
-              danger
-              onClick={() => handleDeleteComment(reply.id)}
-            >
-              Delete
-            </Button>
-          </div>
-          {renderReplies(reply.id)}
-        </div>
-      ));
+  const buildCommentTree = (
+    comments: CommentType[],
+    parentId: string | null = null
+  ): CommentTree[] => {
+    const commentTree: CommentTree[] = comments
+      .filter((comment) => comment.parent_comment_id === parentId)
+      .map((comment) => ({
+        ...comment,
+        replies: buildCommentTree(comments, comment.id),
+      }));
+
+    return commentTree;
   };
+
+  const renderComments = (comments: CommentTree[]): JSX.Element[] => {
+    return comments.map((comment) => (
+      <div key={comment.id} className={styles.commentContainer}>
+        <div className={styles.username}>{user!.username}</div>
+        {editingComment?.id === comment.id ? (
+          <Input.TextArea
+            value={editingComment?.text}
+            onChange={(e) =>
+              editingComment &&
+              setEditingComment({
+                id: editingComment.id,
+                text: e.target.value,
+              })
+            }
+            onPressEnter={() => handleEditComment(comment.id)}
+          />
+        ) : (
+          <div className={styles.commentText}>
+            <p>{comment.text}</p>
+          </div>
+        )}
+        <div className={styles.commentDate}>
+          {new Date(comment.date).toLocaleString()}
+        </div>
+
+        {replyingTo === comment.id && (
+          <div className={styles.replyInputContainer}>
+            <Input.TextArea
+              rows={2}
+              value={replyTexts[comment.id] || ""}
+              onChange={(e) =>
+                setReplyTexts((prev) => ({
+                  ...prev,
+                  [comment.id]: e.target.value,
+                }))
+              }
+              placeholder="Write a reply..."
+            />
+            <Button
+              type="primary"
+              style={{ marginTop: 8 }}
+              onClick={() => handleAddReply(comment.id)}
+            >
+              Submit Reply
+            </Button>
+          </div>
+        )}
+
+        <div className={styles.buttonContainer}>
+          <Button type="link" onClick={() => handleReplyToComment(comment.id)}>
+            Reply
+          </Button>
+          <Button
+            type="link"
+            onClick={() =>
+              setEditingComment({ id: comment.id, text: comment.text })
+            }
+          >
+            Edit
+          </Button>
+          <Button
+            type="link"
+            danger
+            onClick={() => handleDeleteComment(comment.id)}
+          >
+            Delete
+          </Button>
+        </div>
+
+        {comment.replies && renderComments(comment.replies)}
+      </div>
+    ));
+  };
+
+  const commentsTree = buildCommentTree(commentList);
 
   return (
     <div>
-      <List
-        loading={loading}
-        dataSource={commentList.filter((comment) => !comment.parentId)}
-        renderItem={(item: CommentType) => (
-          <div key={item.id} className={styles.commentContainer}>
-            <div className={styles.username}>{user!.username}</div>
-            {editingComment?.id === item.id ? (
-              <Input.TextArea
-                value={editingComment?.text}
-                onChange={(e) =>
-                  editingComment &&
-                  setEditingComment({
-                    id: editingComment.id,
-                    text: e.target.value,
-                  })
-                }
-                onPressEnter={() => handleEditComment(item.id)}
-              />
-            ) : (
-              <div className={styles.commentText}>
-                <p>{item.text}</p>
-              </div>
-            )}
-            <div className={styles.commentDate}>
-              {new Date(item.date).toLocaleString()}
-            </div>
-
-            {replyingTo === item.id && (
-              <div className={styles.replyInputContainer}>
-                <Input.TextArea
-                  rows={2}
-                  value={replyTexts[item.id] || ""}
-                  onChange={(e) =>
-                    setReplyTexts((prev) => ({
-                      ...prev,
-                      [item.id]: e.target.value,
-                    }))
-                  }
-                  placeholder="Write a reply..."
-                />
-                <Button
-                  type="primary"
-                  style={{ marginTop: 8 }}
-                  onClick={() => handleAddReply(item.id)}
-                >
-                  Submit Reply
-                </Button>
-              </div>
-            )}
-
-            <div className={styles.buttonContainer}>
-              <Button type="link" onClick={() => handleReplyToComment(item.id)}>
-                Reply
-              </Button>
-              <Button
-                type="link"
-                onClick={() =>
-                  setEditingComment({ id: item.id, text: item.text })
-                }
-              >
-                Edit
-              </Button>
-              <Button
-                type="link"
-                danger
-                onClick={() => handleDeleteComment(item.id)}
-              >
-                Delete
-              </Button>
-            </div>
-
-            {renderReplies(item.id)}
-          </div>
-        )}
-      />
+      {loading ? <div>Loading...</div> : renderComments(commentsTree)}
       <Form.Item>
         <Input.TextArea
           rows={4}

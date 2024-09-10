@@ -4,6 +4,7 @@ export interface User {
 }
 
 export interface CommentType {
+  parent_comment_id: string | null;
   parentId: string | null;
   id: string;
   productId: string;
