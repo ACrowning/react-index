@@ -2,62 +2,41 @@ import { apiInstance } from "./index";
 
 const productRoot = "products";
 
-interface GetProductsParams {
-  searchElement: any;
-  sortByPrice: any;
-  page: any;
-  pageSize: any;
-}
-
 export const products = {
-  getProducts: async ({
-    searchElement,
-    sortByPrice,
-    page,
-    pageSize,
-  }: GetProductsParams) => {
+  getProducts: async (params: {
+    title?: string;
+    sortByPrice?: string;
+    page?: number;
+    limit?: number;
+  }) => {
     try {
-      const response = await apiInstance.post(`/${productRoot}`, {
-        title: searchElement,
-        sortByPrice,
-        page,
-        limit: pageSize,
-      });
+      const response = await apiInstance.post(`/${productRoot}`, params);
 
-      return { data: response.data.data, error: null };
+      const products = response.data.data;
+      const total = response.data.total;
+
+      return { data: { products, total }, error: null };
     } catch (error: any) {
       return {
         data: null,
-        error: error.response.data.message || "Network response was not ok",
+        error: error.response?.data.message || "Network response was not ok",
       };
     }
   },
 
-  getProductById: async (id: any) => {
+  getProductById: async (productId: any) => {
     try {
-      const response = await apiInstance.get(`/${productRoot}/${id}`);
+      const response = await apiInstance.get(`/${productRoot}/${productId}`);
       return { data: response.data, error: null };
     } catch (error: any) {
       return {
         data: null,
-        error: error.response.data.message || "Network response was not ok",
+        error: error.response?.data.message || "Network response was not ok",
       };
     }
   },
 
-  deleteProduct: async (itemsId: any) => {
-    try {
-      const response = await apiInstance.delete(`/${productRoot}/${itemsId}`);
-      return { data: response.data, error: null };
-    } catch (error: any) {
-      return {
-        data: null,
-        error: error.response.data.message || "Network response was not ok",
-      };
-    }
-  },
-
-  addProduct: async (newItem: any) => {
+  createProduct: async (newItem: any) => {
     try {
       const response = await apiInstance.post(
         `/${productRoot}/create`,
@@ -67,12 +46,12 @@ export const products = {
     } catch (error: any) {
       return {
         data: null,
-        error: error.response.data.message || "Network response was not ok",
+        error: error.response?.data.message || "Network response was not ok",
       };
     }
   },
 
-  editTitle: async (productId: any, newText: any) => {
+  updateProduct: async (productId: any, newText: any) => {
     try {
       const response = await apiInstance.put(`/${productRoot}/${productId}`, {
         title: newText,
@@ -81,36 +60,19 @@ export const products = {
     } catch (error: any) {
       return {
         data: null,
-        error: error.response.data.message || "Network response was not ok",
+        error: error.response?.data.message || "Network response was not ok",
       };
     }
   },
 
-  changeAmount: async (productId: any, newCount: any) => {
+  deleteProduct: async (productId: string) => {
     try {
-      const response = await apiInstance.put(
-        `/${productRoot}/${productId}`,
-        newCount
-      );
+      const response = await apiInstance.delete(`/${productRoot}/${productId}`);
       return { data: response.data, error: null };
     } catch (error: any) {
       return {
         data: null,
-        error: error.response.data.message || "Network response was not ok",
-      };
-    }
-  },
-
-  updateProductAmount: async (itemsId: any, amount: any) => {
-    try {
-      const response = await apiInstance.put(`/${productRoot}/${itemsId}`, {
-        amount,
-      });
-      return { data: response.data, error: null };
-    } catch (error: any) {
-      return {
-        data: null,
-        error: error.response.data.message || "Network response was not ok",
+        error: error.response?.data.message || "Network response was not ok",
       };
     }
   },

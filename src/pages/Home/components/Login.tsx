@@ -11,7 +11,8 @@ import {
   notification,
 } from "antd";
 import { AuthContext } from "../../../context/AuthContext";
-import { users, Role, UserRegisterPayload } from "../../../api/users";
+import { users, UserRegisterPayload } from "../../../api/users";
+import { Role } from "../../../constants";
 
 const { Option } = Select;
 

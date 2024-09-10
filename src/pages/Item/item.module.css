@@ -50,3 +50,38 @@ p {
   font-size: 16px;
   color: #888;
 }
+
+.commentContainer {
+  margin-bottom: 16px;
+  border: 1px solid #d9d9d9;
+  padding: 16px;
+  border-radius: 4px;
+}
+
+.username {
+  font-weight: bold;
+}
+
+.commentText {
+  margin-top: 8px;
+}
+
+.commentDate {
+  font-size: 12px;
+  color: #888;
+  margin-top: 4px;
+}
+
+.replyContainer {
+  margin-top: 16px;
+  padding-left: 20px;
+  border-left: 2px solid #d9d9d9;
+}
+
+.replyInputContainer {
+  margin-top: 8px;
+}
+
+.buttonContainer {
+  margin-top: 8px;
+}

@@ -3,13 +3,13 @@ export interface User {
   id: string;
 }
 
-export interface Comment {
+export interface CommentType {
+  parentId: string | null;
   id: string;
   productId: string;
   text: string;
   date: Date;
   user: User;
-  comments: Comment[];
 }
 
 export interface Product {

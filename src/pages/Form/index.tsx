@@ -40,12 +40,12 @@ const ProductForm = () => {
       }
     }
 
-    const { data, error } = await products.addProduct(formData);
+    const { data, error } = await products.createProduct(formData);
     if (data) {
       resetForm();
       notification.success({
         message: "Success",
-        description: "Product added successfully!",
+        description: "Product create successfully!",
       });
 
       navigate("/");
