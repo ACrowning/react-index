@@ -112,7 +112,7 @@ const CommentSection: React.FC<Props> = ({ productId }) => {
     parentId: string | null = null
   ): CommentTree[] => {
     const commentTree: CommentTree[] = comments
-      .filter((comment) => comment.parent_comment_id === parentId)
+      .filter((comment) => comment.parentCommentId === parentId)
       .map((comment) => ({
         ...comment,
         replies: buildCommentTree(comments, comment.id),
@@ -124,7 +124,7 @@ const CommentSection: React.FC<Props> = ({ productId }) => {
   const renderComments = (comments: CommentTree[]): JSX.Element[] => {
     return comments.map((comment) => (
       <div key={comment.id} className={styles.commentContainer}>
-        <div className={styles.username}>{user!.username}</div>
+        <div className={styles.username}>{comment.userId}</div>
         {editingComment?.id === comment.id ? (
           <Input.TextArea
             value={editingComment?.text}
@@ -161,7 +161,7 @@ const CommentSection: React.FC<Props> = ({ productId }) => {
             />
             <Button
               type="primary"
-              style={{ marginTop: 8 }}
+              className={styles.buttons}
               onClick={() => handleAddReply(comment.id)}
             >
               Submit Reply
@@ -209,7 +209,12 @@ const CommentSection: React.FC<Props> = ({ productId }) => {
         />
       </Form.Item>
       <Form.Item>
-        <Button htmlType="submit" type="primary" onClick={handleAddComment}>
+        <Button
+          htmlType="submit"
+          className={styles.buttons}
+          type="primary"
+          onClick={handleAddComment}
+        >
           Add Comment
         </Button>
       </Form.Item>

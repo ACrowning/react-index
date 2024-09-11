@@ -4,13 +4,12 @@ export interface User {
 }
 
 export interface CommentType {
-  parent_comment_id: string | null;
-  parentId: string | null;
   id: string;
   productId: string;
   text: string;
   date: Date;
-  user: User;
+  userId: string;
+  parentCommentId: string | null;
 }
 
 export interface Product {
