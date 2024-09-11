@@ -44,7 +44,7 @@ export function ShopCartModal({
     const amountReturn = elementToUpdate.amount + removedItem.amount;
 
     const { error } = await cart.removeFromCart(itemsId);
-    await products.updateProductAmount(itemsId, amountReturn);
+    await products.updateProduct(itemsId, amountReturn);
 
     if (error) {
       setElements([]);
@@ -76,7 +76,7 @@ export function ShopCartModal({
     };
 
     const { error } = await cart.cartPlusMinus(productId, changes);
-    await products.updateProductAmount(productId, amountReturn);
+    await products.updateProduct(productId, amountReturn);
 
     if (error) {
       setCartItems([]);
@@ -105,7 +105,7 @@ export function ShopCartModal({
     };
     if (itemToUpdate.amount <= 1) {
       const { error } = await cart.removeFromCart(productId);
-      await products.updateProductAmount(productId, amountReturn);
+      await products.updateProduct(productId, amountReturn);
       if (error) {
         setCartItems([]);
       } else {
@@ -113,7 +113,7 @@ export function ShopCartModal({
       }
     } else {
       const { error } = await cart.cartPlusMinus(productId, changes);
-      await products.updateProductAmount(productId, amountReturn);
+      await products.updateProduct(productId, amountReturn);
 
       if (error) {
         setCartItems([]);

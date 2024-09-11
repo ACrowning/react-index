@@ -27,29 +27,31 @@ function Home() {
   const [modalOpen, setModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(DEFAULT_PAGE);
   const [pageSize, setPageSize] = useState(DEFAULT_LIMIT);
-  const [totalPages, setTotalPages] = useState(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const context = useContext(AuthContext);
+
   if (!context) {
     throw new Error("UserContext must be used within a UserProvider");
   }
+
   const { user } = context;
 
-  const fetchProducts = async (page: any, pageSize: any) => {
+  const fetchProducts = async (page: number, pageSize: number) => {
     const params = {
-      searchElement,
+      title: searchElement,
       sortByPrice,
       page,
-      pageSize,
+      limit: pageSize,
     };
 
     const { data, error } = await products.getProducts(params);
     if (error) {
       setElements([]);
     } else {
-      setElements(data.currentPage);
-      setTotalPages(data.total);
+      setElements(data?.products);
+      setTotalPages(data?.total);
     }
   };
 
@@ -100,7 +102,7 @@ function Home() {
   };
 
   const handleElementClick = async (productId: any, newText: any) => {
-    const { error } = await products.editTitle(productId, newText);
+    const { error } = await products.updateProduct(productId, newText);
 
     if (error) {
       setElements([]);
@@ -117,7 +119,7 @@ function Home() {
     const changes = {
       amount: parseInt((productId.amount - newCount) as any),
     };
-    const { error } = await products.changeAmount(productId.id, changes);
+    const { error } = await products.updateProduct(productId.id, changes);
 
     if (error) {
       setElements([]);
@@ -248,7 +250,7 @@ function Home() {
                 pageSize={pageSize}
                 current={currentPage}
                 onChange={handlePageChange}
-                total={totalPages * pageSize}
+                total={totalPages}
               />
             </div>
           </div>

@@ -27,7 +27,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -38,8 +38,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
           if (user) {
             setUser({ ...user, token });
           }
-        } catch (error) {
-          console.error("Failed to fetch user by token:", error);
+        } catch (error: any) {
+          console.error(
+            "Failed to fetch user by token:",
+            error.message || error
+          );
           storage.set(TOKEN_KEY, null);
         }
       }

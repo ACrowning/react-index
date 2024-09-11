@@ -25,29 +25,30 @@ const AdminPanel: React.FC = () => {
   });
   const [loading, setLoading] = useState(false);
 
-  const fetchProducts = async (page: number, pageSize: number) => {
+  const fetchProducts = async (page: number, limit: number) => {
     setLoading(true);
     const { data, error } = await p.getProducts({
-      searchElement: "",
+      title: "",
       sortByPrice: "",
       page,
-      pageSize,
+      limit,
     });
     setLoading(false);
 
     if (error) {
-      message.error("Error fetching products");
+      console.error("Error fetching products", data);
     } else {
-      if (Array.isArray(data.currentPage)) {
-        setProducts(data.currentPage);
+      if (data && Array.isArray(data.products)) {
+        setProducts(data.products as Product[]);
         setPagination((prev) => ({
           ...prev,
           current: page,
-          pageSize,
-          total: data.total * pageSize,
+          pageSize: limit,
+          total: data.total || 0,
         }));
       } else {
-        console.error("currentPage is not an array:", data.currentPage);
+        console.error("Products data format is not valid:", data);
+        setProducts([]);
       }
     }
   };
