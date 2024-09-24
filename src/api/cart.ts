@@ -2,9 +2,13 @@ import { apiInstance } from "./index";
 const cartRoot = "cart";
 
 export const cart = {
-  removeFromCart: async (itemsId: any) => {
+  addToCart: async (userId: string, productId: string, amount: number) => {
     try {
-      const response = await apiInstance.delete(`/${cartRoot}/${itemsId}`);
+      const response = await apiInstance.post(`/${cartRoot}/add`, {
+        userId,
+        productId,
+        amount,
+      });
       return { data: response.data, error: null };
     } catch (error: any) {
       return {
@@ -13,9 +17,20 @@ export const cart = {
       };
     }
   },
-  addToCart: async (newCount: any) => {
+
+  removeFromCart: async (
+    cartItemId: string,
+    userId: string,
+    productId: string,
+    amount: number
+  ) => {
     try {
-      const response = await apiInstance.post(`/${cartRoot}`, newCount);
+      const response = await apiInstance.post(`/${cartRoot}/delete`, {
+        cartItemId,
+        userId,
+        productId,
+        amount,
+      });
       return { data: response.data, error: null };
     } catch (error: any) {
       return {
@@ -24,20 +39,10 @@ export const cart = {
       };
     }
   },
-  getCart: async () => {
+
+  getCart: async (userId: string) => {
     try {
-      const response = await apiInstance.get(`/${cartRoot}`);
-      return { data: response.data, error: null };
-    } catch (error: any) {
-      return {
-        data: null,
-        error: error.response.data.message || "Network response was not ok",
-      };
-    }
-  },
-  cartPlusMinus: async (itemsId: any, amount: any) => {
-    try {
-      const response = await apiInstance.put(`/${cartRoot}/${itemsId}`, amount);
+      const response = await apiInstance.get(`/${cartRoot}/${userId}`);
       return { data: response.data, error: null };
     } catch (error: any) {
       return {

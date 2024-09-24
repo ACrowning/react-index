@@ -15,6 +15,7 @@ export interface User {
   username: string;
   email: string;
   role: Role;
+  money: number;
   token: string;
 }
 

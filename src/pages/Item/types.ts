@@ -1,6 +1,10 @@
 export interface User {
-  username: string;
   id: string;
+  username: string;
+  email: string;
+  role: string;
+  money: number;
+  token: string;
 }
 
 export interface CommentType {
