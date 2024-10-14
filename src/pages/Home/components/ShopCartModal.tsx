@@ -53,6 +53,7 @@ export function ShopCartModal({
 
   const handleShopCardRemove = async (cartItemId: string) => {
     if (!user) return;
+
     const removedItem = cartItems.find(
       (item) => item.cartItemId === cartItemId
     );
@@ -71,12 +72,16 @@ export function ShopCartModal({
       removedItem.product.id,
       removedItem.amount
     );
-    await products.updateProduct(removedItem.product.id, amountReturn);
+
+    await products.updateProduct(removedItem.product.id, {
+      amount: amountReturn,
+    });
 
     if (error) {
       console.error("Error removing from cart:", error);
     } else {
       setCartItems(cartItems.filter((item) => item.cartItemId !== cartItemId));
+
       const updatedElements = elements.map((element: Product) =>
         element.id === removedItem.product.id
           ? { ...element, amount: amountReturn }
@@ -87,10 +92,9 @@ export function ShopCartModal({
     }
   };
 
-  const handleCartPlus = async (productId: string) => {
-    if (!user) return;
+  const handleCartPlus = async (productId: string, cartItemId: string) => {
     const itemToUpdate = cartItems.find(
-      (item) => item.product.id === productId
+      (item) => item.cartItemId === cartItemId
     );
     const elementToUpdate = elements.find(
       (element) => element.id === productId
@@ -102,17 +106,21 @@ export function ShopCartModal({
     const updatedAmount = itemToUpdate.amount + 1;
     const amountReturn = elementToUpdate.amount - 1;
 
-    const { error } = await cart.addToCart(user.id, productId, updatedAmount);
-    await products.updateProduct(productId, amountReturn);
+    const { error } = await cart.updateCartItem(
+      cartItemId,
+      productId,
+      updatedAmount
+    );
 
-    if (error) {
-      console.error("Error adding to cart:", error);
-    } else {
+    await products.updateProduct(productId, { amount: amountReturn });
+
+    if (!error) {
       const updatedCartItems = cartItems.map((item: CartItem) =>
-        item.product.id === productId
+        item.cartItemId === cartItemId
           ? { ...item, amount: updatedAmount }
           : item
       );
+
       setCartItems(updatedCartItems);
 
       const updatedElements = elements.map((element: Product) =>
@@ -120,14 +128,14 @@ export function ShopCartModal({
           ? { ...element, amount: amountReturn }
           : element
       );
+
       setElements(updatedElements);
     }
   };
 
-  const handleCartMinus = async (productId: string) => {
-    if (!user) return;
+  const handleCartMinus = async (productId: string, cartItemId: string) => {
     const itemToUpdate = cartItems.find(
-      (item) => item.product.id === productId
+      (item) => item.cartItemId === cartItemId
     );
     const elementToUpdate = elements.find(
       (element) => element.id === productId
@@ -141,17 +149,21 @@ export function ShopCartModal({
     if (updatedAmount <= 0) {
       await handleShopCardRemove(itemToUpdate.cartItemId);
     } else {
-      const { error } = await cart.addToCart(user.id, productId, updatedAmount);
-      await products.updateProduct(productId, amountReturn);
+      const { error } = await cart.updateCartItem(
+        cartItemId,
+        productId,
+        updatedAmount
+      );
 
-      if (error) {
-        console.error("Error updating cart:", error);
-      } else {
+      await products.updateProduct(productId, { amount: amountReturn });
+
+      if (!error) {
         const updatedCartItems = cartItems.map((item: CartItem) =>
-          item.product.id === productId
+          item.cartItemId === cartItemId
             ? { ...item, amount: updatedAmount }
             : item
         );
+
         setCartItems(updatedCartItems);
 
         const updatedElements = elements.map((element: Product) =>
@@ -159,6 +171,7 @@ export function ShopCartModal({
             ? { ...element, amount: amountReturn }
             : element
         );
+
         setElements(updatedElements);
       }
     }
@@ -183,11 +196,13 @@ export function ShopCartModal({
             actions={[
               <PlusSquareOutlined
                 className={styles.iconsStyle}
-                onClick={() => handleCartPlus(item.product.id)}
+                onClick={() => handleCartPlus(item.product.id, item.cartItemId)}
               />,
               <MinusSquareOutlined
                 className={styles.iconsStyle}
-                onClick={() => handleCartMinus(item.product.id)}
+                onClick={() =>
+                  handleCartMinus(item.product.id, item.cartItemId)
+                }
               />,
               <Button
                 type="link"

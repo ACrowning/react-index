@@ -155,15 +155,13 @@ function Home() {
 
   const addToCart = async (element: Product, newCount: number) => {
     if (!user || !user.id) {
-      console.error("User is not authenticated");
       return;
     }
 
     const newItem: CartItem = {
-      id: element.id,
       cartItemId: "",
       userId: user.id,
-      amount: parseInt(String(newCount), 10),
+      amount: newCount,
       product: {
         id: element.id,
         title: element.title,
@@ -174,18 +172,49 @@ function Home() {
     };
 
     const existingItemIndex = cartItems.findIndex(
-      (item) => item.id === newItem.id
+      (item) => item.product.id === newItem.product.id
     );
-    const { error } = await cart.addToCart(user.id, newItem.id, newItem.amount);
 
-    if (error) {
-      console.error("Error adding to cart:", error);
-    } else if (existingItemIndex !== -1) {
-      const updatedItems = [...cartItems];
-      updatedItems[existingItemIndex].amount += newItem.amount;
-      setCartItems(updatedItems);
+    if (existingItemIndex !== -1) {
+      const existingItem = cartItems[existingItemIndex];
+      const updatedAmount = existingItem.amount + newItem.amount;
+
+      const { error } = await cart.updateCartItem(
+        existingItem.cartItemId,
+        newItem.product.id,
+        updatedAmount
+      );
+
+      if (!error) {
+        const updatedItems = [...cartItems];
+        updatedItems[existingItemIndex].amount = updatedAmount;
+        setCartItems(updatedItems);
+
+        const updatedElements = elements.map((elementItem: Product) =>
+          elementItem.id === element.id
+            ? { ...elementItem, amount: elementItem.amount - newItem.amount }
+            : elementItem
+        );
+        setElements(updatedElements);
+      }
     } else {
-      setCartItems([...cartItems, newItem]);
+      const { error, data: newCartItem } = await cart.addToCart(
+        user.id,
+        newItem.product.id,
+        newItem.amount
+      );
+
+      if (!error && newCartItem?.data?.id) {
+        newItem.cartItemId = newCartItem.data.id;
+        setCartItems([...cartItems, newItem]);
+
+        const updatedElements = elements.map((elementItem: Product) =>
+          elementItem.id === element.id
+            ? { ...elementItem, amount: elementItem.amount - newItem.amount }
+            : elementItem
+        );
+        setElements(updatedElements);
+      }
     }
   };
 

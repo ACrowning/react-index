@@ -18,6 +18,22 @@ export const cart = {
     }
   },
 
+  updateCartItem: async (cartId: string, productId: string, amount: number) => {
+    try {
+      const response = await apiInstance.put(`/${cartRoot}/update`, {
+        cartId,
+        productId,
+        amount,
+      });
+      return { data: response.data, error: null };
+    } catch (error: any) {
+      return {
+        data: null,
+        error: error.response.data.message || "Network response was not ok",
+      };
+    }
+  },
+
   removeFromCart: async (
     cartItemId: string,
     userId: string,
