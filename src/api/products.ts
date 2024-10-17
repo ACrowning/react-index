@@ -51,10 +51,10 @@ export const products = {
     }
   },
 
-  updateProduct: async (productId: any, newText: any) => {
+  updateProduct: async (productId: any, updatedFields: any) => {
     try {
       const response = await apiInstance.put(`/${productRoot}/${productId}`, {
-        title: newText,
+        ...updatedFields,
       });
       return { data: response.data, error: null };
     } catch (error: any) {

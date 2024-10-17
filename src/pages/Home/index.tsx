@@ -17,23 +17,25 @@ import {
   DEFAULT_SORT,
   DEFAULT_SIZE,
 } from "../../constants/index";
+import { Product } from "../Item/types";
+import { CartItem } from "../../constants/types";
 
 function Home() {
-  const [elements, setElements] = useState([]);
+  const [elements, setElements] = useState<any[]>([]);
   const [searchElement, setSearchElement] = useState("");
   const [sumCard, setSumCard] = useState(0);
-  const [cartItems, setCartItems] = useState<any[]>([]);
-  const [sortByPrice, setSortByPrice] = useState(DEFAULT_SORT);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [sortByPrice, setSortByPrice] = useState<string>(DEFAULT_SORT);
   const [modalOpen, setModalOpen] = useState(false);
-  const [currentPage, setCurrentPage] = useState(DEFAULT_PAGE);
-  const [pageSize, setPageSize] = useState(DEFAULT_LIMIT);
+  const [currentPage, setCurrentPage] = useState<number>(DEFAULT_PAGE);
+  const [pageSize, setPageSize] = useState<number>(DEFAULT_LIMIT);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const context = useContext(AuthContext);
 
   if (!context) {
-    throw new Error("UserContext must be used within a UserProvider");
+    throw new Error("AuthContext must be used within an AuthProvider");
   }
 
   const { user } = context;
@@ -60,40 +62,44 @@ function Home() {
   }, [searchElement, sortByPrice, currentPage, pageSize]);
 
   useEffect(() => {
-    const sort: any = searchParams.get("sort");
-    const current: any = searchParams.get("page");
-    const size = parseInt(searchParams.get("size") as any);
+    const sort = searchParams.get("sort");
+    const current = searchParams.get("page");
+    const size = parseInt(searchParams.get("size") || "10");
     setSortByPrice(sort || DEFAULT_SORT);
-    setCurrentPage(current || DEFAULT_PAGE);
-    setPageSize(size || DEFAULT_LIMIT);
+    setCurrentPage(Number(current) || DEFAULT_PAGE);
+    setPageSize(size);
   }, [searchParams]);
 
-  const handleSort = (e: any) => {
+  const handleSort = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSortByPrice(e.target.value);
     setSearchParams({
-      page: DEFAULT_PAGE,
-      size: pageSize,
+      page: String(DEFAULT_PAGE),
+      size: String(pageSize),
       sort: e.target.value,
-    } as any);
+    });
   };
 
-  const handleSearch = (e: any) => {
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchElement(e.target.value);
     setSearchParams({
-      page: DEFAULT_PAGE,
-      size: DEFAULT_LIMIT,
+      page: String(DEFAULT_PAGE),
+      size: String(DEFAULT_LIMIT),
       sort: DEFAULT_SORT,
-    } as any);
+    });
   };
 
-  const handlePageChange = (current: any, size: any) => {
+  const handlePageChange = (current: number, size: number) => {
     const page = size !== pageSize ? DEFAULT_PAGE : current;
-    setSearchParams({ page: page, size: size, sort: sortByPrice });
+    setSearchParams({
+      page: String(page),
+      size: String(size),
+      sort: sortByPrice,
+    });
   };
 
-  const handleToggle = (productId: any) => {
-    setElements((prevElements: any) =>
-      prevElements.map((element: any) =>
+  const handleToggle = (productId: string) => {
+    setElements((prevElements) =>
+      prevElements.map((element) =>
         element.id === productId
           ? { ...element, favorite: !element.favorite }
           : element
@@ -101,36 +107,38 @@ function Home() {
     );
   };
 
-  const handleElementClick = async (productId: any, newText: any) => {
-    const { error } = await products.updateProduct(productId, newText);
+  const handleElementClick = async (productId: string, newText: string) => {
+    const { error } = await products.updateProduct(productId, {
+      title: newText,
+    });
 
     if (error) {
       setElements([]);
     } else {
-      setElements((prevElements: any) =>
-        prevElements.map((element: any) =>
+      setElements((prevElements) =>
+        prevElements.map((element) =>
           element.id === productId ? { ...element, title: newText } : element
         )
       );
     }
   };
 
-  const handleAmountEdit = async (productId: any, newCount: any) => {
+  const handleAmountEdit = async (productId: string, newCount: number) => {
+    const product = elements.find((el) => el.id === productId);
+    if (!product) return;
+
     const changes = {
-      amount: parseInt((productId.amount - newCount) as any),
+      amount: Math.max(0, product.amount - newCount),
     };
-    const { error } = await products.updateProduct(productId.id, changes);
+    const { error } = await products.updateProduct(productId, changes);
 
     if (error) {
       setElements([]);
     } else {
-      setElements((prevElements: any) =>
-        prevElements.map((element: any) =>
-          element.id === productId.id
-            ? {
-                ...element,
-                amount: Math.max(0, element.amount - newCount),
-              }
+      setElements((prevElements) =>
+        prevElements.map((element) =>
+          element.id === productId
+            ? { ...element, amount: changes.amount }
             : element
         )
       );
@@ -139,32 +147,74 @@ function Home() {
 
   useEffect(() => {
     const totalItems = cartItems.reduce(
-      (total, item: any) => total + item.amount,
+      (total, item) => total + item.amount,
       0
     );
     setSumCard(totalItems);
   }, [cartItems]);
 
-  const addToCart = async (element: any, newCount: any) => {
-    const newItem = {
-      id: element.id,
-      title: element.title,
-      amount: parseInt(newCount),
-      price: element.price,
+  const addToCart = async (element: Product, newCount: number) => {
+    if (!user || !user.id) {
+      return;
+    }
+
+    const newItem: CartItem = {
+      cartItemId: "",
+      userId: user.id,
+      amount: newCount,
+      product: {
+        id: element.id,
+        title: element.title,
+        price: element.price,
+        amount: element.amount,
+        favorite: element.favorite,
+      },
     };
-    const existingItemIndex: any = cartItems.findIndex(
-      (item) => item.id === newItem.id
+
+    const existingItemIndex = cartItems.findIndex(
+      (item) => item.product.id === newItem.product.id
     );
 
-    const { error } = await cart.addToCart(newItem);
+    if (existingItemIndex !== -1) {
+      const existingItem = cartItems[existingItemIndex];
+      const updatedAmount = existingItem.amount + newItem.amount;
 
-    if (error) {
-      setCartItems([]);
-    } else if (existingItemIndex !== -1) {
-      cartItems[existingItemIndex].amount += newItem.amount;
-      setCartItems([...cartItems]);
+      const { error } = await cart.updateCartItem(
+        existingItem.cartItemId,
+        newItem.product.id,
+        updatedAmount
+      );
+
+      if (!error) {
+        const updatedItems = [...cartItems];
+        updatedItems[existingItemIndex].amount = updatedAmount;
+        setCartItems(updatedItems);
+
+        const updatedElements = elements.map((elementItem: Product) =>
+          elementItem.id === element.id
+            ? { ...elementItem, amount: elementItem.amount - newItem.amount }
+            : elementItem
+        );
+        setElements(updatedElements);
+      }
     } else {
-      setCartItems([...cartItems, newItem]);
+      const { error, data: newCartItem } = await cart.addToCart(
+        user.id,
+        newItem.product.id,
+        newItem.amount
+      );
+
+      if (!error && newCartItem?.data?.id) {
+        newItem.cartItemId = newCartItem.data.id;
+        setCartItems([...cartItems, newItem]);
+
+        const updatedElements = elements.map((elementItem: Product) =>
+          elementItem.id === element.id
+            ? { ...elementItem, amount: elementItem.amount - newItem.amount }
+            : elementItem
+        );
+        setElements(updatedElements);
+      }
     }
   };
 

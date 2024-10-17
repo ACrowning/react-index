@@ -2,9 +2,13 @@ import { apiInstance } from "./index";
 const cartRoot = "cart";
 
 export const cart = {
-  removeFromCart: async (itemsId: any) => {
+  addToCart: async (userId: string, productId: string, amount: number) => {
     try {
-      const response = await apiInstance.delete(`/${cartRoot}/${itemsId}`);
+      const response = await apiInstance.post(`/${cartRoot}/add`, {
+        userId,
+        productId,
+        amount,
+      });
       return { data: response.data, error: null };
     } catch (error: any) {
       return {
@@ -13,9 +17,14 @@ export const cart = {
       };
     }
   },
-  addToCart: async (newCount: any) => {
+
+  updateCartItem: async (cartId: string, productId: string, amount: number) => {
     try {
-      const response = await apiInstance.post(`/${cartRoot}`, newCount);
+      const response = await apiInstance.put(`/${cartRoot}/update`, {
+        cartId,
+        productId,
+        amount,
+      });
       return { data: response.data, error: null };
     } catch (error: any) {
       return {
@@ -24,9 +33,20 @@ export const cart = {
       };
     }
   },
-  getCart: async () => {
+
+  removeFromCart: async (
+    cartItemId: string,
+    userId: string,
+    productId: string,
+    amount: number
+  ) => {
     try {
-      const response = await apiInstance.get(`/${cartRoot}`);
+      const response = await apiInstance.post(`/${cartRoot}/delete`, {
+        cartItemId,
+        userId,
+        productId,
+        amount,
+      });
       return { data: response.data, error: null };
     } catch (error: any) {
       return {
@@ -35,9 +55,10 @@ export const cart = {
       };
     }
   },
-  cartPlusMinus: async (itemsId: any, amount: any) => {
+
+  getCart: async (userId: string) => {
     try {
-      const response = await apiInstance.put(`/${cartRoot}/${itemsId}`, amount);
+      const response = await apiInstance.get(`/${cartRoot}/${userId}`);
       return { data: response.data, error: null };
     } catch (error: any) {
       return {

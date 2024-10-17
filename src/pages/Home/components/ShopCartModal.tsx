@@ -1,19 +1,19 @@
-import { Modal, List } from "antd";
-import React, { useEffect } from "react";
+import { Modal, List, Button } from "antd";
+import React, { useContext, useEffect } from "react";
+import { PlusSquareOutlined, MinusSquareOutlined } from "@ant-design/icons";
 import styles from "../app.module.css";
-import { PlusSquareOutlined } from "@ant-design/icons";
-import { MinusSquareOutlined } from "@ant-design/icons";
-import { Button } from "antd";
 import { cart } from "../../../api/cart";
 import { products } from "../../../api/products";
+import { AuthContext } from "../../../context/AuthContext";
+import { CartItem, Product } from "../../../constants/types";
 
 interface Props {
-  modalOpen: any;
-  setModalOpen: any;
-  cartItems: any;
-  setCartItems: any;
-  elements: any;
-  setElements: any;
+  modalOpen: boolean;
+  setModalOpen: (open: boolean) => void;
+  cartItems: CartItem[];
+  setCartItems: (items: CartItem[]) => void;
+  elements: Product[];
+  setElements: (elements: Product[]) => void;
 }
 
 export function ShopCartModal({
@@ -24,107 +24,155 @@ export function ShopCartModal({
   elements,
   setElements,
 }: Props) {
+  const context = useContext(AuthContext);
+
+  if (!context) {
+    throw new Error("AuthContext must be used within an AuthProvider");
+  }
+
+  const { user } = context;
+
   useEffect(() => {
     (async () => {
-      const { data, error } = await cart.getCart();
+      if (!user) return;
+      const { data, error } = await cart.getCart(user.id);
+
       if (error) {
         setCartItems([]);
-      } else {
-        setCartItems(data.data);
+        return;
       }
-    })();
-  }, [setCartItems]);
 
-  const handleShopCardRemove = async (itemsId: any) => {
-    const itemsDeleted = cartItems.filter((item: any) => item.id !== itemsId);
-    const removedItem = cartItems.find((item: any) => item.id === itemsId);
-    const elementToUpdate = elements.find(
-      (element: any) => element.id === itemsId
+      if (!Array.isArray(data.data)) {
+        setCartItems([]);
+        return;
+      }
+
+      setCartItems(data.data);
+    })();
+  }, [setCartItems, user?.id]);
+
+  const handleShopCardRemove = async (cartItemId: string) => {
+    if (!user) return;
+
+    const removedItem = cartItems.find(
+      (item) => item.cartItemId === cartItemId
     );
+    if (!removedItem) return;
+
+    const elementToUpdate = elements.find(
+      (element) => element.id === removedItem.product.id
+    );
+    if (!elementToUpdate) return;
+
     const amountReturn = elementToUpdate.amount + removedItem.amount;
 
-    const { error } = await cart.removeFromCart(itemsId);
-    await products.updateProduct(itemsId, amountReturn);
+    const { error } = await cart.removeFromCart(
+      removedItem.cartItemId,
+      user.id,
+      removedItem.product.id,
+      removedItem.amount
+    );
+
+    await products.updateProduct(removedItem.product.id, {
+      amount: amountReturn,
+    });
 
     if (error) {
-      setElements([]);
+      console.error("Error removing from cart:", error);
     } else {
-      setCartItems(itemsDeleted);
-      setElements((prevElements: any) =>
-        prevElements.map((element: any) =>
-          element.id === itemsId
-            ? { ...element, amount: amountReturn }
-            : element
-        )
+      setCartItems(cartItems.filter((item) => item.cartItemId !== cartItemId));
+
+      const updatedElements = elements.map((element: Product) =>
+        element.id === removedItem.product.id
+          ? { ...element, amount: amountReturn }
+          : element
       );
+
+      setElements(updatedElements);
     }
   };
 
-  const handleCartPlus = async (productId: any) => {
-    const itemToUpdate = cartItems.find((item: any) => item.id === productId);
+  const handleCartPlus = async (productId: string, cartItemId: string) => {
+    const itemToUpdate = cartItems.find(
+      (item) => item.cartItemId === cartItemId
+    );
     const elementToUpdate = elements.find(
-      (element: any) => element.id === productId
+      (element) => element.id === productId
     );
 
-    if (elementToUpdate.amount === 0) {
+    if (!itemToUpdate || !elementToUpdate || elementToUpdate.amount === 0)
       return;
-    }
-    const updatedAmount = (itemToUpdate.amount += 1);
-    const amountReturn = Math.max((elementToUpdate.amount -= 1), 0);
-    const changes = {
-      amount: updatedAmount,
-    };
 
-    const { error } = await cart.cartPlusMinus(productId, changes);
-    await products.updateProduct(productId, amountReturn);
+    const updatedAmount = itemToUpdate.amount + 1;
+    const amountReturn = elementToUpdate.amount - 1;
 
-    if (error) {
-      setCartItems([]);
-    } else {
-      setCartItems((prevElements: any) =>
-        prevElements.map((element: any) =>
-          element.id === productId
-            ? { ...element, amount: updatedAmount }
-            : element
-        )
+    const { error } = await cart.updateCartItem(
+      cartItemId,
+      productId,
+      updatedAmount
+    );
+
+    await products.updateProduct(productId, { amount: amountReturn });
+
+    if (!error) {
+      const updatedCartItems = cartItems.map((item: CartItem) =>
+        item.cartItemId === cartItemId
+          ? { ...item, amount: updatedAmount }
+          : item
       );
+
+      setCartItems(updatedCartItems);
+
+      const updatedElements = elements.map((element: Product) =>
+        element.id === productId
+          ? { ...element, amount: amountReturn }
+          : element
+      );
+
+      setElements(updatedElements);
     }
   };
 
-  const handleCartMinus = async (productId: any) => {
-    const itemToUpdate = cartItems.find((item: any) => item.id === productId);
-    const elementToUpdate = elements.find(
-      (element: any) => element.id === productId
+  const handleCartMinus = async (productId: string, cartItemId: string) => {
+    const itemToUpdate = cartItems.find(
+      (item) => item.cartItemId === cartItemId
     );
-    const itemsDeleted = cartItems.filter((item: any) => item.id !== productId);
+    const elementToUpdate = elements.find(
+      (element) => element.id === productId
+    );
+
+    if (!itemToUpdate || !elementToUpdate) return;
 
     const updatedAmount = itemToUpdate.amount - 1;
-    const amountReturn = (elementToUpdate.amount += 1);
-    const changes = {
-      amount: updatedAmount,
-    };
-    if (itemToUpdate.amount <= 1) {
-      const { error } = await cart.removeFromCart(productId);
-      await products.updateProduct(productId, amountReturn);
-      if (error) {
-        setCartItems([]);
-      } else {
-        setCartItems(itemsDeleted);
-      }
-    } else {
-      const { error } = await cart.cartPlusMinus(productId, changes);
-      await products.updateProduct(productId, amountReturn);
+    const amountReturn = elementToUpdate.amount + 1;
 
-      if (error) {
-        setCartItems([]);
-      } else {
-        setCartItems((prevElements: any) =>
-          prevElements.map((element: any) =>
-            element.id === productId
-              ? { ...element, amount: updatedAmount }
-              : element
-          )
+    if (updatedAmount <= 0) {
+      await handleShopCardRemove(itemToUpdate.cartItemId);
+    } else {
+      const { error } = await cart.updateCartItem(
+        cartItemId,
+        productId,
+        updatedAmount
+      );
+
+      await products.updateProduct(productId, { amount: amountReturn });
+
+      if (!error) {
+        const updatedCartItems = cartItems.map((item: CartItem) =>
+          item.cartItemId === cartItemId
+            ? { ...item, amount: updatedAmount }
+            : item
         );
+
+        setCartItems(updatedCartItems);
+
+        const updatedElements = elements.map((element: Product) =>
+          element.id === productId
+            ? { ...element, amount: amountReturn }
+            : element
+        );
+
+        setElements(updatedElements);
       }
     }
   };
@@ -143,28 +191,33 @@ export function ShopCartModal({
       <List
         itemLayout="horizontal"
         dataSource={cartItems}
-        renderItem={(item: any) => (
+        renderItem={(item: CartItem) => (
           <List.Item
             actions={[
               <PlusSquareOutlined
                 className={styles.iconsStyle}
-                onClick={() => handleCartPlus(item.id)}
-              ></PlusSquareOutlined>,
+                onClick={() => handleCartPlus(item.product.id, item.cartItemId)}
+              />,
               <MinusSquareOutlined
                 className={styles.iconsStyle}
-                onClick={() => handleCartMinus(item.id)}
-              ></MinusSquareOutlined>,
-              <Button type="link" onClick={() => handleShopCardRemove(item.id)}>
+                onClick={() =>
+                  handleCartMinus(item.product.id, item.cartItemId)
+                }
+              />,
+              <Button
+                type="link"
+                onClick={() => handleShopCardRemove(item.cartItemId)}
+              >
                 Remove
               </Button>,
             ]}
           >
             <List.Item.Meta
-              title={item.title}
+              title={item.product.title}
               description={
                 <>
                   <div>Amount: {item.amount}</div>
-                  <div>Price: {item.price}</div>
+                  <div>Price: {item.product.price}</div>
                 </>
               }
             />

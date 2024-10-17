@@ -1,16 +1,9 @@
 import React, { createContext, useState, useEffect, ReactNode } from "react";
 import { users } from "../api/users";
 import { storage } from "../api/storage";
+import { User } from "../pages/Item/types";
 
 const TOKEN_KEY = "authToken";
-
-interface User {
-  id: string;
-  username: string;
-  email: string;
-  role: string;
-  token: string;
-}
 
 interface AuthContextType {
   user: User | null;
